@@ -9,3 +9,78 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model member {
+  member_id Int @id @default(autoincrement())
+  login_id String 
+  password String
+  phone String?
+  role Int @db.TinyInt @default(0)
+  point Int @default(0)
+  sns_type Int @db.TinyInt @default(0)
+  o_auth String?
+  store_id Int?
+}
+
+model non_member {
+  non_member_id Int @id @default(autoincrement())
+  phone String
+  certificate String?
+}
+
+model store {
+  store_id Int @id @default(autoincrement())
+  name String
+  address String
+  store_img_url String
+  phone String
+  content String?
+  tag_id Int?  
+}
+
+model menu {
+  menu_id Int @id @default(autoincrement())
+  store_id Int
+  tag_id Int? //category 대용
+  name String
+  price Int
+  menu_img_url String @default("default.jpg") //default 이미지
+  discription String?
+  status Int @db.TinyInt @default(0) // 0 - 판매 가능, 1 - 판매 불가
+}
+
+model tag {
+  tag_id Int @id @default(autoincrement())
+  content String
+}
+
+model order {
+  order_id Int @id @default(autoincrement())
+  store_id Int 
+  user_id Int
+  total_price Int @default(0)
+  status Int @db.TinyInt @default(0) // 0- 주문요청, 1- 주문확인, 2- 주문완료, -1 주문취소취소
+}
+
+model order_menu {
+  order_menu_id Int @id @default(autoincrement())
+  order_id Int 
+  menu_id Int 
+  count Int 
+}
+
+model review {
+  review_id Int @id @default(autoincrement())
+  user_id Int
+  order_id Int
+  tag_id Int?
+  title String
+  content String?
+  review_img_url String? @default("default.jpg")
+  sns_opt Int @db.TinyInt @default(0) // 개시여부 0- 안함, 1- 함
+  rating Int @db.TinyInt @default(0)
+  createtime DateTime @default(now())
+  store_url String
+  sns_url String 
+}
+
