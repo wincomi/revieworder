@@ -58,13 +58,27 @@ model Session {
 /// 유저 (NextAuth)
 /// NextAuth으로 첫 로그인 후 자동으로 생성됨.
 model User {
+  /// 고유 번호
   id            String    @id @default(cuid())
   name          String?
+  /// SNS 연동 외 유저를 위한 ID
   email         String?   @unique
   emailVerified DateTime?
-  image         String?
+  image         String? // 프로필 사진 
   accounts      Account[]
   sessions      Session[]
+
+  /// SNS 연동 외 유저를 위한 비밀번호
+  password      String?
+
+  /// 전화번호 형식: 01012345678
+  phoneNumber   String?
+
+  /// 리뷰오더 머니
+  money         Int @default(0)
+
+  /// 관리하는 매장
+  stores        Store[]
 }
 
 /// 확인 토큰 (NextAuth)
@@ -77,43 +91,61 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Member {
-  id Int @id @default(autoincrement())
-  loginId String 
-  password String
-  phone String?
-  role Int @db.TinyInt @default(0)
-  point Int @default(0)
-  snsType Int @db.TinyInt @default(0)
-  oAuth String?
-  storeId Int?
-}
-
-model NonMember {
-  id Int @id @default(autoincrement())
-  phone String
-  certificate String?
-}
-
+/// 매장 모델
 model Store {
+  /// 고유 번호
   id Int @id @default(autoincrement())
+
+  /// 매장 이름
   name String
-  address String
-  storeImgUrl String
-  phone String
-  content String?
-  tagId Int?  
+
+  /// 매장 설명 (해시태그 포함)
+  description String?
+
+  /// 매장 주소
+  address String?
+
+  /// 매장 이미지
+  image String?
+
+  /// 매장 전화 번호
+  phoneNumber String?
+
+  /// 매장 관리 유저
+  userId String
+
+  // Error validating field `stores` in model `User`: The relation field `stores` on model `User` is missing an opposite relation field on the model `Store`. Either run `prisma format` or add it manually.
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  /// 매장 내 메뉴
+  menus Menu[]
 }
 
+// 매장 메뉴
 model Menu {
+  /// 메뉴 고유번호
   id Int @id @default(autoincrement())
-  storeId Int
-  tagId Int? //category 대용
+
+  /// 메뉴 이름
   name String
-  price Int
-  menuImgUrl String @default("default.jpg") //default 이미지
+
+  /// 메뉴 설명
   description String?
+
+  /// 메뉴 가격
+  price Int @default(0)
+  
+  /// 메뉴 이미지
+  image String?
+
+  /// 메뉴 구매 가능 여부
   status MenuStatus @default(AVAILABLE)
+
+  storeId Int
+  
+  store Store @relation(fields: [storeId], references: [id])
 }
 
 /// AVAILABLE: 판매 가능
@@ -123,16 +155,16 @@ enum MenuStatus {
   UNAVAILABLE
 }
 
-model Tag {
-  id Int @id @default(autoincrement())
-  content String
-}
-
 model Order {
-  id Int @id @default(autoincrement())
-  storeId Int 
-  userId Int
+  // 주문 고유 번호
+  id String @id @default(cuid())
+
+  store Store
+
+  user User
+  
   totalPrice Int @default(0)
+
   status OrderStatus @default(REQUESTED)
 }
 
