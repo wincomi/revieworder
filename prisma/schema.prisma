@@ -79,6 +79,13 @@ model User {
 
   /// 관리하는 매장
   stores        Store[]
+
+  // 내 주문 내역 기록 (Order)
+  orders        Order[]
+
+  // 내 리뷰 (Review)
+  reviews Review[]
+  
 }
 
 /// 확인 토큰 (NextAuth)
@@ -121,6 +128,10 @@ model Store {
 
   /// 매장 내 메뉴
   menus Menu[]
+
+  // 매장에서 판매된 주문내역들
+  order Order[]
+
 }
 
 // 매장 메뉴
@@ -143,9 +154,16 @@ model Menu {
   /// 메뉴 구매 가능 여부
   status MenuStatus @default(AVAILABLE)
 
+  // 매장 FK키
   storeId Int
-  
   store Store @relation(fields: [storeId], references: [id])
+  /// index 추가 사유
+  // Warning : With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. 
+  @@index([storeId])
+
+  /// 장바구니로 추가된 각 메뉴들
+  // 외래키 주려면 주는곳에서 이렇게 처리해야함 (FK는 OrderMenu에 있음)
+  OrderMenus OrderMenu[]
 }
 
 /// AVAILABLE: 판매 가능
@@ -155,17 +173,33 @@ enum MenuStatus {
   UNAVAILABLE
 }
 
+/// Order (최종 주문 내역) 
+// 거래 내역보면 결제자, 결제장소랑, 최종금액 표시 뜨는 것 나타냄 
 model Order {
   // 주문 고유 번호
   id String @id @default(cuid())
 
-  store Store
+  // 매장 FK키
+  storeId Int
+  store Store @relation(fields: [storeId], references: [id])
+  @@index([storeId])
 
-  user User
+  // 유저 FK키
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  @@index([userId])
   
+  // 총합 금액 (총 결제 금액)
   totalPrice Int @default(0)
 
   status OrderStatus @default(REQUESTED)
+
+  /// 장바구니로 추가된 각 메뉴들 
+  // 외래키 주려면 주는곳에서 이렇게 처리해야함 (FK는 OrderMenu에 있음)
+  OrderMenus OrderMenu[]
+
+  // 리뷰에 개시된 주문들
+  reviews Review[]
 }
 
 enum OrderStatus {
@@ -175,24 +209,51 @@ enum OrderStatus {
   CANCELED // 주문 취소
 }
 
+// OrderMenu (장바구니)
 model OrderMenu {
-  id Int @id @default(autoincrement())
-  orderId Int 
+  // 장바구니 고유 번호
+  id String @id @default(cuid())
+
+  // Order FK키
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  @@index([orderId])
+
+  // 메뉴 FK키
   menuId Int 
-  count Int 
+  menu Menu @relation(fields: [menuId], references: [id])
+  @@index([menuId])
+
+  // 주문 수량
+  count Int @default(1)
 }
 
 model Review {
+  // 리뷰 고유 번호
   id Int @id @default(autoincrement())
-  userId Int
-  orderId Int
-  tagId Int?
+
+  // 유저 FK키
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  @@index([userId])
+
+  // 주문내역 FK키
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  @@index([orderId])
+  
   title String
+  // 내용 (해시태그 등등)
   content String?
-  reviewImgUrl String? @default("default.jpg")
-  snsOpt Int @db.TinyInt @default(0) // 개시여부 0- 안함, 1- 함
+
+  // 리뷰 이미지
+  image String?
+  // 리뷰 별점 or 평점
   rating Int @db.TinyInt @default(0)
+  // 리뷰 생성일자
   createTime DateTime @default(now())
-  storeUrl String
-  snsUrl String 
+
+  /// 링크 보류 (백엔드 차원에서 구현 가능 예상)
+  //storeUrl String 
+  //snsUrl String 
 }
