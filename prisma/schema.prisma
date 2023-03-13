@@ -35,6 +35,10 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+
+  // Warning 해결을 위한 index
+  // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
+  @@index([userId])
 }
 
 /// 세션 (NextAuth)
@@ -45,6 +49,10 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Warning 해결을 위한 index
+  // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
+  @@index([userId])
 }
 
 /// 유저 (NextAuth)
