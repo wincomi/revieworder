@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,79 +5,149 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+
+  relationMode = "prisma"
 }
 
-model member {
-  member_id Int @id @default(autoincrement())
-  login_id String 
+// NextAuth Adapter (@next-auth/prisma-adapter)
+// https://next-auth.js.org/adapters/models
+
+/// OAuth 계정 (NextAuth)
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+/// 세션 (NextAuth)
+/// 데이터베이스 세션을 위한 모델. JSON 웹 토큰이 활성화되어 있으면 사용되지 않음.
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 유저 (NextAuth)
+/// NextAuth으로 첫 로그인 후 자동으로 생성됨.
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+/// 확인 토큰 (NextAuth)
+/// 비밀번호 없는 로그인을 위해 사용함. 한 유저가 여러 토큰을 가질 수 있음.
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Member {
+  id Int @id @default(autoincrement())
+  loginId String 
   password String
   phone String?
   role Int @db.TinyInt @default(0)
   point Int @default(0)
-  sns_type Int @db.TinyInt @default(0)
-  o_auth String?
-  store_id Int?
+  snsType Int @db.TinyInt @default(0)
+  oAuth String?
+  storeId Int?
 }
 
-model non_member {
-  non_member_id Int @id @default(autoincrement())
+model NonMember {
+  id Int @id @default(autoincrement())
   phone String
   certificate String?
 }
 
-model store {
-  store_id Int @id @default(autoincrement())
+model Store {
+  id Int @id @default(autoincrement())
   name String
   address String
-  store_img_url String
+  storeImgUrl String
   phone String
   content String?
-  tag_id Int?  
+  tagId Int?  
 }
 
-model menu {
-  menu_id Int @id @default(autoincrement())
-  store_id Int
-  tag_id Int? //category 대용
+model Menu {
+  id Int @id @default(autoincrement())
+  storeId Int
+  tagId Int? //category 대용
   name String
   price Int
-  menu_img_url String @default("default.jpg") //default 이미지
-  discription String?
-  status Int @db.TinyInt @default(0) // 0 - 판매 가능, 1 - 판매 불가
+  menuImgUrl String @default("default.jpg") //default 이미지
+  description String?
+  status MenuStatus @default(AVAILABLE)
 }
 
-model tag {
-  tag_id Int @id @default(autoincrement())
+/// AVAILABLE: 판매 가능
+/// UNAVAILABLE: 판매 불가
+enum MenuStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
   content String
 }
 
-model order {
-  order_id Int @id @default(autoincrement())
-  store_id Int 
-  user_id Int
-  total_price Int @default(0)
-  status Int @db.TinyInt @default(0) // 0- 주문요청, 1- 주문확인, 2- 주문완료, -1 주문취소취소
+model Order {
+  id Int @id @default(autoincrement())
+  storeId Int 
+  userId Int
+  totalPrice Int @default(0)
+  status OrderStatus @default(REQUESTED)
 }
 
-model order_menu {
-  order_menu_id Int @id @default(autoincrement())
-  order_id Int 
-  menu_id Int 
+enum OrderStatus {
+  REQUESTED // 주문 요청
+  CONFIRMED // 주문 확인
+  COMPLETED // 주문 완료
+  CANCELED // 주문 취소
+}
+
+model OrderMenu {
+  id Int @id @default(autoincrement())
+  orderId Int 
+  menuId Int 
   count Int 
 }
 
-model review {
-  review_id Int @id @default(autoincrement())
-  user_id Int
-  order_id Int
-  tag_id Int?
+model Review {
+  id Int @id @default(autoincrement())
+  userId Int
+  orderId Int
+  tagId Int?
   title String
   content String?
-  review_img_url String? @default("default.jpg")
-  sns_opt Int @db.TinyInt @default(0) // 개시여부 0- 안함, 1- 함
+  reviewImgUrl String? @default("default.jpg")
+  snsOpt Int @db.TinyInt @default(0) // 개시여부 0- 안함, 1- 함
   rating Int @db.TinyInt @default(0)
-  createtime DateTime @default(now())
-  store_url String
-  sns_url String 
+  createTime DateTime @default(now())
+  storeUrl String
+  snsUrl String 
 }
-
