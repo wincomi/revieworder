@@ -27,6 +27,11 @@ model Account {
   id_token           String?  @db.Text
   session_state      String?
 
+  // KakaoProvider 적용할 경우
+  // Unknown arg `refresh_token_expires_in` in data.refresh_token_expires_in for type AccountUncheckedCreateInput.
+  // 에러 해결
+  refresh_token_expires_in Int?
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])

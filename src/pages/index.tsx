@@ -2,10 +2,13 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const { data, status } = useSession()
+
   return (
     <>
       <Head>
@@ -18,7 +21,10 @@ export default function Home() {
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
+            <code className={styles.code}>src/pages/index.tsx</code><br />
+            {status}{` `}{JSON.stringify(data)}
+            <button type="button" onClick={() => signIn()}>로그인</button>
+            <button type="button" onClick={() => signOut()}>로그아웃</button>
           </p>
           <div>
             <a
