@@ -1,10 +1,11 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import { Container, Button, User, Loading } from '@nextui-org/react'
+import { Container, Button, User, Loading, Spacer } from '@nextui-org/react'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 
 export default function Home() {
     const session = useSession()
+    const router = useRouter()
 
     return (
         <>
@@ -27,6 +28,8 @@ export default function Home() {
                         <Button flat onClick={() => signOut()}>로그아웃</Button> :
                         <Button flat onClick={() => signIn()}>로그인</Button>
                     }
+                    <Spacer y={1} />
+                    <Button color="gradient" flat onClick={() => router.push('/mypage')}>마이페이지</Button>
                 </Container>
             </main>
         </>
