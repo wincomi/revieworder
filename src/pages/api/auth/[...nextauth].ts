@@ -2,7 +2,7 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import AppleProvider from 'next-auth/providers/apple'
 import KakaoProvider from 'next-auth/providers/kakao'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import prisma from "../../../utils/prismadb"
+import prisma from "@/libs/prismadb"
 
 const APPLE_ID = process.env.NEXTAUTH_APPLE_ID!
 const APPLE_SECRET = process.env.NEXTAUTH_APPLE_SECRET!
