@@ -2,8 +2,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { Button, Text, Loading, Spacer, Input, useInput, Grid, Switch } from "@nextui-org/react"
 
 export default () => {
-    const session = useSession()
-    const { value, reset, bindings } = useInput("")
+    const session = useSession({required: true})
 
     if (session.status == "loading") {
         return <Loading type="points-opacity" />
