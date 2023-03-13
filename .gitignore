@@ -37,3 +37,7 @@ next-env.d.ts
 
 # env file
 .env
+
+# 
+/certificates/
+server.js
