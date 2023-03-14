@@ -246,6 +246,12 @@ model Review {
   // 내용 (해시태그 등등)
   content String?
 
+  // 좋아요 수
+  favorite Int @default(0)
+
+  // 조회 수
+  views  Int @default(0)
+  
   // 리뷰 이미지
   image String?
   // 리뷰 별점 or 평점
