@@ -4,7 +4,9 @@ import { Button, Text, Loading, Spacer, Input, useInput, Grid, Switch } from "@n
 import Layout from '@/components/layout'
 
 export default () => {
-    const session = useSession({required: true})
+    const { data } = useSession({required: true})
+
+    if (data?.user == null) return
 
     return (
         <>
@@ -17,7 +19,7 @@ export default () => {
                     type="text"
                     label="이름"
                     placeholder="이름을 입력하세요."
-                    initialValue={session.data?.user?.name ?? undefined} 
+                    initialValue={data.user.name ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
@@ -27,7 +29,7 @@ export default () => {
                     type="email" 
                     label="이메일"
                     placeholder="example@naver.com" 
-                    initialValue={session.data?.user?.email ?? undefined} 
+                    initialValue={data.user.email ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     />
