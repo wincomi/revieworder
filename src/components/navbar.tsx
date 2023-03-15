@@ -1,12 +1,13 @@
-import { Button, Navbar, Text, Link, Loading, User, Dropdown } from '@nextui-org/react'
+import { Button, Navbar, Text, Link, Loading, User, Dropdown, Input } from '@nextui-org/react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Key } from 'react'
+import { HiOutlinePencil, HiOutlineSwitchHorizontal, HiLogout, HiSearch } from 'react-icons/hi'
 
 export type NavbarMenuItem = {
   id: string
   name: string,
-  path: string
+  path: string,
 }
 
 export interface NavbarProps {
@@ -35,13 +36,13 @@ export default ({ menu }: NavbarProps) => {
                 <Dropdown placement="bottom-right">
                   <Navbar.Item>
                     <Dropdown.Trigger>
-                    <User
-                        bordered
-                        as="button"
-                        size="md"
-                        name={session.data.user.name ?? "이름 없음"}
-                        src={session.data.user.image ?? undefined}
-                      />
+                      <User
+                          bordered
+                          as="button"
+                          size="md"
+                          name={session.data.user.name ?? "이름 없음"}
+                          src={session.data.user.image ?? undefined}
+                        />
                     </Dropdown.Trigger>
                   </Navbar.Item>
                   <Dropdown.Menu onAction={dropdownAction} disabledKeys={[router.pathname.substring(1)]}>
@@ -50,13 +51,13 @@ export default ({ menu }: NavbarProps) => {
                         {session.data.user.name ?? "이름 없음"}
                       </Text>
                     </Dropdown.Item>
-                    <Dropdown.Item key="mypage" withDivider>
+                    <Dropdown.Item key="mypage" withDivider icon={<HiOutlinePencil />}>
                       회원정보 수정
                     </Dropdown.Item>
-                    <Dropdown.Item key="mypage/sns">
+                    <Dropdown.Item key="mypage/sns" icon={<HiOutlineSwitchHorizontal />}>
                       SNS 연동
                     </Dropdown.Item>
-                    <Dropdown.Item key="logout" withDivider color="error">
+                    <Dropdown.Item key="logout" withDivider color="error" icon={<HiLogout />}>
                       로그아웃
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -85,7 +86,7 @@ export default ({ menu }: NavbarProps) => {
                     </Text>
                   </Link>
                 </Navbar.Brand>
-                <Navbar.Content hideIn="xs">
+                <Navbar.Content hideIn="xs" variant="highlight">
                     {menu.map((item) => 
                         <Navbar.Link key={item.id} onPress={() => router.push(item.path)} isActive={router.pathname == item.path}>
                             {item.name}
