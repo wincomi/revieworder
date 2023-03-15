@@ -21,7 +21,16 @@ export const authOptions: AuthOptions = {
             clientId: KAKAO_ID,
             clientSecret: KAKAO_SECRET
         }),
-    ]
+    ],
+    callbacks: {
+        // https://next-auth.js.org/configuration/callbacks#session-callback
+        session: async ({ session, token, user }) => {
+          if (session?.user) {
+            session.user.id = user.id
+          }
+          return session
+        },
+      }  
 }
 
 export default NextAuth(authOptions)
