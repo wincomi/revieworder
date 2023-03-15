@@ -41,8 +41,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                         description: req.body.description,
                         image: req.body.image,
 
-                        // 유저 FK키
-                        userId : req.body.userId,
+                        // 유저 FK 연결
+                        user: { connect: { id: req.body.userId } },
+                    },
+                    include: {
+                        user: true,
                     }
                 })
 
