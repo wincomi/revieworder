@@ -20,7 +20,8 @@ export default ({ menu }: NavbarProps) => {
     const dropdownAction: (key: Key) => void = (key) => {
       switch (key) {
         case "mypage":
-          router.push("/mypage")
+        case "mypage/sns":
+          router.push("/" + key)
           break
         case "logout":
           signOut()
