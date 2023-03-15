@@ -9,7 +9,7 @@ export default () => {
     return (
         <Layout>
             <Text h1>내 프로필</Text>
-            <Button flat onPress={() => router.push('/mypage') } css={{ml: 'auto'}} icon={<HiPencil />}>회원정보 수정</Button>
+            <Button flat onPress={() => router.push('/profile/edit') } css={{ml: 'auto'}} icon={<HiPencil />}>회원정보 수정</Button>
         </Layout>
     )
 }

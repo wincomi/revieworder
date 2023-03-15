@@ -11,7 +11,7 @@ import { User } from '@prisma/client'
 import { getAccountProviders } from '@/libs/users'
 import { FaPencilAlt } from 'react-icons/fa'
 
-interface MyPageProps {
+interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
     user?: User,
 
@@ -19,7 +19,7 @@ interface MyPageProps {
     accountProviders?: string[]
 }
 
-export default ({ user, accountProviders }: MyPageProps) => {
+export default ({ user, accountProviders }: ProfileEditPageProps) => {
     const autoHyphen = (e: { currentTarget: { value: string } }) => {
         e.currentTarget.value = e.currentTarget.value
             .replace(/[^0-9]/g, '')
@@ -88,7 +88,7 @@ export default ({ user, accountProviders }: MyPageProps) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<MyPageProps> = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps<ProfileEditPageProps> = async ({ req, res }) => {
     // getServerSideProps에서 getSession이 작동 안 되기에 getServerSession 사용
     const session = await getServerSession(req, res, authOptions)
   
