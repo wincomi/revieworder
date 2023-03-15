@@ -61,8 +61,11 @@ model User {
   /// 고유 번호
   id            String    @id @default(cuid())
   name          String?
+
   /// SNS 연동 외 유저를 위한 ID
   email         String?   @unique
+
+  /// 이메일 인증된 시간
   emailVerified DateTime?
   image         String? // 프로필 사진 
   accounts      Account[]
@@ -157,6 +160,7 @@ model Menu {
   // 매장 FK키
   storeId Int
   store Store @relation(fields: [storeId], references: [id])
+
   /// index 추가 사유
   // Warning : With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. 
   @@index([storeId])
@@ -242,9 +246,8 @@ model Review {
   order Order @relation(fields: [orderId], references: [id])
   @@index([orderId])
   
-  title String
   // 내용 (해시태그 등등)
-  content String?
+  content String
 
   // 좋아요 수
   favorite Int @default(0)
@@ -254,12 +257,10 @@ model Review {
   
   // 리뷰 이미지
   image String?
+
   // 리뷰 별점 or 평점
   rating Int @db.TinyInt @default(0)
+
   // 리뷰 생성일자
   createTime DateTime @default(now())
-
-  /// 링크 보류 (백엔드 차원에서 구현 가능 예상)
-  //storeUrl String 
-  //snsUrl String 
 }
