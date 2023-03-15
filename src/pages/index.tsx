@@ -23,6 +23,8 @@ export default function Home() {
         )
     }
 
+    const list = [1, 2, 3, 4, 5] // Sample Data
+
     return (
         <>
             <Head>
@@ -34,7 +36,13 @@ export default function Home() {
                     <Grid>{SearchInput()}</Grid>
                     <Grid css={{ml: '$4'}}><Button auto flat css={{h: '100%'}} icon={<HiSearch />}>검색</Button></Grid>
                 </Grid.Container>
-                <ReviewCard />
+                <Grid.Container gap={2} justify="flex-start" css={{px: 0}}>
+                    {list.map((item, index) => (
+                        <Grid xs={12} sm={6} lg={4} key={index}>
+                            <ReviewCard />
+                        </Grid>
+                    ))}
+                </Grid.Container>
             </Layout>
         </>
     )
