@@ -35,9 +35,10 @@ export default ({ user }: MyPageProps) => {
                     type="text"
                     readOnly
                     label="리뷰오더 머니"
-                    initialValue={user.money.toString()}
+                    initialValue={user.money.toLocaleString()}
                     labelRight="원"
                     fullWidth={true}
+                    style={{textAlign: 'right'}}
                     />
                 <Button flat auto size="sm" css={{mt: 8, ml: 'auto'}}>충전</Button>
                 <Spacer />
