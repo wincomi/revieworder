@@ -3,6 +3,7 @@ import { Container, Button, User, Loading, Spacer } from '@nextui-org/react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import Layout from '@/components/layout'
+import ReviewCard from '@/components/reviewCard'
 
 export default function Home() {
     const session = useSession()
@@ -14,7 +15,7 @@ export default function Home() {
                 <title>리뷰오더</title>
             </Head>
             <Layout>
-                TODO
+                <ReviewCard />
             </Layout>
         </>
     )
