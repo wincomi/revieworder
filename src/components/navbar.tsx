@@ -31,9 +31,7 @@ export default ({ menu }: NavbarProps) => {
     }
 
     function UserButton() {
-        if (session.status == "loading") {
-            return <Loading type="points-opacity" />
-        } else if (session.data?.user != null) {
+        if (session.data?.user != null) {
             return (
               <>
                 <Dropdown placement="bottom-right">
@@ -48,24 +46,31 @@ export default ({ menu }: NavbarProps) => {
                   </Dropdown.Trigger>
                 </Navbar.Item>
                 <Dropdown.Menu onAction={dropdownAction}>
-                  <Dropdown.Item key="profile">
-                    <Text b color="inherit" css={{ d: "flex" }}>
-                      {session.data.user.name}
-                    </Text>
-                  </Dropdown.Item>
-                  <Dropdown.Item key="mypage" withDivider>
-                    회원정보 수정
-                  </Dropdown.Item>
-                  <Dropdown.Item key="logout" withDivider color="error">
-                    로그아웃
-                  </Dropdown.Item>
+                  <Dropdown.Section title={session.data.user.name}>
+                    <Dropdown.Item key="mypage">
+                      회원정보 수정
+                    </Dropdown.Item>
+                    <Dropdown.Item key="mypage/sns">
+                      SNS 연동
+                    </Dropdown.Item>
+                    <Dropdown.Item key="logout" withDivider color="error">
+                      로그아웃
+                    </Dropdown.Item>
+                  </Dropdown.Section>
                 </Dropdown.Menu>
               </Dropdown>
             </>
             )
         } else {
             // 로그인이 되어 있지 않을 때
-            return <Navbar.Link color="inherit" onPress={() => signIn()}>로그인</Navbar.Link>
+            return (
+              <Navbar.Item>
+                <Button auto flat as={Link} onPress={() => signIn()}>
+                  {session.status == "loading" ? <Loading type="points-opacity" /> : <>로그인</>}
+                </Button>
+              </Navbar.Item>
+            )
+            // <Navbar.Link color="inherit" onPress={() => signIn()}>로그인</Navbar.Link>
         }
     }
 
@@ -73,9 +78,11 @@ export default ({ menu }: NavbarProps) => {
         <>
             <Navbar variant="sticky">
                 <Navbar.Brand>
-                    <Text b color="inherit" hideIn="xs">
-                        리뷰오더
+                  <Link onPress={() => router.push('/')}>
+                    <Text b color="text" css={{fontSize: 20, ml: 8}}>
+                      리뷰오더
                     </Text>
+                  </Link>
                 </Navbar.Brand>
                 <Navbar.Content hideIn="xs">
                     {menu.map((item) => 
