@@ -1,16 +1,17 @@
+import Head from 'next/head'
 import { signOut, useSession } from 'next-auth/react'
 import { Button, Text, Loading, Spacer, Input, useInput, Grid, Switch } from "@nextui-org/react"
+import Layout from '@/components/layout'
 
 export default () => {
     const session = useSession({required: true})
 
-    if (session.status == "loading") {
-        return <Loading type="points-opacity" />
-    } else {
-        return (
-            <>
-                <Button auto flat onClick={() => signOut()}>로그아웃</Button>
-                <Spacer />
+    return (
+        <>
+            <Head>
+                <title>마이페이지</title>
+            </Head>
+            <Layout>
                 <Text h1>회원정보 변경</Text>
                 <Input 
                     type="text"
@@ -19,6 +20,7 @@ export default () => {
                     initialValue={session.data?.user?.name ?? undefined} 
                     shadow={false}
                     fullWidth={true}
+                    helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
                     />
                 <Spacer />
                 <Input 
@@ -66,7 +68,10 @@ export default () => {
                         리뷰 연동 <Switch />
                     </Grid>
                 </Grid.Container>
-            </>
-        )
-    }
+
+                <Spacer />
+                <Button auto flat onClick={() => signOut()}>로그아웃</Button>
+            </Layout>
+        </>
+    )
 }

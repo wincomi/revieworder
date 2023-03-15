@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { Container, Button, User, Loading, Spacer } from '@nextui-org/react'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import Layout from '@/components/layout'
 
 export default function Home() {
     const session = useSession()
@@ -12,9 +13,8 @@ export default function Home() {
             <Head>
                 <title>리뷰오더</title>
             </Head>
-            <main>
-                <Container css={{pt: 32}}>
-                    {session.status == "loading" && <Loading />}
+            <Layout>
+                {session.status == "loading" && <Loading />}
                     {(session.data?.user != null) &&
                         <User 
                             name={session.data.user.name} 
@@ -25,13 +25,13 @@ export default function Home() {
                         />
                     }
                     {session.status === "authenticated" ?
-                        <Button flat onClick={() => signOut()}>로그아웃</Button> :
-                        <Button flat onClick={() => signIn()}>로그인</Button>
+                        <Button flat onPress={() => signOut()}>로그아웃</Button> :
+                        <Button flat onPress={() => signIn()}>로그인</Button>
                     }
                     <Spacer y={1} />
-                    <Button color="gradient" flat onClick={() => router.push('/mypage')}>마이페이지</Button>
-                </Container>
-            </main>
+                    <Button color="gradient" onPress={() => router.push('/mypage')}>마이페이지</Button>
+                    <Spacer y={100} />
+            </Layout>
         </>
     )
 }
