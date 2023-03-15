@@ -49,7 +49,22 @@ export const authOptions: AuthOptions = {
         }
         return session
       },
-    }
+    },
+    // Apple 로그인 사용시 'PKCE code_verifier cookie was missing.' 에러 수정
+    // 참고 사이트:
+    // https://github.com/nextauthjs/next-auth/discussions/6898
+    // https://next-auth.js.org/configuration/options#cookies
+    cookies: {
+      pkceCodeVerifier: {
+        name: "next-auth.pkce.code_verifier",
+        options: {
+          httpOnly: true,
+          sameSite: "none",
+          path: "/",
+          secure: true,
+        },
+      },
+    },
 }
 
 export default NextAuth(authOptions)
