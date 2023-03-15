@@ -21,9 +21,9 @@ const FACEBOOK_CLIENT_SECRET = process.env.NEXTAUTH_FACEBOOK_SECRET!
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
-        AppleProvider({
-            clientId: APPLE_ID,
-            clientSecret: APPLE_SECRET
+      AppleProvider({
+          clientId: APPLE_ID,
+          clientSecret: APPLE_SECRET
         }),
         KakaoProvider({
             clientId: KAKAO_ID,
@@ -32,21 +32,24 @@ export const authOptions: AuthOptions = {
         NaverProvider({
           clientId: NAVER_ID,
           clientSecret: NAVER_SECRET
-      }),
+        }),
         FacebookProvider({
           clientId: FACEBOOK_CLIENT_ID,
           clientSecret: FACEBOOK_CLIENT_SECRET
       }),
     ],
+    pages: {
+      signIn: '/login'
+    },
     callbacks: {
-        // https://next-auth.js.org/configuration/callbacks#session-callback
-        session: async ({ session, token, user }) => {
-          if (session?.user) {
-            session.user.id = user.id
-          }
-          return session
-        },
-      }  
+      // https://next-auth.js.org/configuration/callbacks#session-callback
+      session: async ({ session, token, user }) => {
+        if (session?.user) {
+          session.user.id = user.id
+        }
+        return session
+      },
+    }
 }
 
 export default NextAuth(authOptions)
