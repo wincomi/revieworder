@@ -64,7 +64,7 @@ export default ({ user }: MyPageProps) => {
                     type="tel" 
                     label="휴대폰 번호"
                     placeholder='010-0000-0000'
-                    initialValue={/*item.phoneNumber ?? */undefined} 
+                    initialValue={user.phoneNumber ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     onChange={autoHyphen}
@@ -77,6 +77,8 @@ export default ({ user }: MyPageProps) => {
 }
 
 export const getServerSideProps: GetServerSideProps<MyPageProps> = async ({ req, res }) => {
+    
+    // getServerSideProps에서 getSession이 작동 안 되기에 getServerSession 사용
     const session = await getServerSession(req, res, authOptions)
   
     const userId = session?.user.id
