@@ -2,6 +2,7 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import AppleProvider from 'next-auth/providers/apple'
 import KakaoProvider from 'next-auth/providers/kakao'
 import NaverProvider from 'next-auth/providers/naver'
+import FacebookProvider from 'next-auth/providers/facebook'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
 
@@ -13,6 +14,9 @@ const KAKAO_SECRET = process.env.NEXTAUTH_KAKAO_SECRET!
 
 const NAVER_ID = process.env.NEXTAUTH_NAVER_ID!
 const NAVER_SECRET = process.env.NEXTAUTH_NAVER_SECRET!
+
+const FACEBOOK_CLIENT_ID = process.env.NEXTAUTH_FACEBOOK_ID!
+const FACEBOOK_CLIENT_SECRET = process.env.NEXTAUTH_FACEBOOK_SECRET!
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -28,6 +32,10 @@ export const authOptions: AuthOptions = {
         NaverProvider({
           clientId: NAVER_ID,
           clientSecret: NAVER_SECRET
+      }),
+        FacebookProvider({
+          clientId: FACEBOOK_CLIENT_ID,
+          clientSecret: FACEBOOK_CLIENT_SECRET
       }),
     ],
     callbacks: {
