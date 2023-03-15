@@ -43,9 +43,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                         phoneNumber: req.body.phoneNumber != null ? req.body.phoneNumber : undefined,
                         description: req.body.description != null ? req.body.description : undefined,
                         image: req.body.image != null ? req.body.image : undefined,
-
-                        // 유저 FK키 -- 수정x (null 주면 된다.)
-                        userId : req.body.userId != null ? req.body.userId : undefined,
                     }
                 })
 
