@@ -10,6 +10,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     switch (req.method) {
 
         // GET (모든 유저 조회)
+        // 권한 없는 유저가 모든 유저를 조회할 수도 있기 때문에 추후 변경할 것
+        // 대신 libs/users.ts의 getUsers() 사용
         case "GET":
             const readResult = await prisma.user.findMany()
 
@@ -44,14 +46,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 결과 값이 없을때 오류
                 res.status(400).json({
-                    "message": "store를 등록할 수 없습니다."
+                    "message": "유저를 등록할 수 없습니다."
                 })
             }
             break
 
         default:
             // API method가 잘못되었을 때 오류
-            res.status(400).json({ message: "잘못된 요청" })
+            res.status(400).json({ message: "잘못된 요청입니다." })
     }
 }
 
