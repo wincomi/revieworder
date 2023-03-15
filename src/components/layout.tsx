@@ -3,7 +3,6 @@ import { ReactNode } from 'react'
 import Navbar from '@/components/navbar'
 import { NavbarMenuItem } from '@/components/navbar'
 
-
 interface LayoutProps {
     children: ReactNode
 }
@@ -17,7 +16,7 @@ export default ({ children }: LayoutProps) => {
     return (
         <main>
             <Navbar menu={menu} />
-            <Container css={{mt: 32}}>
+            <Container lg css={{mt: 32}}>
                 {children}
             </Container>
         </main>
