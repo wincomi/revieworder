@@ -24,7 +24,7 @@ export default () => {
                     fullWidth={true}
                     helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
                     />
-                <Spacer />
+                <Spacer y={2} />
                 <Input 
                     type="email" 
                     label="이메일"
@@ -33,7 +33,7 @@ export default () => {
                     shadow={false}
                     fullWidth={true}
                     />
-                <Spacer />
+                <Spacer y={2} />
                 <Input 
                     type="tel" 
                     label="전화번호"
@@ -42,37 +42,8 @@ export default () => {
                     shadow={false}
                     fullWidth={true}
                     />
-                <Spacer />
-
-                <Text h1>SNS 연동</Text>
-                <Grid.Container gap={2}>
-                    <Grid>
-                        카카오
-                        <Button flat auto>연동</Button>
-                    </Grid>
-                    <Grid>
-                        네이버
-                        <Button flat auto>연동</Button>
-                    </Grid>
-                    <Grid>
-                        인스타그램
-                        <Button flat auto>연동</Button>
-                        리뷰 연동 <Switch />
-                    </Grid>
-                    <Grid>
-                        페이스북
-                        <Button flat auto>연동</Button>
-                        리뷰 연동 <Switch />
-                    </Grid>
-                    <Grid>
-                        트위터
-                        <Button flat auto>연동</Button>
-                        리뷰 연동 <Switch />
-                    </Grid>
-                </Grid.Container>
-
-                <Spacer />
-                <Button auto flat onClick={() => signOut()}>로그아웃</Button>
+                <Spacer y={2} />
+                <Button auto flat onClick={() => signOut()} css={{ml: 'auto'}}>로그아웃</Button>
             </Layout>
         </>
     )
