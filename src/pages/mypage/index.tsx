@@ -1,13 +1,19 @@
 import Head from 'next/head'
 import { signOut, useSession } from 'next-auth/react'
-import { Button, Text, Loading, Spacer, Input, useInput, Grid, Switch } from "@nextui-org/react"
+import { Button, Text, Spacer, Input } from "@nextui-org/react"
 import Layout from '@/components/layout'
+
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../api/auth/[...nextauth]'
-import { InferGetServerSidePropsType } from 'next'
+import { GetServerSideProps } from 'next'
+import { User } from '@prisma/client'
 
-export default ({ item }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-    const { data } = useSession({required: true})
+interface MyPageProps {
+    user: User | undefined | null
+}
+
+export default ({ user }: MyPageProps) => {
+    const { data } = useSession({ required: true })
 
     if (data?.user == null) return
 
@@ -24,7 +30,7 @@ export default ({ item }: InferGetServerSidePropsType<typeof getServerSideProps>
             </Head>
             <Layout>
                 <Text h1>회원정보 변경</Text>
-                {JSON.stringify(data)}
+                {JSON.stringify(user)}
                 <Input 
                     type="text"
                     label="이름"
@@ -54,28 +60,28 @@ export default ({ item }: InferGetServerSidePropsType<typeof getServerSideProps>
                     onChange={autoHyphen}
                     />
                 <Spacer y={2} />
-                <Button auto flat onClick={() => signOut()} css={{ml: 'auto'}}></Button>
+                <Button auto flat onPress={() => signOut()} css={{ml: 'auto'}}>저장</Button>
             </Layout>
         </>
     )
 }
 
-
-export async function getServerSideProps({ req, res }) {
-    var session = await getServerSession(req, res, authOptions)
+export const getServerSideProps: GetServerSideProps<MyPageProps> = async ({ req, res }) => {
+    const session = await getServerSession(req, res, authOptions)
   
     const userId = session?.user.id
-    
-    var res = await fetch(
-      `https://revieworder.kr:3000/api/users/${userId}`
-    )
-    const item = await res.json()
-    if (item == null) {
-      console.log("값을 받아올 수 없습니다.")
-    } else {
-      return {
-        props: { item },
-      }
+
+    if (userId == undefined) {
+        return {
+            props: { user: null }
+        }
     }
-  }
-  
+    
+    const result = await fetch(`https://revieworder.kr:3000/api/users/${userId}`)
+    const user = await result.json().then(data => data as User) // any to User
+
+    return {
+        props: { user: user }
+    }
+}
+ 
