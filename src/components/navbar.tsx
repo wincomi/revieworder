@@ -79,7 +79,7 @@ export default ({ menu }: NavbarProps) => {
                 </Navbar.Brand>
                 <Navbar.Content hideIn="xs">
                     {menu.map((item) => 
-                        <Navbar.Link key={item.id} href={item.path} isActive={router.pathname == item.path}>
+                        <Navbar.Link key={item.id} onPress={() => router.push(item.path)} isActive={router.pathname == item.path}>
                             {item.name}
                         </Navbar.Link>
                     )}
