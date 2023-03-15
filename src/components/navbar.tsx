@@ -1,4 +1,4 @@
-import { Button, Navbar, Text, Link, Loading, User, Dropdown, Avatar } from '@nextui-org/react'
+import { Button, Navbar, Text, Link, Loading, User, Dropdown } from '@nextui-org/react'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Key } from 'react'
@@ -10,7 +10,7 @@ export type NavbarMenuItem = {
 }
 
 export interface NavbarProps {
-    menu: NavbarMenuItem[]
+  menu: NavbarMenuItem[]
 }
 
 export default ({ menu }: NavbarProps) => {
@@ -19,14 +19,11 @@ export default ({ menu }: NavbarProps) => {
 
     const dropdownAction: (key: Key) => void = (key) => {
       switch (key) {
-        case "mypage":
-        case "mypage/sns":
-          router.push("/" + key)
-          break
         case "logout":
           signOut()
           break
         default:
+          router.push("/" + key)
           break
       }
     }
@@ -36,19 +33,24 @@ export default ({ menu }: NavbarProps) => {
             return (
               <>
                 <Dropdown placement="bottom-right">
-                <Navbar.Item>
-                  <Dropdown.Trigger>
-                    <Avatar
-                      bordered
-                      as="button"
-                      size="md"
-                      src={session.data.user.image ?? undefined} 
-                    />
-                  </Dropdown.Trigger>
-                </Navbar.Item>
-                <Dropdown.Menu onAction={dropdownAction}>
-                  <Dropdown.Section title={session.data.user.name}>
-                    <Dropdown.Item key="mypage">
+                  <Navbar.Item>
+                    <Dropdown.Trigger>
+                    <User
+                        bordered
+                        as="button"
+                        size="md"
+                        name={session.data.user.name ?? "이름 없음"}
+                        src={session.data.user.image ?? undefined}
+                      />
+                    </Dropdown.Trigger>
+                  </Navbar.Item>
+                  <Dropdown.Menu onAction={dropdownAction} disabledKeys={[router.pathname.substring(1)]}>
+                    <Dropdown.Item key="profile">
+                      <Text b color="inherit" css={{ d: "flex" }}>
+                        {session.data.user.name ?? "이름 없음"}
+                      </Text>
+                    </Dropdown.Item>
+                    <Dropdown.Item key="mypage" withDivider>
                       회원정보 수정
                     </Dropdown.Item>
                     <Dropdown.Item key="mypage/sns">
@@ -57,10 +59,9 @@ export default ({ menu }: NavbarProps) => {
                     <Dropdown.Item key="logout" withDivider color="error">
                       로그아웃
                     </Dropdown.Item>
-                  </Dropdown.Section>
-                </Dropdown.Menu>
-              </Dropdown>
-            </>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </>
             )
         } else {
             // 로그인이 되어 있지 않을 때
@@ -71,7 +72,6 @@ export default ({ menu }: NavbarProps) => {
                 </Button>
               </Navbar.Item>
             )
-            // <Navbar.Link color="inherit" onPress={() => signIn()}>로그인</Navbar.Link>
         }
     }
 
