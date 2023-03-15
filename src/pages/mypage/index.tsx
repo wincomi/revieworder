@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { signOut, useSession } from 'next-auth/react'
-import { Button, Text, Spacer, Input } from "@nextui-org/react"
+import { Button, Text, Spacer, Input, Grid } from "@nextui-org/react"
 import Layout from '@/components/layout'
 
 import { getServerSession } from 'next-auth/next'
@@ -13,14 +13,14 @@ interface MyPageProps {
 }
 
 export default ({ user }: MyPageProps) => {
-    const { data } = useSession({ required: true })
-
-    if (data?.user == null) return
-
     const autoHyphen = (e: { currentTarget: { value: string } }) => {
         e.currentTarget.value = e.currentTarget.value
             .replace(/[^0-9]/g, '')
             .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "")
+    }
+
+    if (user == null) {
+        return <></>
     }
 
     return (
@@ -30,12 +30,22 @@ export default ({ user }: MyPageProps) => {
             </Head>
             <Layout>
                 <Text h1>회원정보 변경</Text>
-                {JSON.stringify(user)}
+                <pre>{JSON.stringify(user)}</pre>
+                <Input 
+                    type="text"
+                    readOnly
+                    label="리뷰오더 머니"
+                    initialValue={user.money.toString()}
+                    labelRight="원"
+                    fullWidth={true}
+                    />
+                <Button flat auto size="sm" css={{mt: 8, ml: 'auto'}}>충전</Button>
+                <Spacer />
                 <Input 
                     type="text"
                     label="이름"
                     placeholder="이름을 입력하세요."
-                    initialValue={data.user.name ?? undefined} 
+                    initialValue={user.name ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
@@ -45,7 +55,7 @@ export default ({ user }: MyPageProps) => {
                     type="email" 
                     label="이메일"
                     placeholder="example@naver.com" 
-                    initialValue={data.user.email ?? undefined} 
+                    initialValue={user.email ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     />
@@ -84,4 +94,3 @@ export const getServerSideProps: GetServerSideProps<MyPageProps> = async ({ req,
         props: { user: user }
     }
 }
- 
