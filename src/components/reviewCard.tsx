@@ -64,7 +64,7 @@ export default (props: ReviewCardProps) => {
                     </Text>
                     <Spacer y={0.5} />
                     
-                    <Button css={{width: '100%'}} onPress={() => router.push(`/order`)} flat color="gradient" icon={<FaShoppingCart />}>
+                    <Button css={{width: '100%'}} onPress={() => router.push(`/cart`)} flat color="gradient" icon={<FaShoppingCart />}>
                         이 메뉴로 주문하기
                     </Button>
                 </div>
