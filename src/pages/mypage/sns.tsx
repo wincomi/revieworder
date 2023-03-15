@@ -2,8 +2,16 @@ import Head from 'next/head'
 import { useSession } from 'next-auth/react'
 import { Button, Text, Spacer, Input, useInput, Grid, Switch } from "@nextui-org/react"
 import Layout from '@/components/layout'
+import { getAccountProviders } from '@/libs/users'
+import { GetServerSideProps } from 'next'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../api/auth/[...nextauth]'
 
-export default () => {
+interface SNSPageProvider {
+    currentProviders: string[]
+}
+
+export default ({ currentProviders }: SNSPageProvider) => {
     const session = useSession({required: true})
 
     return (
@@ -13,6 +21,8 @@ export default () => {
             </Head>
             <Layout>
                 <Text h1>SNS 연동</Text>
+                <p><Text b>현재 계정과 연동된 SNS:</Text> {currentProviders}</p>
+                <Spacer />
                 <Grid.Container alignItems="center">
                     <Grid>
                         <Text h2>카카오</Text>
@@ -77,4 +87,25 @@ export default () => {
             </Layout>
         </>
     )
+}
+
+export const getServerSideProps: GetServerSideProps<SNSPageProvider> = async (context) => {
+    // https://next-auth.js.org/configuration/nextjs#in-getserversideprops
+    const session = await getServerSession(context.req, context.res, authOptions)
+
+    if (session?.user != null) {
+        const currentProviders = await getAccountProviders(session.user.id)
+
+        return {
+            props: {
+                currentProviders: currentProviders ?? [] as string[]
+            }
+        }
+    }
+
+    return {
+        props: {
+            currentProviders: [] as string[]
+        }
+    }
 }
