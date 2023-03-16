@@ -51,7 +51,7 @@ prismaAdapter.linkAccount = (account: AdapterAccount) => {
     token_type: account.token_type,
     scope: account.scope,
     id_token: account.id_token,
-    session_state: account.session_state,  
+    session_state: account.session_state,
   }
 
   return prisma.account.create({ data: newAccount }) as unknown as AdapterAccount
@@ -83,12 +83,19 @@ const phoneNumberProvider = CredentialsProvider({
       return null
     }
   
+    var user
+    
     // 휴대폰 번호와 같은 유저 검색
     // TODO: findUnique로 변경 및 인증 코드(verificationCode) 확인 추가
-    const user = await prisma.user.findFirst({
+    user = await prisma.user.findFirst({
       where: {
-        phoneNumber: credentials.phoneNumber
+        phoneNumber: phoneNumber
       }
+    })
+
+    // 만약 유저가 없을 경우 가입
+    user = await prisma.user.create({ 
+      data: { phoneNumber: phoneNumber }
     })
 
     return user
