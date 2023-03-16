@@ -25,7 +25,7 @@ export default (/* { providers }: SignInPage */) => {
                 네이버 로그인
             </Button>
             <Spacer />
-            <Button flat color="primary" size="lg" onPress={() => signIn("naver")} icon={<SiFacebook />} css={{mx: 'auto'}}>
+            <Button flat color="primary" size="lg" onPress={() => signIn("facebook")} icon={<SiFacebook />} css={{mx: 'auto'}}>
                 페이스북 로그인
             </Button>
         </Layout>
