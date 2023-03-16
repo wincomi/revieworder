@@ -90,6 +90,9 @@ export const authOptions: AuthOptions = {
         }
         return session
       },
+      redirect: async ({ url, baseUrl }) => {
+        return baseUrl
+      }
     },
     // Apple 로그인 사용시 'PKCE code_verifier cookie was missing.' 에러 수정
     // 참고 사이트:
