@@ -67,7 +67,7 @@ export default ({ menu }: NavbarProps) => {
             // 로그인이 되어 있지 않을 때
             return (
               <Navbar.Item>
-                <Button auto flat as={Link} onPress={() => signIn()}>
+                <Button auto flat as={Link} onPress={() => { signIn() }}>
                   {session.status == "loading" ? <Loading type="points-opacity" /> : <>로그인</>}
                 </Button>
               </Navbar.Item>
@@ -79,7 +79,7 @@ export default ({ menu }: NavbarProps) => {
         <>
             <Navbar variant="sticky">
                 <Navbar.Brand>
-                  <Link onPress={() => router.push('/')}>
+                  <Link onClick={() => router.push('/')}>
                     <Text b color="text" css={{fontSize: 20, ml: 8}}>
                       리뷰오더
                     </Text>
@@ -87,7 +87,7 @@ export default ({ menu }: NavbarProps) => {
                 </Navbar.Brand>
                 <Navbar.Content hideIn="xs" variant="highlight">
                     {menu.map((item) => 
-                        <Navbar.Link key={item.id} onPress={() => router.push(item.path)} isActive={router.pathname == item.path}>
+                        <Navbar.Link key={item.id} onClick={() => router.push(item.path)} isActive={router.pathname == item.path}>
                             {item.name}
                         </Navbar.Link>
                     )}
