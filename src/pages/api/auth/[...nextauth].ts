@@ -9,6 +9,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
 import { AdapterAccount } from 'next-auth/adapters'
+import { regexNumber, regexPhoneNumber } from '@/utils/regex'
 
 const APPLE_ID = process.env.NEXTAUTH_APPLE_ID!
 const APPLE_SECRET = process.env.NEXTAUTH_APPLE_SECRET!
@@ -57,17 +58,31 @@ prismaAdapter.linkAccount = (account: AdapterAccount) => {
 }
 
 const phoneNumberProvider = CredentialsProvider({
-  id: "phoneNumber",
+  id: "phonenumber",
+  name: "phonenumber", // await signIn("phonenumber", { ... }) 으로 사용 가능
   credentials: {
       phoneNumber: { label: "휴대폰 번호", type: "text", placeholder: "010-0000-0000" },
       verificationCode: { label: "인증 코드", type: "number", placeholder: "123456" }
   },
   authorize: async (credentials, req) => {
-    // 휴대폰 번호가 전달되지 않을 경우 null 반환
-    if (credentials?.phoneNumber == null) {
+    // 휴대폰 번호와 인증 코드가 전달되지 않을 경우 null 반환
+    if (credentials?.phoneNumber == null || credentials.verificationCode == null) {
       return null
     }
 
+    const phoneNumber = credentials.phoneNumber.replace(/-/g, "") // 휴대폰 번호 하이픈(-) 제거
+    const { verificationCode }  = credentials
+
+    // 휴대폰 번호 유효성 검사
+    const isValidPhoneNumber = phoneNumber.match(regexPhoneNumber)
+
+    // 인증 코드 유효성 검사
+    const isValidVerificationCode = verificationCode.match(regexNumber)
+
+    if (!(isValidPhoneNumber && isValidVerificationCode)) {
+      return null
+    }
+  
     // 휴대폰 번호와 같은 유저 검색
     // TODO: findUnique로 변경 및 인증 코드(verificationCode) 확인 추가
     const user = await prisma.user.findFirst({
