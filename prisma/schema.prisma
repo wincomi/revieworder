@@ -67,8 +67,13 @@ model User {
 
   /// 이메일 인증된 시간
   emailVerified DateTime?
-  image         String? // 프로필 사진 
+  
+  /// 프로필 사진 URL
+  /// Facebook 로그인시 이미지 URL이 길기 때문에 에러가 발생하여 임의로 길이를 늘림 (기본: varchar(191))
+  image         String?   @db.Text
+
   accounts      Account[]
+  
   sessions      Session[]
 
   /// SNS 연동 외 유저를 위한 비밀번호
@@ -88,7 +93,6 @@ model User {
 
   // 내 리뷰 (Review)
   reviews Review[]
-  
 }
 
 /// 확인 토큰 (NextAuth)
