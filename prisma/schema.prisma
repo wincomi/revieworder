@@ -15,6 +15,11 @@ datasource db {
 /// OAuth 계정 (NextAuth)
 model Account {
   id                 String  @id @default(cuid())
+  
+  // InstagramProvider 오류 해결
+  // user_id컬럼 추가
+  // user_id가 int 범위를 넘어서 BigInt를 사용함
+  user_id            BigInt? @db.BigInt
   userId             String
   type               String
   provider           String
