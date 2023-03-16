@@ -3,6 +3,7 @@ import AppleProvider from 'next-auth/providers/apple'
 import KakaoProvider from 'next-auth/providers/kakao'
 import NaverProvider from 'next-auth/providers/naver'
 import FacebookProvider from 'next-auth/providers/facebook'
+import InstagramProvider from 'next-auth/providers/instagram'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
 
@@ -17,6 +18,9 @@ const NAVER_SECRET = process.env.NEXTAUTH_NAVER_SECRET!
 
 const FACEBOOK_CLIENT_ID = process.env.NEXTAUTH_FACEBOOK_ID!
 const FACEBOOK_CLIENT_SECRET = process.env.NEXTAUTH_FACEBOOK_SECRET!
+
+const INSTAGRAM_CLIENT_ID = process.env.NEXTAUTH_INSTAGRAM_ID!
+const INSTAGRAM_CLIENT_SECRET = process.env.NEXTAUTH_INSTAGRAM_SECRET!
 
 export const authOptions: AuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -36,7 +40,11 @@ export const authOptions: AuthOptions = {
         FacebookProvider({
           clientId: FACEBOOK_CLIENT_ID,
           clientSecret: FACEBOOK_CLIENT_SECRET
-      }),
+        }),
+        InstagramProvider({
+          clientId: INSTAGRAM_CLIENT_ID,
+          clientSecret: INSTAGRAM_CLIENT_SECRET
+        }),
     ],
     pages: {
       signIn: '/login'
