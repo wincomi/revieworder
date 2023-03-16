@@ -12,18 +12,30 @@ datasource db {
 // NextAuth Adapter (@next-auth/prisma-adapter)
 // https://next-auth.js.org/adapters/models
 
-/// OAuth 계정 (NextAuth)
+/// 계정 (NextAuth)
 model Account {
+  /// SNS 계정 고유 번호
   id                 String  @id @default(cuid())
-  
-  // InstagramProvider 오류 해결
-  // user_id컬럼 추가
-  // user_id가 int 범위를 넘어서 BigInt를 사용함
-  user_id            BigInt? @db.BigInt
+
+  // 아래는 AdapterAccount interface에서 필수로 요구
+
+  /// User 테이블의 id의 외래키
   userId             String
+
+  /// 이 계정의 프로바이더 타입 ("oauth" | "email" | "credentials")
   type               String
+
+  /// 이 계정에서 사용된 프로바이더의 ID
   provider           String
+
+  /// 이 값은 Account를 생성하는데 사용된 프로바이더의 종류에 따라 다름.
+  /// - oauth: `profile()` callback으로 반환된 OAuth 계정의 아이디.
+  /// - email: 유저의 이메일 주소
+  /// - credential: `authorize()` callback으로 반환된 `id`
   providerAccountId  String
+
+  // 아래는 OAuth에서 사용되는 TokenSet (TokenSetParameters) interface에서 필수로 요구함
+  // node_modules/openid-client/types/index.d.ts 참고
   refresh_token      String?  @db.Text
   access_token       String?  @db.Text
   expires_at         Int?
@@ -32,18 +44,13 @@ model Account {
   id_token           String?  @db.Text
   session_state      String?
 
-  // KakaoProvider 적용할 경우
-  // Unknown arg `refresh_token_expires_in` in data.refresh_token_expires_in for type AccountUncheckedCreateInput.
-  // 에러 해결
-  refresh_token_expires_in Int?
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
 
   // Warning 해결을 위한 index
   // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
   @@index([userId])
+
+  @@unique([provider, providerAccountId])
 }
 
 /// 세션 (NextAuth)
