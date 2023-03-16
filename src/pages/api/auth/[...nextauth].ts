@@ -4,6 +4,7 @@ import KakaoProvider from 'next-auth/providers/kakao'
 import NaverProvider from 'next-auth/providers/naver'
 import FacebookProvider from 'next-auth/providers/facebook'
 import InstagramProvider from 'next-auth/providers/instagram'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
@@ -55,7 +56,31 @@ prismaAdapter.linkAccount = (account: AdapterAccount) => {
   return prisma.account.create({ data: newAccount }) as unknown as AdapterAccount
 }
 
-export const authOptions: AuthOptions = {
+const phoneNumberProvider = CredentialsProvider({
+  id: "phoneNumber",
+  credentials: {
+      phoneNumber: { label: "휴대폰 번호", type: "text", placeholder: "010-0000-0000" },
+      verificationCode: { label: "인증 코드", type: "number", placeholder: "123456" }
+  },
+  authorize: async (credentials, req) => {
+    // 휴대폰 번호가 전달되지 않을 경우 null 반환
+    if (credentials?.phoneNumber == null) {
+      return null
+    }
+
+    // 휴대폰 번호와 같은 유저 검색
+    // TODO: findUnique로 변경 및 인증 코드(verificationCode) 확인 추가
+    const user = await prisma.user.findFirst({
+      where: {
+        phoneNumber: credentials.phoneNumber
+      }
+    })
+
+    return user
+  }
+})
+
+export var authOptions: AuthOptions = {
     adapter: prismaAdapter,
     providers: [
       AppleProvider({
@@ -78,6 +103,7 @@ export const authOptions: AuthOptions = {
           clientId: INSTAGRAM_CLIENT_ID,
           clientSecret: INSTAGRAM_CLIENT_SECRET
         }),
+        phoneNumberProvider
     ],
     pages: {
       signIn: '/login'
@@ -85,11 +111,20 @@ export const authOptions: AuthOptions = {
     callbacks: {
       // https://next-auth.js.org/configuration/callbacks#session-callback
       session: async ({ session, token, user }) => {
+        // 데이터베이스(database) 세션일 경우 user가 반환됨
+        // JSON Web Token 세션일 경우 user 대신 JWT token이 반환됨
+
         if (session?.user) {
-          session.user.id = user.id
+          // token.sub은 user.id와 동일 (https://github.com/nextauthjs/next-auth/blob/v4/packages/next-auth/src/core/routes/callback.ts#L125)
+          session.user.id = token.sub!
         }
+
         return session
       },
+      // jwt: async ({ token, user, account, profile, isNewUser }) => {
+      //   // user, account, profile, isNewUser는 데이터베이스를 사용할 경우에만 사용됨
+      //   return token
+      // },
       redirect: async ({ url, baseUrl }) => {
         return baseUrl
       }
@@ -109,6 +144,16 @@ export const authOptions: AuthOptions = {
         },
       },
     },
+    session: {
+      // CredentialsProvider 사용을 위해 (jwt만 사용 가능) 세션을 database 대신 jwt로 사용함
+      // Session 테이블을 사용하지 않음
+      strategy: "jwt"
+    },
+}
+
+// 개발 모드일 경우 디버그 활성화
+if (process.env.NODE_ENV !== "production") {
+  authOptions.debug = true
 }
 
 export default NextAuth(authOptions)
