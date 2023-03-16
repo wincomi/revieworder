@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { signOut, useSession } from 'next-auth/react'
 import { Button, Text, Spacer, Input, Card } from "@nextui-org/react"
 import Layout from '@/components/layout'
 import { TbPigMoney } from 'react-icons/tb'
@@ -10,6 +9,7 @@ import { GetServerSideProps } from 'next'
 import { User } from '@prisma/client'
 import { getAccountProviders } from '@/libs/users'
 import { FaPencilAlt } from 'react-icons/fa'
+import { useState } from 'react'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -20,10 +20,47 @@ interface ProfileEditPageProps {
 }
 
 export default ({ user, accountProviders }: ProfileEditPageProps) => {
+
+    // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
+    const [update, setUpdate] = useState({
+        name: '',
+        email: '',
+        tel: ''
+      });
+
+    // 개인정보 수정
+    const edit = async () => {
+        
+        // 세션에서 유저 ID 받아온다.
+        const userId = user?.id
+        const result = await fetch(`https://revieworder.kr:3000/api/users/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                // 보내줘야할 body.데이터들
+                name: update.name,
+                email: update.email,
+                phoneNumber: update.tel,
+
+                // 수정 안 해도 되는 것들
+                //password: null,
+                //image: null,
+                //emailVerified: null
+            })
+        })
+        // 새로고침 필요. (저번에 router 썻는데 이번엔?)
+    }
+
+    // 자동 하이픈 처리
     const autoHyphen = (e: { currentTarget: { value: string } }) => {
         e.currentTarget.value = e.currentTarget.value
             .replace(/[^0-9]/g, '')
             .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "")
+
+            // 전화번호 value 값 저장 -- 124 주석 참고
+            setUpdate({ ...update, tel: e.currentTarget.value })
     }
 
     if (user == null) {
@@ -55,12 +92,14 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 <Spacer />
                 <Input 
                     type="text"
+                    name = "name"
                     label="이름"
                     placeholder="이름을 입력하세요."
                     initialValue={user.name ?? undefined} 
                     shadow={false}
                     fullWidth={true}
                     helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
+                    onChange={(e) => setUpdate({ ...update, name: e.target.value })}
                     />
                 <Spacer y={2} />
                 <Input 
@@ -70,6 +109,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                     initialValue={user.email ?? undefined} 
                     shadow={false}
                     fullWidth={true}
+                    onChange={(e) => setUpdate({ ...update, email: e.target.value })}
                     />
                 <Spacer y={2} />
                 <Input 
@@ -79,10 +119,12 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                     initialValue={user.phoneNumber ?? undefined} 
                     shadow={false}
                     fullWidth={true}
-                    onChange={autoHyphen}
+
+                    // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
+                    onChange = {autoHyphen}
                     />
                 <Spacer y={2} />
-                <Button auto flat onPress={() => signOut()} css={{ml: 'auto'}} icon={<FaPencilAlt />}>저장</Button>
+                <Button auto flat onPress={() => edit()} css={{ml: 'auto'}} icon={<FaPencilAlt />}>저장</Button>
             </Layout>
         </>
     )
