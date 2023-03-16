@@ -12,7 +12,8 @@ interface SNSPageProvider {
 }
 
 export default ({ currentProviders }: SNSPageProvider) => {
-    const session = useSession({required: true})
+    // 로그인된 유저만 접근 가능
+    const session = useSession({ required: true })
 
     return (
         <>

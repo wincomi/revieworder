@@ -10,6 +10,7 @@ import { User } from '@prisma/client'
 import { getAccountProviders } from '@/libs/users'
 import { FaPencilAlt } from 'react-icons/fa'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -20,6 +21,8 @@ interface ProfileEditPageProps {
 }
 
 export default ({ user, accountProviders }: ProfileEditPageProps) => {
+    // 로그인된 유저만 접근 가능
+    const session = useSession({ required: true })
 
     // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
     const [update, setUpdate] = useState({

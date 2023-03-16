@@ -28,7 +28,7 @@ export default (props: SignInPage) => {
         OAuthAccountNotLinked: "To confirm your identity, sign in with the same account you used originally.",
         EmailSignin: "The e-mail could not be sent.",
         CredentialsSignin: "Sign in failed. Check the details you provided are correct.",
-        SessionRequired: "Please sign in to access this page.",
+        SessionRequired: "이 페이지에 접근하기 위해 로그인이 필요합니다.",
         default: "Unable to sign in."
     }
 
@@ -77,7 +77,7 @@ export default (props: SignInPage) => {
                     <Card css={{$$cardColor: '$colors$error' }}>
                         <Card.Body>
                             <Text h6 size={15} color="white" css={{ m: 0, ta: 'center' }}>
-                                <FaExclamationTriangle style={{ verticalAlign: 'text-bottom' }} />{errorTexts[error]}
+                                <FaExclamationTriangle style={{ verticalAlign: 'text-bottom' }} />{` `}{errorTexts[error]}
                             </Text>
                         </Card.Body>
                     </Card>
