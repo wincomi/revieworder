@@ -29,11 +29,19 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
         name: '',
         email: '',
         tel: ''
-      });
+    });
+
+    // input default 값들
+    const [placeholder, setPlaceHolder] = useState({
+        name: "이름을 입력하세요.",
+        email: "example@naver.com",
+        tel: "010-0000-0000"
+    });
+
 
     // 개인정보 수정
     const edit = async () => {
-        
+        console.log(update?.tel)
         // 세션에서 유저 ID 받아온다.
         const userId = user?.id
         const result = await fetch(`https://revieworder.kr:3000/api/users/${userId}`, {
@@ -43,9 +51,9 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
             },
             body: JSON.stringify({
                 // 보내줘야할 body.데이터들
-                name: update.name,
-                email: update.email,
-                phoneNumber: update.tel,
+                name: update.name != '' ? update.name : null,
+                email: update.email != '' ? update.email : null,
+                phoneNumber: update.tel != '' ? update.tel : null,
 
                 // 수정 안 해도 되는 것들
                 //password: null,
@@ -63,6 +71,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
             .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "")
 
             // 전화번호 value 값 저장 -- 124 주석 참고
+            // 나중에 hyPhen 처리 수정 필요 !! (01056490485를 -삽입 및 제거 필요 - 현재는 타이핑때만 작동)
             setUpdate({ ...update, tel: e.currentTarget.value })
     }
 
@@ -97,7 +106,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                     type="text"
                     name = "name"
                     label="이름"
-                    placeholder="이름을 입력하세요."
+                    placeholder={placeholder.name}
                     initialValue={user.name ?? undefined} 
                     shadow={false}
                     fullWidth={true}
@@ -108,7 +117,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 <Input 
                     type="email" 
                     label="이메일"
-                    placeholder="example@naver.com" 
+                    placeholder={placeholder.email}
                     initialValue={user.email ?? undefined} 
                     shadow={false}
                     fullWidth={true}
@@ -118,7 +127,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 <Input 
                     type="tel" 
                     label="휴대폰 번호"
-                    placeholder='010-0000-0000'
+                    placeholder={placeholder.tel}
                     initialValue={user.phoneNumber ?? undefined} 
                     shadow={false}
                     fullWidth={true}
