@@ -22,6 +22,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     money: req.body.money != null ? req.body.money : undefined
                 }
             })
-        break
+            break
     }
 }

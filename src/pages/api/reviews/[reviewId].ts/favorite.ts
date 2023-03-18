@@ -17,7 +17,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 where: { id: reviewId },
                 data: {
                     // favorite 말고 나머지 다 Null 전달
-                    // 이거 되려나?
                     favorite: (req.body.favorite + 1)
                 }
             })

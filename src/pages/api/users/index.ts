@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 요청된 정보가 없음
                 res.status(400).json({
-                    "message": "user 정보가 없습니다."
+                    "message": "유저 정보가 없습니다."
                 })
             }
             break
@@ -56,4 +56,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             res.status(400).json({ message: "잘못된 요청입니다." })
     }
 }
-

@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(200).json(readResult)
             } else {
                 res.status(400).json({
-                    "message": "해당 store정보가 없습니다."
+                    "message": "해당 매장 정보가 없습니다."
                 })
             }
             break
@@ -52,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                     // 수정 실패.
                     res.status(400).json({
-                        "message": "해당 store를 수정할 수 없습니다."
+                        "message": "해당 매장을 수정할 수 없습니다."
                     })
                 }
             }
@@ -62,7 +62,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         case "DELETE":
             const deleteResult = await prisma.store.delete({where: { id: storeId }})
 
-            // 삭제하면 deleteResult 값이 있나?
             if (deleteResult != null) {
                 // 삭제 성공!!
                 res.status(200).json(deleteResult)

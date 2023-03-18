@@ -20,7 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(200).json(readResult)
             } else {
                 res.status(400).json({
-                    "message": "내 review정보가 없습니다."
+                    "message": "내 리뷰 정보가 없습니다."
                 })
             }
             break

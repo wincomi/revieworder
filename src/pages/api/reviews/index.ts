@@ -19,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 요청된 정보가 없음
                 res.status(400).json({
-                    "message": "review 정보가 없습니다."
+                    "message": "리뷰 정보가 없습니다."
                 })
             }
             break
@@ -58,7 +58,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                     // 결과 값이 없을때 오류
                     res.status(400).json({
-                        "message": "store를 등록할 수 없습니다."
+                        "message": "리뷰를 게시 실패."
                     })
                 }
                 break

@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(200).json(readResult)
             } else {
                 res.status(400).json({
-                    "message": "해당 review정보가 없습니다."
+                    "message": "해당 리뷰 정보가 없습니다."
                 })
             }
             break
@@ -36,7 +36,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 삭제 실패.
                 res.status(400).json({
-                    "message": "해당 review를 삭제할 수 없습니다."
+                    "message": "해당 리뷰를 삭제할 수 없습니다."
                 })
             }
             break

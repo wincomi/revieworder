@@ -12,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // API method에 따라 작동
     switch (req.method) {
         
-        // READ (userId에 해당되는 매장 조회)
+        // READ (userId에 해당되는 유저 조회)
         case "GET":
             const readResult = await prisma.user.findUnique({where: { id : userId }})
 
@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(200).json(readResult)
             } else {
                 res.status(400).json({
-                    "message": "해당 user정보가 없습니다."
+                    "message": "해당 유저 정보가 없습니다."
                 })
             }
             break
@@ -48,7 +48,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 수정 실패.
                 res.status(400).json({
-                    "message": "해당 user를 수정할 수 없습니다."
+                    "message": "해당 유저를 수정할 수 없습니다."
                 })
             }
             break
@@ -64,7 +64,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 삭제 실패.
                 res.status(400).json({
-                    "message": "해당 user를 삭제할 수 없습니다."
+                    "message": "해당 유저를 삭제할 수 없습니다."
                 })
             }
             break

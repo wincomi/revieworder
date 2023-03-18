@@ -19,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 요청된 정보가 없음
                 res.status(400).json({
-                    "message": "store 정보가 없습니다."
+                    "message": "매장 정보가 없습니다."
                 })
             }
             break
@@ -29,7 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             // name은 Not Null이기에 무조건 입력되게 표시
             if (req.body.name == null) {
                 res.status(400).json({
-                    "message": "가게 이름을 입력해주세요."
+                    "message": "매장 이름을 입력해주세요."
                 })
             } else {
                 const createResult = await prisma.store.create({
@@ -55,7 +55,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                     // 결과 값이 없을때 오류
                     res.status(400).json({
-                        "message": "store를 등록할 수 없습니다."
+                        "message": "매장을 등록할 수 없습니다."
                     })
                 }
             }
@@ -66,4 +66,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             res.status(400).json({ message: "잘못된 요청" })
     }
 }
-
