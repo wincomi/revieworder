@@ -26,34 +26,41 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // CREATE (메뉴 등록)
         case "POST":
-            const createResult = await prisma.menu.create({
-                // 메뉴 이름, 설명, 가격, 이미지 
-                data: {
-                    name: req.body.name,
-                    description: req.body.description,
-                    price: req.body.price,
-                    image: req.body.image,
 
-                    // 외래키 연결
-                    store: { 
-                        connect: { id: req.body.storeId }
-                    }
-                },
-                include: { 
-                    store: true 
-                }
-            })
-
-            if (createResult != null) {
-                // 성공!!
-                res.status(200).json(createResult)
-            } else {
-                // 결과 값이 없을때 오류
+            if (req.body.content == null) {
                 res.status(400).json({
-                    "message": "메뉴를 등록할 수 없습니다."
+                    "message": "리뷰 내용을 입력해주세요."
                 })
+            } else {
+                const createResult = await prisma.menu.create({
+                    // 메뉴 이름, 설명, 가격, 이미지 
+                    data: {
+                        name: req.body.name,
+                        description: req.body.description,
+                        price: req.body.price,
+                        image: req.body.image,
+
+                        // 외래키 연결
+                        store: { 
+                            connect: { id: req.body.storeId }
+                        }
+                    },
+                    include: { 
+                        store: true 
+                    }
+                })
+
+                if (createResult != null) {
+                    // 성공!!
+                    res.status(200).json(createResult)
+                } else {
+                    // 결과 값이 없을때 오류
+                    res.status(400).json({
+                        "message": "메뉴를 등록할 수 없습니다."
+                    })
+                }
+                break
             }
-            break
 
         default:
             // API method가 잘못되었을 때 오류
