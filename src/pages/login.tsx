@@ -82,9 +82,9 @@ export default (props: SignInPage) => {
                         </Card.Body>
                     </Card>
                 }
-                <Grid.Container gap={4}>
-                    <Grid xs={12} md={6} alignItems="baseline">
-                        <Card variant="flat" css={{ maxWidth: 300, ml: 'auto' }}>
+                <Grid.Container gap={4} justify="center">
+                    <Grid xs={12} md={3} alignItems="baseline">
+                        <Card variant="flat">
                             <Card.Body css={{ta: 'center'}}>
                                 <form onSubmit={loginByPhoneNumber}>
                                     <Text h3>휴대폰 번호로 로그인</Text>
@@ -120,29 +120,25 @@ export default (props: SignInPage) => {
                             </Card.Body>
                         </Card>
                     </Grid>
-                    <Grid xs={12} md={6}>
-                        <div style={{width: '100%'}}>
-                            <Button color="primary" size="lg" onPress={() => signIn("facebook")} icon={<SiFacebook />} css={{mr: 'auto'}}>
+                    <Grid xs={10} md={3}>
+                        <div style={{ width: '100%' }}>
+                            <Button color="primary" size="lg" onPress={() => signIn("facebook")} icon={<SiFacebook />} css={{width: '100%'}}>
                                 페이스북으로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="error" size="lg" onPress={() => signIn("instagram")} icon={<SiInstagram />} css={{mr: 'auto'}}>
+                            <Button color="error" size="lg" onPress={() => signIn("instagram")} icon={<SiInstagram />} css={{width: '100%'}}>
                                 인스타그램으로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="primary" size="lg" onPress={() => signIn("twitter")} icon={<SiTwitter />} css={{mr: 'auto'}} disabled>
-                                트위터로 로그인
-                            </Button>
-                            <Spacer />
-                            <Button color="warning" size="lg" onPress={() => signIn("kakao")} icon={<SiKakaotalk />} css={{mr: 'auto'}}>
+                            <Button color="warning" size="lg" onPress={() => signIn("kakao")} icon={<SiKakaotalk />} css={{width: '100%'}}>
                                 카카오로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="success" size="lg" onPress={() => signIn("naver")} icon={<SiNaver />} css={{mr: 'auto'}}>
+                            <Button color="success" size="lg" onPress={() => signIn("naver")} icon={<SiNaver />} css={{width: '100%'}}>
                                 네이버로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="secondary" size="lg" onPress={() => signIn("apple")} icon={<SiApple />} css={{mr: 'auto'}}>
+                            <Button color="secondary" size="lg" onPress={() => signIn("apple")} icon={<SiApple />} css={{width: '100%'}}>
                                 Apple로 로그인
                             </Button>
                         </div>
