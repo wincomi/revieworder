@@ -44,7 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
             if (putResult != null) {
                 // 성공!!
-                res.status(200).json(putResult);
+                res.status(200).json(putResult)
             } else {
                 // 수정 실패.
                 res.status(400).json({
@@ -55,7 +55,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // DELETE (userId에 해당되는 유저 탈퇴)
         case "DELETE":
-            const deleteResult = await prisma.user.delete({where: { id: userId }})
+            const deleteResult = await prisma.user.delete({ where: { id: userId }})
 
             // 삭제하면 deleteResult 값이 있나?
             if (deleteResult != null) {

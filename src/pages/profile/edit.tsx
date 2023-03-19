@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Button, Text, Spacer, Input, Card } from "@nextui-org/react"
+import { Button, Text, Spacer, Input, Card, Loading } from "@nextui-org/react"
 import Layout from '@/components/layout'
 import { TbPigMoney } from 'react-icons/tb'
 
@@ -29,19 +29,22 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
         name: '',
         email: '',
         tel: ''
-    });
+    })
 
     // input default 값들
     const [placeholder, setPlaceHolder] = useState({
         name: "이름을 입력하세요.",
         email: "example@naver.com",
         tel: "010-0000-0000"
-    });
+    })
 
+    // 저장 중
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
 
-    // 개인정보 수정
+    // 회원정보 수정
     const edit = async () => {
-        console.log(update?.tel)
+        setIsLoadingUpdate(true)
+
         // 세션에서 유저 ID 받아온다.
         const userId = user?.id
         const result = await fetch(`/api/users/${userId}`, {
@@ -61,7 +64,15 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 //emailVerified: null
             })
         })
-        // 새로고침 필요. (저번에 router 썻는데 이번엔?)
+
+        // const json = await result.json()
+        if (result.status == 200) {
+            alert("저장되었습니다.")
+        } else {
+            alert("에러가 발생하였습니다.")
+        }
+
+        setIsLoadingUpdate(false)
     }
 
     // 자동 하이픈 처리
@@ -85,7 +96,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 <title>마이페이지</title>
             </Head>
             <Layout>
-                <Text h1>회원정보 변경</Text>
+                <Text h1>회원정보 수정</Text>
                 {accountProviders &&
                     <Card css={{mb: '$12', $$cardColor: '$colors$gradient' }}>
                         <Card.Body>
@@ -102,41 +113,47 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                     </Card.Body>
                 </Card>
                 <Spacer />
-                <Input 
-                    type="text"
-                    name = "name"
-                    label="이름"
-                    placeholder={placeholder.name}
-                    initialValue={user.name ?? undefined} 
-                    shadow={false}
-                    fullWidth={true}
-                    helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
-                    onChange={(e) => setUpdate({ ...update, name: e.target.value })}
-                    />
-                <Spacer y={2} />
-                <Input 
-                    type="email" 
-                    label="이메일"
-                    placeholder={placeholder.email}
-                    initialValue={user.email ?? undefined} 
-                    shadow={false}
-                    fullWidth={true}
-                    onChange={(e) => setUpdate({ ...update, email: e.target.value })}
-                    />
-                <Spacer y={2} />
-                <Input 
-                    type="tel" 
-                    label="휴대폰 번호"
-                    placeholder={placeholder.tel}
-                    initialValue={user.phoneNumber ?? undefined} 
-                    shadow={false}
-                    fullWidth={true}
+                <form>
+                    <fieldset disabled={isLoadingUpdate} style={{margin: 0, padding: 0, borderWidth: '0'}}>
+                        <Input 
+                            type="text"
+                            name="name"
+                            label="이름"
+                            placeholder={placeholder.name}
+                            initialValue={user.name ?? undefined} 
+                            shadow={false}
+                            fullWidth={true}
+                            helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
+                            onChange={(e) => setUpdate({ ...update, name: e.target.value })}
+                            />
+                        <Spacer y={2} />
+                        <Input 
+                            type="email" 
+                            label="이메일"
+                            placeholder={placeholder.email}
+                            initialValue={user.email ?? undefined} 
+                            shadow={false}
+                            fullWidth={true}
+                            onChange={(e) => setUpdate({ ...update, email: e.target.value })}
+                            />
+                        <Spacer y={2} />
+                        <Input 
+                            type="tel" 
+                            label="휴대폰 번호"
+                            placeholder={placeholder.tel}
+                            initialValue={user.phoneNumber ?? undefined} 
+                            shadow={false}
+                            fullWidth={true}
 
-                    // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
-                    onChange = {autoHyphen}
-                    />
-                <Spacer y={2} />
-                <Button auto flat onPress={() => edit()} css={{ml: 'auto'}} icon={<FaPencilAlt />}>저장</Button>
+                            // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
+                            onChange={autoHyphen}
+                            />
+                        <Spacer y={2} />
+                        <Button flat onPress={() => edit()} css={{ml: 'auto'}} icon={!isLoadingUpdate && <FaPencilAlt />} disabled={isLoadingUpdate}>
+                            {isLoadingUpdate ? <Loading type="points-opacity" color="currentColor" size="sm" /> : <>저장</>}
+                        </Button>
+                    </fieldset>
+                </form>
             </Layout>
         </>
     )
