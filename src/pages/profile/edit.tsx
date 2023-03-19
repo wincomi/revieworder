@@ -44,7 +44,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
         console.log(update?.tel)
         // 세션에서 유저 ID 받아온다.
         const userId = user?.id
-        const result = await fetch(`https://revieworder.kr:3000/api/users/${userId}`, {
+        const result = await fetch(`${process.env.NEXTAUTH_URL}/api/users/${userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -154,7 +154,7 @@ export const getServerSideProps: GetServerSideProps<ProfileEditPageProps> = asyn
 
     const accountProviders = await getAccountProviders(userId)
     
-    const result = await fetch(`https://revieworder.kr:3000/api/users/${userId}`)
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/users/${userId}`)
     const user = await result.json().then(data => data as User) // any to User
 
     return {
