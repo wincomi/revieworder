@@ -235,8 +235,9 @@ model OrderMenu {
   id String @id @default(cuid())
 
   // Order FK키
-  orderId String
-  order Order @relation(fields: [orderId], references: [id])
+  // 장바구니 추가만 하면 null, 주문하면 orderId 생성 및 연결
+  orderId String?
+  order Order? @relation(fields: [orderId], references: [id])
   @@index([orderId])
 
   // 메뉴 FK키
