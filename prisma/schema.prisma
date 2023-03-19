@@ -102,9 +102,6 @@ model User {
 
   // 내 주문 내역 기록 (Order)
   orders        Order[]
-
-  // 내 리뷰 (Review)
-  reviews Review[]
 }
 
 /// 확인 토큰 (NextAuth)
@@ -253,10 +250,8 @@ model Review {
   // 리뷰 고유 번호
   id Int @id @default(autoincrement())
 
-  // 유저 FK키
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  @@index([userId])
+  // 유저 FK키 삭제
+  // 이유: order에서 user가 이중 참조가 일어나서 에러! 어차피 order에서 userId를 받아올 수 있어서 삭제
 
   // 주문내역 FK키
   orderId String
