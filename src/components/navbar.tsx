@@ -2,8 +2,12 @@ import { Button, Navbar, Text, Link, Loading, User, Dropdown, Badge } from '@nex
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Key } from 'react'
-import { FaShoppingCart } from 'react-icons/fa'
+import { FaBars, FaBolt, FaMoon, FaShoppingCart, FaSun } from 'react-icons/fa'
 import { HiOutlinePencil, HiOutlineSwitchHorizontal, HiLogout, HiSearch } from 'react-icons/hi'
+
+import { useTheme as useNextTheme } from 'next-themes'
+import { Switch, useTheme } from '@nextui-org/react'
+import { useState, useMemo } from 'react'
 
 export type NavbarMenuItem = {
   id: string
@@ -18,6 +22,10 @@ export interface NavbarProps {
 export default ({ menu }: NavbarProps) => {
     const router = useRouter()
     const session = useSession()
+    const { setTheme } = useNextTheme()
+    const { isDark, type } = useTheme()
+
+    const [selectedTheme, setSelectedTheme] = useState(new Set([ type ]))
 
     const dropdownAction: (key: Key) => void = (key) => {
       switch (key) {
@@ -93,12 +101,34 @@ export default ({ menu }: NavbarProps) => {
                     )}
                 </Navbar.Content>
                 <Navbar.Content>
-                  <Navbar.Link>
-                    <Badge color="error" content="5" shape="circle" disableAnimation>
-                      <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient"></Button>
-                    </Badge>
-                  </Navbar.Link>
-                    {UserButton()}
+                  <Dropdown>
+                    <Navbar.Item>
+                      <Dropdown.Button auto flat>
+                        <FaBars />
+                      </Dropdown.Button>
+                    </Navbar.Item>
+                    <Dropdown.Menu
+                      color="primary"
+                      selectionMode="single"
+                      disallowEmptySelection
+                      selectedKeys={selectedTheme}
+                      onSelectionChange={ (keys) => {
+                        const key = Array.from(keys).join()
+                        setSelectedTheme(new Set([ key ]))
+                        setTheme(key) 
+                      }}
+                    >
+                      <Dropdown.Section title="테마">
+                        <Dropdown.Item key="system" icon={<FaBolt />}>시스템 설정</Dropdown.Item>
+                        <Dropdown.Item key="light" icon={<FaSun />}>라이트 모드</Dropdown.Item>
+                        <Dropdown.Item key="dark" icon={<FaMoon />}>다크 모드</Dropdown.Item>
+                      </Dropdown.Section>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  <Badge color="error" content="5" shape="circle" disableAnimation>
+                    <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient"></Button>
+                  </Badge>
+                  <UserButton />
                 </Navbar.Content>
             </Navbar>
         </>
