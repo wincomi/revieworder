@@ -39,15 +39,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                         image: req.body.image,
 
                         // 외래키 연결
-                        user: {
-                            connect: { id: req.body.userId }
-                        },
                         order: {
                             connect: { id: req.body.orderId }
                         }
                     },
                     include: {
-                        user: true,
                         order: true,
                     }
                 })
