@@ -13,7 +13,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         
         // READ (reviewId에 해당되는 리뷰들 조회)
         case "GET":
-            const readResult = await prisma.review.findMany({where: { userId: userId }})
+            const readResult = await prisma.review.findMany({ 
+                where: { order : {userId: userId} },
+                include: { order: true }
+            })
 
             if (readResult != null) {
                 // 성공!!
