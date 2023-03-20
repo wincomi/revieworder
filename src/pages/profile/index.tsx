@@ -5,9 +5,6 @@ import { useRouter } from "next/router"
 import { HiPencil } from "react-icons/hi"
 
 export default () => {
-    // 로그인된 유저만 접근 가능
-    const session = useSession({ required: true })
-    
     const router = useRouter()
 
     return (

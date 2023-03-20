@@ -21,9 +21,6 @@ interface ProfileEditPageProps {
 }
 
 export default ({ user, accountProviders }: ProfileEditPageProps) => {
-    // 로그인된 유저만 접근 가능
-    const session = useSession({ required: true })
-
     // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
     const [update, setUpdate] = useState({
         name: '',
