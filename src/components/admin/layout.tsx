@@ -3,8 +3,6 @@ import { ReactNode } from 'react'
 import Navbar from '@/components/navbar'
 import { NavbarMenuItem } from '@/components/navbar'
 import NavbarUserButton from '@/components/navbarUserDropdown'
-import NavbarThemeButton from '@/components/navbarThemeDropdown'
-import ShoppingCartButton from '@/components/shoppingCartButton'
 
 interface LayoutProps {
     children: ReactNode
@@ -12,16 +10,14 @@ interface LayoutProps {
 
 export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
-        { id: "index", name: "둘러보기", path: "/" },
-        { id: "order", name: "주문하기", path: "/order" },
-        { id: "profile", name: "내 프로필", path: "/profile" },
+        { id: "index", name: "홈", path: "/admin" },
+        { id: "order", name: "주문", path: "/admin/order" },
+        { id: "setup", name: "설정", path: "/admin/setup" },
     ]
 
     return (
         <main>
-            <Navbar title="리뷰오더" menu={menu} activeColor="primary">
-                <ShoppingCartButton />
-                <NavbarThemeButton />
+            <Navbar title="매장 관리" menu={menu} activeColor="secondary">
                 <NavbarUserButton />
             </Navbar>
             <Container lg css={{ mt: 32 }}>

@@ -1,9 +1,7 @@
 import { Navbar, Text, Link, Loading, User, Dropdown, Badge } from '@nextui-org/react'
 import { useRouter } from 'next/router'
 
-import NavbarUserButton from '@/components/navbarUserDropdown'
-import NavbarThemeButton from '@/components/navbarThemeDropdown'
-import ShoppingCartButton from '@/components/shoppingCartButton'
+import { ReactNode } from 'react'
 
 export type NavbarMenuItem = {
   id: string
@@ -13,10 +11,12 @@ export type NavbarMenuItem = {
 
 export interface NavbarProps {
   title: string,
-  menu: NavbarMenuItem[]
+  menu: NavbarMenuItem[],
+  activeColor?: "default" | "primary" | "secondary" | "success" | "warning" | "error" | "neutral",
+  children?: ReactNode
 }
 
-export default ({ title, menu }: NavbarProps) => {
+export default ({ title, menu, activeColor, children }: NavbarProps) => {
   const router = useRouter()
   
   return (
@@ -28,7 +28,7 @@ export default ({ title, menu }: NavbarProps) => {
           </Text>
         </Link>
       </Navbar.Brand>
-      <Navbar.Content hideIn="xs" variant="highlight" enableCursorHighlight>
+      <Navbar.Content hideIn="xs" activeColor={activeColor} variant="highlight-rounded" enableCursorHighlight>
         {menu.map((item) =>
           <Navbar.Link
             key={item.id}
@@ -40,9 +40,7 @@ export default ({ title, menu }: NavbarProps) => {
         )}
       </Navbar.Content>
       <Navbar.Content>
-        <ShoppingCartButton />
-        <NavbarThemeButton />
-        <NavbarUserButton />
+        {children}
       </Navbar.Content>
     </Navbar>
   )
