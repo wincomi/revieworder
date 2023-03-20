@@ -16,8 +16,8 @@ export default ({ children }: LayoutProps) => {
 
     return (
         <main>
-            <Navbar menu={menu} />
-            <Container lg css={{mt: 32}}>
+            <Navbar title="리뷰오더" menu={menu} />
+            <Container lg css={{ mt: 32 }}>
                 {children}
             </Container>
         </main>
