@@ -97,11 +97,14 @@ model User {
   /// 리뷰오더 머니
   money         Int @default(0)
 
-  /// 관리하는 매장
+  /// 관리하는 매장들
   stores        Store[]
 
-  // 내 주문 내역 기록 (Order)
+  // 내 주문 내역들 (Order)
   orders        Order[]
+
+  // 내 장바구니 메뉴들
+  carts         Cart[]
 }
 
 /// 확인 토큰 (NextAuth)
@@ -138,7 +141,7 @@ model Store {
   userId String
 
   // Error validating field `stores` in model `User`: The relation field `stores` on model `User` is missing an opposite relation field on the model `Store`. Either run `prisma format` or add it manually.
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
 
@@ -178,9 +181,11 @@ model Menu {
   // Warning : With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. 
   @@index([storeId])
 
-  /// 장바구니로 추가된 각 메뉴들
-  // 외래키 주려면 주는곳에서 이렇게 처리해야함 (FK는 OrderMenu에 있음)
-  OrderMenus OrderMenu[]
+  // 주문상세 메뉴들
+  orderDetail OrderDetail[]
+
+  // 장바구니에 추가된 메뉴들
+  carts Cart[]
 }
 
 /// AVAILABLE: 판매 가능
@@ -206,17 +211,16 @@ model Order {
   user User @relation(fields: [userId], references: [id])
   @@index([userId])
   
-  // 총합 금액 (총 결제 금액)
-  totalPrice Int @default(0)
+  // 주문일자
+  orderDate DateTime @default(now())
 
   status OrderStatus @default(REQUESTED)
 
-  /// 장바구니로 추가된 각 메뉴들 
-  // 외래키 주려면 주는곳에서 이렇게 처리해야함 (FK는 OrderMenu에 있음)
-  OrderMenus OrderMenu[]
+  orderDetail OrderDetail[]
 
   // 리뷰에 개시된 주문들
-  reviews Review[]
+  // 리뷰랑 주문이랑 1:1 or 1:0 관계
+  reviews Review?
 }
 
 enum OrderStatus {
@@ -226,24 +230,45 @@ enum OrderStatus {
   CANCELED // 주문 취소
 }
 
-// OrderMenu (장바구니)
-model OrderMenu {
+// 주문 상세
+model OrderDetail {
+  // 주문 상세 고유 번호
+  id String @id @default(cuid())
+
+  // 주문번호
+  orderId String
+  order Order @relation(fields: [orderId], references: [id])
+  @@index([orderId])
+
+  // 메뉴번호
+  menuId Int
+  menu Menu @relation(fields: [menuId], references: [id])
+  @@index([menuId])
+
+  // 수량
+  count Int
+
+  // 가격
+  price Int
+}
+
+// 장바구니에 추가된 메뉴들
+model Cart {
   // 장바구니 고유 번호
   id String @id @default(cuid())
 
-  // Order FK키
-  // 장바구니 추가만 하면 null, 주문하면 orderId 생성 및 연결
-  orderId String?
-  order Order? @relation(fields: [orderId], references: [id])
-  @@index([orderId])
+  // 유저 FK키
+  userId String @unique
+  user User @relation(fields: [userId], references: [id])
+  @@index([userId])
 
-  // 메뉴 FK키
-  menuId Int 
+  // 장바구니 FK키
+  menuId Int
   menu Menu @relation(fields: [menuId], references: [id])
   @@index([menuId])
 
   // 주문 수량
-  count Int @default(1)
+  count Int
 }
 
 model Review {
@@ -254,11 +279,12 @@ model Review {
   // 이유: order에서 user가 이중 참조가 일어나서 에러! 어차피 order에서 userId를 받아올 수 있어서 삭제
 
   // 주문내역 FK키
-  orderId String
+  /// 주문내역에 맞는 리뷰만 제작 가능
+  orderId String @unique
   order Order @relation(fields: [orderId], references: [id])
   @@index([orderId])
   
-  // 내용 (해시태그 등등)
+  /// 내용 (해시태그 등등)
   content String
 
   // 좋아요 수
