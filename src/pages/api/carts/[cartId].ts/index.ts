@@ -17,7 +17,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 where: { id: cartId },
                 data: {
                     // 수량만 변경 가능하고 추가 삭제만 기능
-                    count: (req.body.count)
+                    count: (req.body.count),
+                    userId: undefined,
+                    menuId: undefined
                 }
             })
 
