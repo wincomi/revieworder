@@ -94,6 +94,9 @@ model User {
   /// 전화번호 형식: 01012345678
   phoneNumber   String?
 
+  // 회원 알러지 등록 text
+  allergy       String?
+
   /// 리뷰오더 머니
   money         Int @default(0)
 
