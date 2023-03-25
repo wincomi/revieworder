@@ -22,7 +22,7 @@ interface ProfileEditPageProps {
 
 // 알러지 칸 추가
 
-export default ({ user, accountProviders }: ProfileEditPageProps) => {
+export default function profileEdit ({ user, accountProviders }: ProfileEditPageProps) {
     // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
     const [update, setUpdate] = useState({
         name: '',
