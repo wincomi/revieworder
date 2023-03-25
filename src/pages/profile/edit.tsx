@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Button, Text, Spacer, Input, Card, Loading } from "@nextui-org/react"
+import { Button, Text, Spacer, Input, Card, Loading, Textarea } from "@nextui-org/react"
 import Layout from '@/components/layout'
 import { TbPigMoney } from 'react-icons/tb'
 
@@ -20,19 +20,23 @@ interface ProfileEditPageProps {
     accountProviders?: string[]
 }
 
+// 알러지 칸 추가
+
 export default ({ user, accountProviders }: ProfileEditPageProps) => {
     // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
     const [update, setUpdate] = useState({
         name: '',
         email: '',
-        tel: ''
+        tel: '',
+        allergy: '',
     })
 
     // input default 값들
     const [placeholder, setPlaceHolder] = useState({
         name: "이름을 입력하세요.",
         email: "example@naver.com",
-        tel: "010-0000-0000"
+        tel: "010-0000-0000",
+        allergy: "알러지 사항을 입력하세요. 가게 측으로 전달됩니다."
     })
 
     // 저장 중
@@ -54,7 +58,7 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                 name: update.name != '' ? update.name : null,
                 email: update.email != '' ? update.email : null,
                 phoneNumber: update.tel != '' ? update.tel : null,
-
+                allergy: update.allergy != '' ? update.allergy : null,   
                 // 수정 안 해도 되는 것들
                 //password: null,
                 //image: null,
@@ -145,6 +149,19 @@ export default ({ user, accountProviders }: ProfileEditPageProps) => {
                             // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
                             onChange={autoHyphen}
                             />
+                        <Spacer y={2} />
+                        <Textarea
+                            // 초기 TextArea 크기 ex) 5줄
+                            rows={5}
+
+                            label="전달사항"
+                            placeholder={placeholder.allergy}
+                            initialValue={user.allergy ?? undefined}
+                            shadow={false}
+                            fullWidth={true}
+
+                            onChange={(e) => setUpdate({ ...update, allergy: e.target.value })} 
+                        />
                         <Spacer y={2} />
                         <Button flat onPress={() => edit()} css={{ml: 'auto'}} icon={!isLoadingUpdate && <FaPencilAlt />} disabled={isLoadingUpdate}>
                             {isLoadingUpdate ? <Loading type="points-opacity" color="currentColor" size="sm" /> : <>저장</>}

@@ -39,6 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     phoneNumber: req.body.phoneNumber != null ? req.body.phoneNumber : undefined, 
                     image: req.body.image != null ? req.body.image : undefined, 
                     emailVerified: req.body.emailVerified != null ? req.body.emailVerified : undefined, 
+                    allergy: req.body.allergy != null ? req.body.allergy : undefined, 
                 }
             })
 
