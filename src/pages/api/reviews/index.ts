@@ -11,7 +11,27 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         // GET (모든 리뷰 조회)
         case "GET":
-            const readResult = await prisma.review.findMany()
+            const readResult = await prisma.review.findMany({
+                include: { 
+                    order: {
+                        include: {
+                            store: true,
+                            user: true, 
+                            orderDetail: {
+                                include: {menu: true}
+                            }
+                        }
+                    }
+                },
+                orderBy: [
+                    {
+                    createTime: 'desc'
+                    },
+                    {
+                        rating: 'desc'
+                    }
+                ]
+            })
 
             if (readResult != null) {
                 // 성공!!
