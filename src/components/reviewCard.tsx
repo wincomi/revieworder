@@ -4,45 +4,49 @@ import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useState } from "react"
 import { Prisma } from "@prisma/client"
-import dateFormat from "@/utils/dateFormat"
 
-type ReviewCardProps =
-    Prisma.ReviewGetPayload<{
-        include: {
-            order: {
-                include: {
-                    store: true,
-                    user: true,
-                    orderDetail: {
-                        include: { menu: true }
-                    }
+// review에 연결된 order에서 store, user, orderDetail을 다시 orderDetail에서 menu정보를 불러온다
+// 결론: review에 연결된 모든 테이블 조회 가능
+// + 나중에 타입들 모아서 라이브러리화 생각 중.
+const reviewWithOrder = Prisma.validator<Prisma.ReviewArgs>()({
+    include: { 
+        order: {
+            include: {
+                store: true,
+                user: true,
+                orderDetail: {
+                    include: { menu: true }
                 }
             }
         }
-    }>
+     }
+})
+
+export type ReviewCardProps = Prisma.ReviewGetPayload<typeof reviewWithOrder>
 
 export default (review: ReviewCardProps) => {
     const router = useRouter()
-    const [favorite, setFavorite] = useState(0)
-
-    console.log(review)
+    const [favorite, setFavorite] = useState(review.favorite)
 
     return (
         <Card variant="flat">
             <Card.Header>
                 <Row wrap="wrap" justify="space-between" align="center">
                     <User
-                        src={review.order.user.image ? review.order.user.image : "https://i.pravatar.cc/150?u=a042581f4e29026704d"}
-                        name={review.order.user.name ? review.order.user.name : "이름 없음"}
+                        src={review.order.user.image ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"}
+                        name={review.order.user.name ?? "이름 없음"}
                         size="sm"
                         css={{ px: 0 }}
                     />
-                    <Text css={{ color: "$accents7", fontSize: "$xs" }}>{dateFormat(review.createTime)}</Text>
+                    <Text css={{ color: "$accents7", fontSize: "$xs" }}>
+                        {/* TODO: Text content does not match server-rendered HTML 해결 후 dateFormat() 적용 */}
+                        {String(review.createTime)}
+                    </Text>
                 </Row>
             </Card.Header>
             <Card.Body css={{ p: 0 }}>
                 <Card.Image
-                    src={review.image ? review.image : "https://source.unsplash.com/random/600x600/?food"}
+                    src={review.image ?? "https://source.unsplash.com/random/600x600/?food"}
                     objectFit="cover"
                     width="100%"
                     height={300}
@@ -64,8 +68,6 @@ export default (review: ReviewCardProps) => {
                     <Spacer y={0.5} />
 
                     {review.content}
-                    {/* 국회는 국무총리 또는 국무위원의 해임을 대통령에게 건의할 수 있다. 광물 기타 중요한 지하자원·수산자원·수력과 경제상 이용할 수 있는 자연력은 법률이 정하는 바에 의하여 일정한 기간 그 채취·개발 또는 이용을 특허할 수 있다.<br />
-                    모든 국민은 법률이 정하는 바에 의하여 선거권을 가진다. 국정감사 및 조사에 관한 절차 기타 필요한 사항은 법률로 정한다. 형사피해자는 법률이 정하는 바에 의하여 당해 사건의 재판절차에서 진술할 수 있다. */}
 
                     <Text h6 css={{ mt: "$4", mb: "$2" }}>주문한 가게</Text>
                     <Tooltip content={"리뷰어가 주문한 가게로 이동하기"} placement="right" color="invert">
