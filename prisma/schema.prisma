@@ -261,7 +261,7 @@ model Cart {
   id String @id @default(cuid())
 
   // 유저 FK키
-  userId String @unique
+  userId String
   user User @relation(fields: [userId], references: [id])
   @@index([userId])
 
