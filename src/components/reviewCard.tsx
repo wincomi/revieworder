@@ -4,6 +4,7 @@ import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useState } from "react"
 import { Prisma } from "@prisma/client"
+import { useSession } from "next-auth/react"
 
 // review에 연결된 order에서 store, user, orderDetail을 다시 orderDetail에서 menu정보를 불러온다
 // 결론: review에 연결된 모든 테이블 조회 가능
@@ -26,6 +27,7 @@ export type ReviewCardProps = Prisma.ReviewGetPayload<typeof reviewWithOrder>
 
 export default (review: ReviewCardProps) => {
     const router = useRouter()
+    const session = useSession()
     const [favorite, setFavorite] = useState(review.favorite)
 
     return (
@@ -83,7 +85,26 @@ export default (review: ReviewCardProps) => {
                     ))}
                     <Spacer y={0.5} />
 
-                    <Button css={{ width: '100%' }} onPress={() => router.push(`/cart`)} color="gradient" icon={<FaShoppingCart />}>
+                    <Button 
+                        css={{ width: '100%' }} 
+                        color="gradient" 
+                        icon={<FaShoppingCart />}
+                        onPress={() => 
+                            fetch(`api/carts/posts`,{
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            // session의 쿠키를 보내는데 req가 없으면 필요
+                            credentials: 'include',
+
+                            body: JSON.stringify({
+                                menu: review.order.orderDetail
+                                })
+                            })
+                        }
+                        >
+
                         이 메뉴로 주문하기
                     </Button>
                 </div>
