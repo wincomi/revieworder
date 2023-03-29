@@ -52,7 +52,6 @@ prismaAdapter.linkAccount = (account: AdapterAccount) => {
     scope: account.scope,
     id_token: account.id_token,
     session_state: account.session_state,
-    code: account.code
   }
 
   return prisma.account.create({ data: newAccount }) as unknown as AdapterAccount
