@@ -1,43 +1,80 @@
 import Layout from "@/components/layout"
-import { getAccountProviders } from "@/libs/users"
-import { Grid, Text } from '@nextui-org/react'
-import { Prisma } from "@prisma/client"
+import { Button, Grid, Row, Col, Text, Card, Spacer } from '@nextui-org/react'
 import { GetServerSideProps } from "next"
-import { getServerSession } from "next-auth/next"
 import { useSession } from "next-auth/react"
-import { authOptions } from "./api/auth/[...nextauth]"
+import { Key, useState } from "react"
+
+import CartCard, { CartCardProps } from '@/components/cartCard'
+
+import { TbPigMoney } from 'react-icons/tb'
+import { useRouter } from "next/router"
 
 interface CartProps {
-    cart: Prisma.CartGetPayload<{
-        include: {
-            menu: true
-        }   
-    }>
+    cartCards: CartCardProps[]
 }
 
-export default function Cart( {cart}: CartProps ) {
+export default function Cart( {cartCards}: CartProps ) {
     const session = useSession()
-    console.log(cart)
+    const router = useRouter()
+    const [totalPrice, setTotalPrice] = useState(0)
+
+    //console.log(cartCards)
+
+    // TODO: 나중에 장바구니 담긴 거 없을 때 default 화면 정해야함?
     return (
         <Layout>
             <Text h1>장바구니</Text>
+            
                 <Grid.Container gap={2} justify="flex-start" css={{px: 0}}>
-                    {}
+                    <Row justify="space-between">
+                        <Col>
+                        {/* 장바구니에 담긴 메뉴 리스트. 취소 및 갯수 변경 기능 추가 예정 */}
+                        {cartCards.map((item: CartCardProps, index: Key) => (
+                            <Grid>
+                                <CartCard {...item} key={index} />
+                            </Grid>
+                        ))}
+                        </Col>
+
+                    {/* 장바구니에 담긴 메뉴 정리 및 총 가격 출력 */}
+                    <Grid xs={6} md={6}>
+                        <Card variant="flat">
+                            <Card.Body css={{ p: 0 }}>
+                                <Grid justify="center">
+                                {cartCards.map((item: CartCardProps, index: Key) => (
+                                    <>
+                                    <Row justify="space-between">
+                                        <Text>{item.menu.name} x {item.count}</Text>
+                                        <Text>{item.menu.price * item.count}</Text>
+                                    </Row>
+                                    <Spacer y={0.2} />
+                                    </>
+                                ))}
+                                </Grid>
+                            </Card.Body>
+                            <Card.Divider />
+
+                            <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
+                                <Col>
+                                <Row justify="flex-end"><Text h2>{totalPrice} 원</Text></Row>
+                                    <Row>
+                                        <Button color="gradient">주문 하기</Button>
+                                        <Spacer y={0.5} />
+                                        <Button color="gradient" onClick={()=>router.back()}>돌아가기</Button>
+                                    </Row>
+                                </Col>
+                            </Card.Footer>
+                        </Card>
+                    </Grid>
+                    </Row>
                 </Grid.Container>
+                
         </Layout>
     )
 }
 
 export const getServerSideProps: GetServerSideProps = async ({req,res}) => {
-    // getServerSideProps에서 getSession이 작동 안 되기에 getServerSession 사용
-    const session = await getServerSession(req, res, authOptions)
-  
-    const userId = session?.user.id
 
-    if (userId == undefined) {
-        return { props: { } }
-    }
-    
     const result = await fetch(`${process.env.NEXTAUTH_URL}/api/carts/posts/`,{
         method: "GET",
         headers: {
@@ -45,12 +82,12 @@ export const getServerSideProps: GetServerSideProps = async ({req,res}) => {
             cookie: req.headers.cookie || "",
           }
     })
-    const cart = await result.json().then(data => data as CartProps) 
+    const cartCards = await result.json().then(data => data as CartCardProps) 
+
+    //console.log(cartCards)
 
     return {
-        props: { 
-           cart
-        }
+        props: { cartCards }
     }
 }
 
