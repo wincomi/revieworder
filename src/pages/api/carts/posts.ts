@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from "@/libs/prismadb"
-import { Order, OrderDetail, Prisma } from '@prisma/client'
+import { OrderDetail } from '@prisma/client'
 import { getSession } from 'next-auth/react'
 
 // res.status(200) - 성공!, res.status(400) - 실패!
@@ -13,8 +13,8 @@ export default (async (req: NextApiRequest, res: NextApiResponse) => {
     const userId = session?.user.id
     const menu: OrderDetail[] | null = req.body.menu as OrderDetail[] ?? null 
 
-    // 세션 확인용
-    console.log(session)
+    // // 세션 확인용
+    // console.log(session)
 
     // API method에 따라 작동
     switch (req.method) {
@@ -22,9 +22,11 @@ export default (async (req: NextApiRequest, res: NextApiResponse) => {
         case "GET":
             const readResult = await prisma.cart.findMany({ 
                 where: { user : {id: userId} },
-                include: { user: true }
+                include: { 
+                    menu: { include: {store: true} } 
+                }
             })
-
+            
             if (readResult != null) {
                 // 성공!!
                 res.status(200).json(readResult)
