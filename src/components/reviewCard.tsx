@@ -51,7 +51,7 @@ export default (review: ReviewCardProps) => {
 
         setIsAddingToCart(false)
 
-        if (confirm('카트로 이동하시겠습니까?')) {
+        if (confirm('장바구니로 이동하시겠습니까?')) {
             router.push('/cart')
         }
     }
@@ -151,7 +151,7 @@ export default (review: ReviewCardProps) => {
                         onPress={ async () => await addToCart() }
                         disabled={isAddingToCart}
                     >
-                        {isAddingToCart ? <Loading type="points" color="currentColor" size="sm" /> : <>카트에 담기</>}
+                        {isAddingToCart ? <Loading type="points" color="currentColor" size="sm" /> : <>장바구니에 담기</>}
                     </Button>
                 </div>
             </Card.Footer>
