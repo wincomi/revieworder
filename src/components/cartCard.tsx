@@ -1,10 +1,10 @@
 import { User, Card, Row, Text, Button, Spacer, Link, Tooltip, Checkbox, Col, Grid} from "@nextui-org/react"
-import { GiCancel } from 'react-icons/gi'
 
 import { useRouter } from 'next/router'
 import { Dispatch, useState, SetStateAction } from "react"
 import { OrderDetail, Prisma } from "@prisma/client"
 import { useSession } from "next-auth/react"
+import { FaMinus, FaPlus, FaTimes } from "react-icons/fa"
 
 const cartWithMenu = Prisma.validator<Prisma.CartArgs>()({
     include: { 
@@ -37,11 +37,10 @@ export default ({ cartCard, onChangeCartItem }: CartCardComponentProps) => {
     }
 
     return (
-        <Card variant="flat">
+        <Card variant="flat" css={{width: '100%'}}>
             <Card.Header>
                 <Row justify="flex-end">
-                    <Button auto light color="error" icon={<GiCancel fill="currentColor" />}>
-                    </Button>
+                    
                 </Row>
             </Card.Header>
             <Card.Body css={{ p: 0 }}>
@@ -66,9 +65,10 @@ export default ({ cartCard, onChangeCartItem }: CartCardComponentProps) => {
             </Card.Body>
             <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
                 <Row justify="flex-end">
-                    <Button auto onClick={minus}>-</Button>
+                    <Button auto flat onClick={minus} icon={<FaMinus />}></Button>
                     <Text>{cartCard.count}</Text>
-                    <Button auto onClick={plus}>+</Button>
+                    <Button auto flat onClick={plus} icon={<FaPlus />}></Button>
+                    <Button auto flat color="error" icon={<FaTimes fill="currentColor" />}></Button>
                 </Row>
             </Card.Footer>
         </Card>

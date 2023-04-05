@@ -8,6 +8,7 @@ import CartCard, { CartCardType, CartCardComponentProps } from '@/components/car
 
 import { TbPigMoney } from 'react-icons/tb'
 import { useRouter } from "next/router"
+import { FaRegCreditCard } from "react-icons/fa"
 
 interface CartPageProps {
     cartCards: CartCardType[]
@@ -33,52 +34,46 @@ export default function Cart({ cartCards }: CartPageProps) {
     return (
         <Layout>
             <Text h1>장바구니</Text>
-                <Grid.Container gap={2} justify="flex-start" css={{px: 0}}>
-                    <Row justify="space-between">
-                        <Col>
+            <Grid.Container gap={2} alignItems="flex-start">
+                <Grid md={8} xs={12}>
+                    <div style={{ width: '100%' }}>
                         {cartItems.map((item: CartCardType, index: Key) => (
-                            <Grid>
+                            <>
                                 <CartCard 
                                     key={index} 
                                     cartCard={item}
                                     onChangeCartItem={(data)=>setCardItem(data,index)}
                                 />
-                            </Grid>
+                                <Spacer />
+                            </>
                         ))}
-                        </Col>
-
-                    <Grid xs={6} md={6}>
-                        <Card variant="flat">
-                            <Card.Body css={{ p: 0 }}>
-                                <Grid justify="center">
-                                {cartItems.map((item: CartCardType, index: Key) => (
-                                    <>
-                                    <Row justify="space-between">
-                                        <Text>{item.menu.name} x {item.count}</Text>
-                                        <Text>{(item.menu.price * item.count).toLocaleString()}</Text>
-                                    </Row>
-                                    <Spacer y={0.2} />
-                                    </>
-                                ))}
-                                </Grid>
-                            </Card.Body>
-                            <Card.Divider />
-
-                            <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
-                                <Col>
-                                <Row justify="flex-end"><Text h2>{totalPrice}원</Text></Row>
-                                    <Row>
-                                        <Button color="gradient">주문 하기</Button>
-                                        <Spacer y={0.5} />
-                                        <Button color="gradient" onClick={()=>router.back()}>돌아가기</Button>
-                                    </Row>
-                                </Col>
-                            </Card.Footer>
-                        </Card>
-                    </Grid>
-                    </Row>
-                </Grid.Container>
-                
+                    </div>
+                </Grid>
+                <Grid md={4} xs={12}>
+                    <Card variant="flat">
+                        <Card.Body css={{ p: 0 }}>
+                            <Grid justify="center">
+                            {cartItems.map((item: CartCardType, index: Key) => (
+                                <>
+                                <Row justify="space-between">
+                                    <Text>{item.menu.name} x {item.count}</Text>
+                                    <Text>{(item.menu.price * item.count).toLocaleString()}</Text>
+                                </Row>
+                                <Spacer y={0.2} />
+                                </>
+                            ))}
+                            </Grid>
+                        </Card.Body>
+                        <Card.Divider />
+                        <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
+                            <div style={{ width: '100%' }}>
+                                <Text h2 style={{textAlign: 'right'}}>{totalPrice}원</Text>
+                                <Button color="gradient" css={{ width: '100%' }} icon={<FaRegCreditCard />}>주문하기</Button>
+                            </div>
+                        </Card.Footer>
+                    </Card>
+                </Grid>
+            </Grid.Container>
         </Layout>
     )
 }
