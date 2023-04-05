@@ -1,8 +1,8 @@
 import { User, Card, Row, Text, Button, Spacer, Link, Tooltip, Checkbox, Col, Grid} from "@nextui-org/react"
-import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
+import { GiCancel } from 'react-icons/gi'
 
 import { useRouter } from 'next/router'
-import { useState } from "react"
+import { Dispatch, useState, SetStateAction } from "react"
 import { OrderDetail, Prisma } from "@prisma/client"
 import { useSession } from "next-auth/react"
 
@@ -12,18 +12,35 @@ const cartWithMenu = Prisma.validator<Prisma.CartArgs>()({
      }
 })
 
-export type CartCardProps = Prisma.CartGetPayload<typeof cartWithMenu>
+export type CartCardType = Prisma.CartGetPayload<typeof cartWithMenu>
 
-export default (cart: CartCardProps) => {
+export type CartCardComponentProps = {
+    cartCard: CartCardType,
+    onChangeCartItem: Dispatch<SetStateAction<CartCardType>>
+}
+
+export default ({ cartCard, onChangeCartItem }: CartCardComponentProps) => {
     const router = useRouter()
     const session = useSession()
+
+    const plus = () => {
+        cartCard.count += 1
+        onChangeCartItem(cartCard)
+    }
+
+    const minus = () => {
+        if(cartCard.count>1){
+            cartCard.count -= 1
+            onChangeCartItem(cartCard)
+        }
+        else {alert("1이하 하지마!!!")}
+    }
 
     return (
         <Card variant="flat">
             <Card.Header>
-
                 <Row justify="flex-end">
-                    <Button icon={<></>}>
+                    <Button auto light color="error" icon={<GiCancel fill="currentColor" />}>
                     </Button>
                 </Row>
             </Card.Header>
@@ -32,7 +49,7 @@ export default (cart: CartCardProps) => {
                     <Spacer y={0.5} />
         
                     <Card.Image
-                        src={cart.menu.image ?? "https://source.unsplash.com/random/600x600/?food"}
+                        src={cartCard.menu.image ?? "https://source.unsplash.com/random/600x600/?food"}
                         objectFit="fill"
                         width={150}
                         height={100}
@@ -42,14 +59,17 @@ export default (cart: CartCardProps) => {
                     <Spacer y={0.5} />
 
                     <Col>
-                        <Text size="x-large">{cart.menu.name}</Text>
-                        {/* TODO: 나중에 money 단위 설정*/}
-                        <Text h3>{cart.menu.price * cart.count} 원</Text>
+                        <Text size="x-large">{cartCard.menu.name}</Text>
+                        <Text h3>{(cartCard.menu.price * cartCard.count).toLocaleString()} 원</Text>
                     </Col>
                 </Row>
             </Card.Body>
             <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
-                {/*+- 갯수 버튼 만들기*/}
+                <Row justify="flex-end">
+                    <Button auto onClick={minus}>-</Button>
+                    <Text>{cartCard.count}</Text>
+                    <Button auto onClick={plus}>+</Button>
+                </Row>
             </Card.Footer>
         </Card>
     )
