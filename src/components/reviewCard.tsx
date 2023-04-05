@@ -17,7 +17,7 @@ const reviewWithOrder = Prisma.validator<Prisma.ReviewArgs>()({
             include: {
                 store: true,
                 user: true,
-                orderDetail: {
+                orderDetails: {
                     include: { menu: true }
                 }
             }
@@ -45,7 +45,7 @@ export default (review: ReviewCardProps) => {
             credentials: 'include',
 
             body: JSON.stringify({
-                menu: review.order.orderDetail
+                menu: review.order.orderDetails
             })
         })
 
@@ -137,7 +137,7 @@ export default (review: ReviewCardProps) => {
                     <Spacer y={0.5} />
 
                     <CardFooterTitle>주문한 메뉴</CardFooterTitle>
-                    {review.order.orderDetail?.map((item) => (
+                    {review.order.orderDetails?.map((item) => (
                         <Text css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
                             - {item.menu.name} &times; {item.count}<br />
                         </Text>

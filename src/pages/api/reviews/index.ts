@@ -17,7 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                         include: {
                             store: true,
                             user: true, 
-                            orderDetail: {
+                            orderDetails: {
                                 include: {menu: true}
                             }
                         }
@@ -25,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 },
                 orderBy: [
                     {
-                    createTime: 'desc'
+                        order: { userId: 'desc' }
                     },
                     {
                         rating: 'desc'
