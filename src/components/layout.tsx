@@ -20,7 +20,7 @@ export default ({ children }: LayoutProps) => {
     return (
         <main>
             <Navbar title="리뷰오더" menu={menu} activeColor="primary">
-                <ShoppingCartButton />
+                <ShoppingCartButton count={0} />
                 <NavbarThemeButton />
                 <NavbarUserButton />
             </Navbar>
