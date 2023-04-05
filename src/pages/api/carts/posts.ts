@@ -39,7 +39,6 @@ export default (async (req: NextApiRequest, res: NextApiResponse) => {
 
         // CREATE (reviewCard에 개시된 메뉴들을 장바구니로 추가)
         case "POST":
-            
             await prisma.cart.deleteMany({
                 where: { user: {id: userId}}
             })
@@ -58,6 +57,9 @@ export default (async (req: NextApiRequest, res: NextApiResponse) => {
                 }))
             })   
             )
+
+            // TODO
+            res.status(200).json({ success: 1 })
 
             break
 
