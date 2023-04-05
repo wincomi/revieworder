@@ -151,7 +151,7 @@ model Store {
   menus Menu[]
 
   // 매장에서 판매된 주문내역들
-  order Order[]
+  orders Order[]
 
 }
 
@@ -184,7 +184,7 @@ model Menu {
   @@index([storeId])
 
   // 주문상세 메뉴들
-  orderDetail OrderDetail[]
+  orderDetails OrderDetail[]
 
   // 장바구니에 추가된 메뉴들
   carts Cart[]
@@ -218,11 +218,11 @@ model Order {
 
   status OrderStatus @default(REQUESTED)
 
-  orderDetail OrderDetail[]
+  orderDetails OrderDetail[]
 
   // 리뷰에 개시된 주문들
   // 리뷰랑 주문이랑 1:1 or 1:0 관계
-  reviews Review?
+  review Review?
 }
 
 enum OrderStatus {
