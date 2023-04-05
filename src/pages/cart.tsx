@@ -1,12 +1,11 @@
 import Layout from "@/components/layout"
-import { Button, Grid, Row, Col, Text, Card, Spacer } from '@nextui-org/react'
+import { Button, Grid, Row, Text, Card, Spacer } from '@nextui-org/react'
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/react"
-import { Key, useState } from "react"
+import { Key, SetStateAction, useState } from "react"
 
-import CartCard, { CartCardType, CartCardComponentProps } from '@/components/cartCard'
+import CartCard, { CartCardType } from '@/components/cartCard'
 
-import { TbPigMoney } from 'react-icons/tb'
 import { useRouter } from "next/router"
 import { FaRegCreditCard } from "react-icons/fa"
 
@@ -14,20 +13,20 @@ interface CartPageProps {
     cartCards: CartCardType[]
 }
 
-export default function Cart({ cartCards }: CartPageProps) {
+export default function CartPage({ cartCards }: CartPageProps) {
     const session = useSession()
     const router = useRouter()
     const [cartItems, setCartItems] = useState(cartCards)
     const [totalPrice, setTotalPrice] = useState(0)
 
-    const setCardItem = (data, index: Key)=> {
+    const setCardItem = (data: SetStateAction<CartCardType>, index: Key)=> {
         const updateCart = cartItems.map((item, idx) =>{
             if(idx === index) {
                 return data
             }
             else return item
         })
-        setCartItems(updateCart)
+        setCartItems(Object.assign(updateCart))
     }
 
     // TODO: 나중에 장바구니 담긴 거 없을 때 default 화면 정해야함?
@@ -67,7 +66,7 @@ export default function Cart({ cartCards }: CartPageProps) {
                         <Card.Divider />
                         <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
                             <div style={{ width: '100%' }}>
-                                <Text h2 style={{textAlign: 'right'}}>{totalPrice}원</Text>
+                                <Text h2 style={{textAlign: 'right'}}>{(totalPrice).toLocaleString()}원</Text>
                                 <Button color="gradient" css={{ width: '100%' }} icon={<FaRegCreditCard />}>주문하기</Button>
                             </div>
                         </Card.Footer>
