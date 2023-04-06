@@ -55,8 +55,8 @@ export default function CartPage({ cartCards }: CartPageProps) {
                             {cartItems.map((item: CartCardType, index: Key) => (
                                 <>
                                 <Row justify="space-between">
-                                    <Text>{item.menu.name} x {item.count}</Text>
-                                    <Text>{(item.menu.price * item.count).toLocaleString()}</Text>
+                                    <Text>{item.menu.name} x {item.amount}</Text>
+                                    <Text>{(item.menu.price * item.amount).toLocaleString()}</Text>
                                 </Row>
                                 <Spacer y={0.2} />
                                 </>

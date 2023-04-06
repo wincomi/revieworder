@@ -62,7 +62,7 @@ export default (async (req: NextApiRequest, res: NextApiResponse) => {
                     const input: Prisma.CartCreateManyInput = {
                         userId: userId,
                         menuId: orderDetail.menuId,
-                        count: orderDetail.count
+                        amount: orderDetail.amount
                     }
                     return input
                 }),

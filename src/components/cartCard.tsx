@@ -24,16 +24,18 @@ export default ({ cartCard, onChangeCartItem }: CartCardComponentProps) => {
     const session = useSession()
 
     const plus = () => {
-        cartCard.count += 1
+        cartCard.amount += 1
         onChangeCartItem(cartCard)
     }
 
     const minus = () => {
-        if(cartCard.count>1){
-            cartCard.count -= 1
+        if(cartCard.amount > 1){
+            cartCard.amount -= 1
             onChangeCartItem(cartCard)
         }
-        else {alert("1이하 하지마!!!")}
+        else {
+            alert("1개 미만으로 변경할 수 없습니다.")
+        }
     }
 
     return (
@@ -59,14 +61,14 @@ export default ({ cartCard, onChangeCartItem }: CartCardComponentProps) => {
 
                     <Col>
                         <Text size="x-large">{cartCard.menu.name}</Text>
-                        <Text h3>{(cartCard.menu.price * cartCard.count).toLocaleString()} 원</Text>
+                        <Text h3>{(cartCard.menu.price * cartCard.amount).toLocaleString()} 원</Text>
                     </Col>
                 </Row>
             </Card.Body>
             <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
                 <Row justify="flex-end">
                     <Button auto flat onClick={minus} icon={<FaMinus />}></Button>
-                    <Text>{cartCard.count}</Text>
+                    <Text>{cartCard.amount}</Text>
                     <Button auto flat onClick={plus} icon={<FaPlus />}></Button>
                     <Button auto flat color="error" icon={<FaTimes fill="currentColor" />}></Button>
                 </Row>

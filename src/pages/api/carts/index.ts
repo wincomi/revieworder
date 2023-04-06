@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             const createResult = await prisma.cart.create({
                 // 장바구니 수량 및 유저,메뉴 외래키
                 data: {
-                    count: req.body.count,
+                    amount: req.body.amount,
                     // 외래키
                     user: { connect: {
                         id: req.body.userId

@@ -270,7 +270,10 @@ model Cart {
   @@index([menuId])
 
   // 주문 수량
-  count Int
+  amount Int
+
+  // 장바구니 추가 시간
+  regdate DateTime @default(now())
 }
 
 model Review {

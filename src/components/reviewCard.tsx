@@ -139,7 +139,7 @@ export default (review: ReviewCardProps) => {
                     <CardFooterTitle>주문한 메뉴</CardFooterTitle>
                     {review.order.orderDetails?.map((item) => (
                         <Text css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
-                            - {item.menu.name} &times; {item.count}<br />
+                            - {item.menu.name} &times; {item.amount}<br />
                         </Text>
                     ))}
                     <Spacer y={0.5} />
