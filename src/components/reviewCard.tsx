@@ -29,14 +29,13 @@ export type ReviewCardProps = Prisma.ReviewGetPayload<typeof reviewWithOrder>
 
 export default (review: ReviewCardProps) => {
     const router = useRouter()
-    const session = useSession()
     const [favorite, setFavorite] = useState(review.favorite)
     const [isAddingToCart, setIsAddingToCart] = useState(false)
 
     const addToCart = async () => {
         setIsAddingToCart(true)
 
-        const result = await fetch(`api/carts/posts`, {
+        const result = await fetch(`api/carts`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -45,7 +44,7 @@ export default (review: ReviewCardProps) => {
             credentials: 'include',
 
             body: JSON.stringify({
-                menu: review.order.orderDetails
+                order_details: review.order.orderDetails
             })
         })
 
@@ -137,9 +136,9 @@ export default (review: ReviewCardProps) => {
                     <Spacer y={0.5} />
 
                     <CardFooterTitle>주문한 메뉴</CardFooterTitle>
-                    {review.order.orderDetails?.map((item) => (
+                    {review.order.orderDetails?.map((orderDetail) => (
                         <Text css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
-                            - {item.menu.name} &times; {item.amount}<br />
+                            - {orderDetail.menu.name} &times; {orderDetail.count}<br />
                         </Text>
                     ))}
                     <Spacer y={0.5} />
