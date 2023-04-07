@@ -1,13 +1,23 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from "@/libs/prismadb"
-import { Prisma, OrderDetail } from '@prisma/client'
+import { Prisma, OrderDetail, Cart, Menu } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
 // API Request 타입 지정
 export interface CartAPIRequest extends NextApiRequest {
     body: {
+        // order_detail인 이유는 리뷰페이지 장바구니로
         order_details?: OrderDetail[] // POST에서 사용
+
+        // 가게페이지에서 메뉴 장바구니로
+        meun?: Menu
+
+        // 자동 Update용 carts
+        carts?: Cart[]
+
+        // 개별 삭제용
+        cart?: Cart
     }
 }
 
@@ -68,46 +78,121 @@ export default (async (req: CartAPIRequest, res: NextApiResponse) => {
             }
             break
 
-        // CREATE (reviewCard에 개시된 메뉴들을 장바구니로 추가)
+
+        // CREATE 
+        // 리뷰페이지에서 담으면 orderDetails로 
+        // 가게 메뉴페이지에서 담으면 menu 참조. 이때 장바구니에 담기는 메뉴는 amount 1로 고정, 나중에 고객이 수정.
         case "POST":
             const orderDetails = req.body.order_details
+            const menu = req.body.meun
 
-            if (orderDetails == undefined || orderDetails.length == 0) {
+            // orderDetails가 오면
+            if (orderDetails != null || orderDetails != undefined){
+                // 장바구니 초기화 후
+                await prisma.cart.deleteMany({ where: { user: { id: userId }} })
+
+                // 장바구니 테이블에 데이터들을 생성
+                const createResult = await prisma.cart.createMany({
+                    data: orderDetails.map((orderDetail) => {
+                        const input: Prisma.CartCreateManyInput = {
+                            userId: userId,
+                            menuId: orderDetail.menuId,
+                            amount: orderDetail.amount
+                        }
+                        return input
+                    }),
+                    skipDuplicates: true
+                })
+
+                res.status(200).json({
+                    data: createResult
+                })
+
+            // menu가 오면
+            } else if (menu != null || menu != undefined) {
+                const createResult = await prisma.cart.create({
+                    data: {
+                        user: { connect: { id: userId }},
+                        menu: { connect: { id: menu.id }}
+                    }
+                })
+
+                res.status(200).json({
+                    data: createResult
+                })
+
+            // 둘 다 안 오면
+            } else {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "menu 값은 필수입니다."
+                        message: "필요(orderDetail or menu) 값은 필수입니다."
                     }
                 })
                 return
             }
 
-            // 장바구니 초기화 후
-            await prisma.cart.deleteMany({ where: { user: { id: userId }} })
+            break
 
-            // 장바구니 테이블에 데이터들을 생성
-            const createResult = await prisma.cart.createMany({
-                data: orderDetails.map((orderDetail) => {
-                    const input: Prisma.CartCreateManyInput = {
-                        userId: userId,
-                        menuId: orderDetail.menuId,
-                        amount: orderDetail.count
+        // PUT 수정 시 전체 업데이트
+        case "PUT":
+            const carts = req.body.carts
+
+                if (carts == undefined || carts.length == 0) {
+                    res.status(400).json({
+                        error: {
+                            code: 400,
+                            message: "cart 값은 필수입니다."
+                        }
+                    })
+                    return
+                }
+
+                // updateMany 하려다 실패..
+
+                // const putResult = await prisma.cart.updateMany({
+                //     data: carts.map((cart) => {
+                //         const input: Prisma.CartUpdateManyWithWhereWithoutUserInput = {
+                //             where: { id: cart.id },
+                //             data: { amount: cart.amount }
+                //         }
+                //         return input
+                //     }),
+                // })
+
+                carts.map(async (cart) => {
+                    const input: Prisma.CartUpdateManyWithWhereWithoutUserInput = {
+                        where: { id: cart.id },
+                        data: { amount: cart.amount }
                     }
-                    return input
-                }),
-                skipDuplicates: true
-            })
 
-            res.status(200).json({
-                data: createResult
-            })
+                    const putResult = await prisma.cart.updateMany(input)
+
+                    res.status(200).json({
+                        data: putResult
+                    })
+                })
 
             break
 
-        // DELETE (userId에 해당하는 장바구니 다 삭제 -> 초기화)
+        // DELETE (cartId로 개별 삭제)
         case "DELETE":
-            const deleteResult = await prisma.cart.deleteMany({ where: { user: { id: userId }} })
+            const cart = req.body.cart
 
+            if (cart == undefined || cart == null) {
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: "cart 값은 필수입니다."
+                    }
+                })
+                return
+            }
+
+            const deleteResult = await prisma.cart.delete({
+                where: { id: cart.id }
+            })
+        
             res.status(200).json({ 
                 data: deleteResult 
             })
