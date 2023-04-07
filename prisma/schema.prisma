@@ -248,7 +248,7 @@ model OrderDetail {
   @@index([menuId])
 
   // 수량
-  count Int
+  amount Int
 
   // 가격
   price Int
@@ -270,7 +270,7 @@ model Cart {
   @@index([menuId])
 
   // 주문 수량
-  amount Int
+  amount Int @default(1)
 
   // 장바구니 추가 시간
   regdate DateTime @default(now())
