@@ -3,6 +3,7 @@ import { FaMinus, FaPlus, FaTimes } from "react-icons/fa"
 
 import { Dispatch, SetStateAction } from "react"
 import { CartItem } from "@/pages/api/carts"
+import router from "next/router"
 
 export type CartCardProps = {
     cartItem: CartItem,
@@ -22,6 +23,22 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
         } else {
             alert("1개 미만으로 변경할 수 없습니다.")
         }
+    }
+
+    const del = async() => {
+        const result = await fetch(`api/carts/`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            // session의 쿠키를 보내는데 req가 없으면 필요
+            credentials: 'include',
+
+            body: JSON.stringify({
+                cart: cartItem
+            })
+        })
+        // refresh 필요
     }
 
     return (
@@ -56,7 +73,7 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
                     <Button auto flat onClick={minus} icon={<FaMinus />}></Button>
                     <Text>{cartItem.amount}</Text>
                     <Button auto flat onClick={plus} icon={<FaPlus />}></Button>
-                    <Button auto flat color="error" icon={<FaTimes fill="currentColor" />}></Button>
+                    <Button auto flat onClick={del} color="error" icon={<FaTimes fill="currentColor" />}></Button>
                 </Row>
             </Card.Footer>
         </Card>
