@@ -3,7 +3,7 @@ import { Button, Grid, Row, Text, Card, Spacer } from '@nextui-org/react'
 import { FaRegCreditCard } from "react-icons/fa"
 
 import { GetServerSideProps } from "next"
-import { Key, SetStateAction, useState } from "react"
+import { Key, SetStateAction, useEffect, useState } from "react"
 
 import CartCard from '@/components/cartCard'
 import { CartAPIGETResponse, CartItem } from "./api/carts"
@@ -13,6 +13,7 @@ interface CartPageProps {
 }
 
 export default function CartPage({ carts }: CartPageProps) {
+
     const getTotalPrice = (cartItems: CartItem[]) => {
         return cartItems.reduce((totalPrice, item) => {
             return totalPrice + item.menu.price * item.amount
@@ -34,6 +35,25 @@ export default function CartPage({ carts }: CartPageProps) {
 
         setTotalPrice(getTotalPrice(cartItems))
     }
+
+    // 값(amount) 변경 시 자동 업데이트 
+    useEffect(() => {
+        const result = async() => {
+            await fetch(`api/carts/`, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                // session의 쿠키를 보내는데 req가 없으면 필요
+                credentials: 'include',
+
+                body: JSON.stringify({
+                    carts: cartItems
+                })
+            })
+        }
+        result()
+    },[cartItems])
 
     if (cartItems.length == 0) {
         return (
