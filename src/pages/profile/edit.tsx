@@ -3,33 +3,21 @@ import { Button, Text, Spacer, Input, Card, Loading, Textarea } from "@nextui-or
 import Layout from '@/components/layout'
 import { TbPigMoney } from 'react-icons/tb'
 
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../api/auth/[...nextauth]'
 import { GetServerSideProps } from 'next'
-import { User } from '@prisma/client'
 import { getAccountProviders } from '@/libs/users'
 import { FaPencilAlt } from 'react-icons/fa'
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { UserAPIGETResponse, UserInfo } from '../api/users'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
-    user?: User,
+    user: UserInfo,
 
     /// 연결된 SNS 계정 종류
-    accountProviders?: string[]
+    accountProviders: string[]
 }
 
-// 알러지 칸 추가
-
 export default function profileEdit ({ user, accountProviders }: ProfileEditPageProps) {
-    // input 폼에서 바뀌는 value(값)들을 저장하는데 쓴다.
-    const [update, setUpdate] = useState({
-        name: '',
-        email: '',
-        tel: '',
-        allergy: '',
-    })
 
     // input default 값들
     const [placeholder, setPlaceHolder] = useState({
@@ -41,32 +29,25 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
 
     // 저장 중
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
+    const [userInfo, setUserInfo] = useState(user)
 
     // 회원정보 수정
     const edit = async () => {
         setIsLoadingUpdate(true)
 
-        // 세션에서 유저 ID 받아온다.
-        const userId = user?.id
-        const result = await fetch(`/api/users/${userId}`, {
+        const result = await fetch(`/api/users/`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
+            // session의 쿠키를 보내는데 req가 없으면 필요
+            credentials: 'include',
+
             body: JSON.stringify({
-                // 보내줘야할 body.데이터들
-                name: update.name != '' ? update.name : null,
-                email: update.email != '' ? update.email : null,
-                phoneNumber: update.tel != '' ? update.tel : null,
-                allergy: update.allergy != '' ? update.allergy : null,   
-                // 수정 안 해도 되는 것들
-                //password: null,
-                //image: null,
-                //emailVerified: null
+                user: userInfo
             })
         })
 
-        // const json = await result.json()
         if (result.status == 200) {
             alert("저장되었습니다.")
         } else {
@@ -84,109 +65,106 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
 
             // 전화번호 value 값 저장 -- 124 주석 참고
             // 나중에 hyPhen 처리 수정 필요 !! (01056490485를 -삽입 및 제거 필요 - 현재는 타이핑때만 작동)
-            setUpdate({ ...update, tel: e.currentTarget.value })
+            setUserInfo({ ...userInfo, phoneNumber: e.currentTarget.value })
     }
 
-    if (user == null) {
+    if (userInfo == null) {
         return <></>
-    }
+    } else {
+        return (
+            <>
+                <Head>
+                    <title>마이페이지</title>
+                </Head>
+                <Layout>
+                    <Text h1>회원정보 수정</Text>
+                    {accountProviders &&
+                        <Card css={{mb: '$12', $$cardColor: '$colors$gradient' }}>
+                            <Card.Body>
+                                <Text b color="white">현재 계정이 {accountProviders[0].toLocaleUpperCase()}(으)로 연결되어있습니다.</Text>
+                            </Card.Body>
+                        </Card>
+                    }
 
-    return (
-        <>
-            <Head>
-                <title>마이페이지</title>
-            </Head>
-            <Layout>
-                <Text h1>회원정보 수정</Text>
-                {accountProviders &&
-                    <Card css={{mb: '$12', $$cardColor: '$colors$gradient' }}>
+                    <Card variant="flat">
                         <Card.Body>
-                            <Text b color="white">현재 계정이 {accountProviders[0].toLocaleUpperCase()}(으)로 연결되어있습니다.</Text>
+                            <Text b>리뷰오더 머니</Text>
+                            <Text h3 css={{mb: 0}}>{userInfo.money.toLocaleString()} 원</Text>
+                            <Button flat auto color="warning" size="sm" css={{mt: 8, ml: 'auto'}} icon={<TbPigMoney />}>충전</Button>
                         </Card.Body>
                     </Card>
-                }
+                    <Spacer />
+                    <form>
+                        <fieldset disabled={isLoadingUpdate} style={{margin: 0, padding: 0, borderWidth: '0'}}>
+                            <Input 
+                                type="text"
+                                name="name"
+                                label="이름"
+                                placeholder={placeholder.name}
+                                initialValue={userInfo.name ?? undefined} 
+                                shadow={false}
+                                fullWidth={true}
+                                helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
+                                onChange={(e)=>setUserInfo({ ...userInfo, name: e.currentTarget.value })}
+                                />
+                            <Spacer y={2} />
+                            <Input 
+                                type="email" 
+                                label="이메일"
+                                placeholder={placeholder.email}
+                                initialValue={userInfo.email ?? undefined} 
+                                shadow={false}
+                                fullWidth={true}
+                                onChange={(e)=>setUserInfo({ ...userInfo, email: e.currentTarget.value })}
+                                />
+                            <Spacer y={2} />
+                            <Input 
+                                type="tel" 
+                                label="휴대폰 번호"
+                                placeholder={placeholder.tel}
+                                initialValue={userInfo.phoneNumber ?? undefined} 
+                                shadow={false}
+                                fullWidth={true}
 
-                <Card variant="flat">
-                    <Card.Body>
-                        <Text b>리뷰오더 머니</Text>
-                        <Text h3 css={{mb: 0}}>{user.money.toLocaleString()} 원</Text>
-                        <Button flat auto color="warning" size="sm" css={{mt: 8, ml: 'auto'}} icon={<TbPigMoney />}>충전</Button>
-                    </Card.Body>
-                </Card>
-                <Spacer />
-                <form>
-                    <fieldset disabled={isLoadingUpdate} style={{margin: 0, padding: 0, borderWidth: '0'}}>
-                        <Input 
-                            type="text"
-                            name="name"
-                            label="이름"
-                            placeholder={placeholder.name}
-                            initialValue={user.name ?? undefined} 
-                            shadow={false}
-                            fullWidth={true}
-                            helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
-                            onChange={(e) => setUpdate({ ...update, name: e.target.value })}
+                                // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
+                                onChange={autoHyphen}
+                                />
+                            <Spacer y={2} />
+                            <Textarea
+                                // 초기 TextArea 크기 ex) 5줄
+                                rows={5}
+
+                                label="전달사항"
+                                placeholder={placeholder.allergy}
+                                initialValue={userInfo.allergy ?? undefined}
+                                shadow={false}
+                                fullWidth={true}
+                                onChange={(e)=>setUserInfo({ ...userInfo, allergy: e.currentTarget.value })}
                             />
-                        <Spacer y={2} />
-                        <Input 
-                            type="email" 
-                            label="이메일"
-                            placeholder={placeholder.email}
-                            initialValue={user.email ?? undefined} 
-                            shadow={false}
-                            fullWidth={true}
-                            onChange={(e) => setUpdate({ ...update, email: e.target.value })}
-                            />
-                        <Spacer y={2} />
-                        <Input 
-                            type="tel" 
-                            label="휴대폰 번호"
-                            placeholder={placeholder.tel}
-                            initialValue={user.phoneNumber ?? undefined} 
-                            shadow={false}
-                            fullWidth={true}
-
-                            // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
-                            onChange={autoHyphen}
-                            />
-                        <Spacer y={2} />
-                        <Textarea
-                            // 초기 TextArea 크기 ex) 5줄
-                            rows={5}
-
-                            label="전달사항"
-                            placeholder={placeholder.allergy}
-                            initialValue={user.allergy ?? undefined}
-                            shadow={false}
-                            fullWidth={true}
-
-                            onChange={(e) => setUpdate({ ...update, allergy: e.target.value })} 
-                        />
-                        <Spacer y={2} />
-                        <Button flat onPress={() => edit()} css={{ml: 'auto'}} icon={!isLoadingUpdate && <FaPencilAlt />} disabled={isLoadingUpdate}>
-                            {isLoadingUpdate ? <Loading type="points-opacity" color="currentColor" size="sm" /> : <>저장</>}
-                        </Button>
-                    </fieldset>
-                </form>
-            </Layout>
-        </>
-    )
+                            <Spacer y={2} />
+                            <Button flat onPress={() => edit()} css={{ml: 'auto'}} icon={!isLoadingUpdate && <FaPencilAlt />} disabled={isLoadingUpdate}>
+                                {isLoadingUpdate ? <Loading type="points-opacity" color="currentColor" size="sm" /> : <>저장</>}
+                            </Button>
+                        </fieldset>
+                    </form>
+                </Layout>
+            </>
+        )
+    }
 }
 
-export const getServerSideProps: GetServerSideProps<ProfileEditPageProps> = async ({ req, res }) => {
-    // getServerSideProps에서 getSession이 작동 안 되기에 getServerSession 사용
-    const session = await getServerSession(req, res, authOptions)
-  
-    const userId = session?.user.id
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/users/`,{
+        method: "GET",
+        headers: {
+            // session의 쿠키 전달
+            cookie: req.headers.cookie || "",
+        }
+    })
 
-    if (userId == undefined) {
-        return { props: { } }
-    }
-
-    const accountProviders = await getAccountProviders(userId)
-    
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/users/${userId}`)
-    const user = await result.json().then(data => data as User) // any to User
+    const response = await result.json().then(data => data as UserAPIGETResponse) // any to User
+    const user = response.data
+    const accountProviders = await getAccountProviders(user.id)
 
     return {
         props: { 
