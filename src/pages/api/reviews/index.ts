@@ -82,7 +82,12 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
 
             } else {
                 const readResult = await prisma.review.findMany({
-                    where: { content: { contains: search }},
+                    where: { 
+                        OR: [
+                            { content: { contains: search }},
+                            { order: { store: { name: { contains: search }}}}
+                        ]
+                    },
                     include: { 
                         order: {
                             include: {
