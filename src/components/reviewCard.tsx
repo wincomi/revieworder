@@ -1,33 +1,14 @@
 import { useRouter } from 'next/router'
 import { ReactNode, useState } from "react"
-import { Prisma } from "@prisma/client"
-import { useSession } from "next-auth/react"
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
-import { User, Card, Row, Text, Button, Spacer, Link, Tooltip, Loading } from "@nextui-org/react"
+import { User, Card, Row, Text, Button, Spacer, Tooltip, Loading } from "@nextui-org/react"
 import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
+import Link from 'next/link'
+import { ReviewItem } from '@/pages/api/reviews'
 
-// review에 연결된 order에서 store, user, orderDetail을 다시 orderDetail에서 menu정보를 불러온다
-// 결론: review에 연결된 모든 테이블 조회 가능
-// + 나중에 타입들 모아서 라이브러리화 생각 중.
-const reviewWithOrder = Prisma.validator<Prisma.ReviewArgs>()({
-    include: { 
-        order: {
-            include: {
-                store: true,
-                user: true,
-                orderDetails: {
-                    include: { menu: true }
-                }
-            }
-        }
-     }
-})
-
-export type ReviewCardProps = Prisma.ReviewGetPayload<typeof reviewWithOrder>
-
-export default (review: ReviewCardProps) => {
+export default (review: ReviewItem) => {
     const router = useRouter()
     const [favorite, setFavorite] = useState(review.favorite)
     const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -121,9 +102,13 @@ export default (review: ReviewCardProps) => {
                     <Spacer y={0.5} />
 
                     <div style={{ alignSelf: 'stretch' }}>
-                        {review.content.split(" ").map((str) => {
+                        {/* 여기 주석 이전 것 DB에 뛰어쓰기 없으면 이거 사용 */}
+                        {/*{review.content.split(" ").map((str) => { */}
+                        {review.content.split("#").map((str) => {
+                            if (str != '') str = "#" + str
                             if (str.startsWith("#")) {
-                                return <><Link href="#">{str}</Link> </>
+                                // return <><Link href="#">{str}</Link> </>
+                                return <><Link href={{pathname:`/`, query: {search: `${str.replace('#','')}`}}}>{str}</Link> </>
                             }
                             return str + " "
                         })}

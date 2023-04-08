@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import ReviewCard, { ReviewCardProps } from '@/components/reviewCard'
+import router, { useRouter } from 'next/router'
+import ReviewCard from '@/components/reviewCard'
 import { GetServerSideProps } from 'next/types'
 import { Key } from 'react'
 
@@ -8,15 +8,16 @@ import Head from 'next/head'
 import Layout from '@/components/layout'
 import { Button, Grid, Input, Spacer, Text } from '@nextui-org/react'
 import { HiSearch } from 'react-icons/hi'
+import { ReviewAPIGETResponse, ReviewItem } from './api/reviews'
 
-interface ReviewProps {
-    reviewCards: ReviewCardProps[]
+interface ReviewPageProps {
+    reviewCards: ReviewItem[]
 }
 
-export default function Home({ reviewCards }: ReviewProps) {
+export default function Home({ reviewCards }: ReviewPageProps) {
     const session = useSession()
     const router = useRouter()
-    
+
     return (
         <>        
             <Head>
@@ -33,6 +34,7 @@ export default function Home({ reviewCards }: ReviewProps) {
                         placeholder="검색"
                         contentLeft={<HiSearch />}
                         fullWidth={true}
+
                     />
                     </Grid>
                     <Grid css={{ml: '$4'}}>
@@ -40,7 +42,7 @@ export default function Home({ reviewCards }: ReviewProps) {
                     </Grid>
                 </Grid.Container>
                 <Grid.Container gap={2} alignItems="stretch" css={{px: 0}}>
-                    {reviewCards.map((item: ReviewCardProps, index: Key) => (
+                    {reviewCards.map((item: ReviewItem, index: Key) => (
                         <Grid xs={12} sm={6} lg={4}>
                             <ReviewCard {...item} key={index} />
                         </Grid>
@@ -51,11 +53,16 @@ export default function Home({ reviewCards }: ReviewProps) {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews`, { method: "GET" })
-    const reviewCards = await result.json().then(data => data as ReviewCardProps) // any to ReviewCardProps
+export const getServerSideProps: GetServerSideProps = async ( context ) => {
+    // 검색 쿼리
+    const search = context.query.search ?? ""
+
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews?search=${search}`, { method: "GET" })
+    const response = await result.json().then(data => data as ReviewAPIGETResponse) // any to ReviewCardProps
+
+    const reviewCards = response.data
 
     return {
-        props: { reviewCards } 
+        props: { reviewCards }
     }
 }
