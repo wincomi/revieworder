@@ -11,7 +11,7 @@ export interface CartAPIRequest extends NextApiRequest {
         order_details?: OrderDetail[] // POST에서 사용
 
         // 가게페이지에서 메뉴 장바구니로
-        meun?: Menu
+        menu?: Menu
 
         // 자동 Update용 carts
         carts?: Cart[]
@@ -84,7 +84,7 @@ export default (async (req: CartAPIRequest, res: NextApiResponse) => {
         // 가게 메뉴페이지에서 담으면 menu 참조. 이때 장바구니에 담기는 메뉴는 amount 1로 고정, 나중에 고객이 수정.
         case "POST":
             const orderDetails = req.body.order_details
-            const menu = req.body.meun
+            const menu = req.body.menu
 
             // orderDetails가 오면
             if (orderDetails != null || orderDetails != undefined){
