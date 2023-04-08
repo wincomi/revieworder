@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react'
 import router, { useRouter } from 'next/router'
 import ReviewCard from '@/components/reviewCard'
 import { GetServerSideProps } from 'next/types'
-import { Key } from 'react'
+import { Key, useState } from 'react'
 
 import Head from 'next/head'
 import Layout from '@/components/layout'
@@ -17,6 +17,12 @@ interface ReviewPageProps {
 export default function Home({ reviewCards }: ReviewPageProps) {
     const session = useSession()
     const router = useRouter()
+
+    const [search, setSearch] = useState('')
+
+    const exeSearch = () => {
+        router.push(`/?search=${search}`)
+    }
 
     return (
         <>        
@@ -34,11 +40,11 @@ export default function Home({ reviewCards }: ReviewPageProps) {
                         placeholder="검색"
                         contentLeft={<HiSearch />}
                         fullWidth={true}
-
+                        onChange={(e)=>setSearch(e.currentTarget.value)}
                     />
                     </Grid>
                     <Grid css={{ml: '$4'}}>
-                        <Button auto flat css={{h: '100%'}} icon={<HiSearch />}>검색</Button>
+                        <Button auto flat css={{h: '100%'}} icon={<HiSearch />} onPress={exeSearch}>검색</Button>
                     </Grid>
                 </Grid.Container>
                 <Grid.Container gap={2} alignItems="stretch" css={{px: 0}}>
