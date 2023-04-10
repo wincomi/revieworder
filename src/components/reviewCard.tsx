@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { ReactNode, useState } from "react"
+import { Dispatch, ReactNode, SetStateAction, useState } from "react"
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -8,7 +8,12 @@ import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
 import Link from 'next/link'
 import { ReviewItem } from '@/pages/api/reviews'
 
-export default (review: ReviewItem) => {
+export type ReviewCardProps = {
+    review: ReviewItem,
+    onChangeQuery: Dispatch<SetStateAction<string>>
+}
+
+export default ({ review, onChangeQuery }: ReviewCardProps) => {
     const router = useRouter()
     const [favorite, setFavorite] = useState(review.favorite)
     const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -108,7 +113,7 @@ export default (review: ReviewItem) => {
                             if (str != '') str = "#" + str
                             if (str.startsWith("#")) {
                                 // return <><Link href="#">{str}</Link> </>
-                                return <><Link href={{pathname:`/`, query: {search: `${str.replace('#','')}`}}}>{str}</Link> </>
+                                return <><Link onClick={(e)=> onChangeQuery(e.currentTarget.text.replace('#',''))} href={{pathname:`/`, query: {search: `${str.replace('#','')}`}}}>{str}</Link> </>
                             }
                             return str + " "
                         })}

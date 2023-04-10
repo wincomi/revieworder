@@ -33,7 +33,7 @@ export type ReviewAPIGETResponse = {
 // 모든 리뷰 조회 및 등록 API
 export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
-    const search = req.query.search as string | undefined
+    const query = req.query.q as string | undefined
 
     // API method에 따라 작동
     switch (req.method) {
@@ -41,7 +41,7 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
         // GET (모든 리뷰 조회)
         case "GET":
             // 검색 쿼리 없으면 모두 출력
-            if (search ==""){
+            if (query ==""){
 
                 const readResult = await prisma.review.findMany({
                     include: { 
@@ -84,8 +84,8 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                 const readResult = await prisma.review.findMany({
                     where: { 
                         OR: [
-                            { content: { contains: search }},
-                            { order: { store: { name: { contains: search }}}}
+                            { content: { contains: query }},
+                            { order: { store: { name: { contains: query }}}}
                         ]
                     },
                     include: { 
