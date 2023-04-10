@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from "@/libs/prismadb"
-import { Prisma, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
@@ -12,20 +12,18 @@ export interface UserAPIRequest extends NextApiRequest {
         /// 현재 세션의 유저 정보
         // 수정, 삭제 같은 경우 다른 정보도 받아와야해서 셰션 대신 타입 지정 
         user?: User,
-
     }
 }
 
-export type UserInfo = User
-
 export type UserAPIGETResponse = {
-    data: UserInfo,
+    // TODO: password 컬럼도 포함되어 있음
+    data: User
 }
 
 // 모든 유저 조회 및 등록 API
 export default async (req: UserAPIRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
-    
+
     // 세션이 존재하는지 확인
     if (session == null) {
         res.status(401).json({
