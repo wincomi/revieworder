@@ -18,11 +18,14 @@ const {
   NEXTAUTH_KAKAO_ID: KAKAO_ID,
   NEXTAUTH_KAKAO_SECRET: KAKAO_SECRET,
 
-  NEXTAUTH_FACEBOOK_CLIENT_ID: FACEBOOK_CLIENT_ID,
-  NEXTAUTH_FACEBOOK_CLIENT_SECRET: FACEBOOK_CLIENT_SECRET,
+  NEXTAUTH_NAVER_ID: NAVER_ID,
+  NEXTAUTH_NAVER_SECRET: NAVER_SECRET,
 
-  NEXTAUTH_INSTAGRAM_CLIENT_ID: INSTAGRAM_CLIENT_ID,
-  NEXTAUTH_INSTAGRAM_CLIENT_SECRET: INSTAGRAM_CLIENT_SECRET,
+  NEXTAUTH_FACEBOOK_ID: FACEBOOK_ID,
+  NEXTAUTH_FACEBOOK_SECRET: FACEBOOK_SECRET,
+
+  NEXTAUTH_INSTAGRAM_ID: INSTAGRAM_ID,
+  NEXTAUTH_INSTAGRAM_SECRET: INSTAGRAM_SECRET,
  } = process.env
 
 var prismaAdapter = PrismaAdapter(prisma)
@@ -117,12 +120,12 @@ export var authOptions: AuthOptions = {
           clientSecret: NAVER_SECRET
         }),
         FacebookProvider({
-          clientId: FACEBOOK_CLIENT_ID,
-          clientSecret: FACEBOOK_CLIENT_SECRET
+          clientId: FACEBOOK_ID,
+          clientSecret: FACEBOOK_SECRET
         }),
         InstagramProvider({
-          clientId: INSTAGRAM_CLIENT_ID,
-          clientSecret: INSTAGRAM_CLIENT_SECRET
+          clientId: INSTAGRAM_ID,
+          clientSecret: INSTAGRAM_SECRET
         }),
         phoneNumberProvider
     ],
