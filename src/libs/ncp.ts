@@ -4,12 +4,7 @@ import CryptoJS from 'crypto-js' // createSignature()에서 사용
 const NCP_API_URL = "https://sens.apigw.ntruss.com"
 
 // .env 파일에서 키를 가져옴
-// HeadersInit 타입이 string | undefined를 받지 않기 때문에
-// 느낌표를 붙여 string | undefined에서 강제로 string으로 변환함
-const NCP_SERVICE_ID = process.env.NCP_SERVICE_ID!
-const NCP_ACCESS_KEY = process.env.NCP_ACCESS_KEY!
-const NCP_SECRET_KEY = process.env.NCP_SECRET_KEY!
-const NCP_SENDER_NUMBER = process.env.NCP_SENDER_NUMBER!
+const { NCP_SERVICE_ID, NCP_ACCESS_KEY, NCP_SECRET_KEY, NCP_SENDER_NUMBER } = process.env
 
 // 메시지 발송 API 문서 참고:
 // https://api.ncloud-docs.com/docs/ai-application-service-sens-smsv2#메시지-발송
