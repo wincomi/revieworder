@@ -133,6 +133,42 @@ export var authOptions: AuthOptions = {
       signIn: '/login'
     },
     callbacks: {
+      // https://next-auth.js.org/configuration/callbacks#sign-in-callback
+      // access_token이 DB에 업데이트되지 않는 문제 해결
+      // https://github.com/nextauthjs/next-auth/issues/3599
+      signIn: async ({ user, account, profile, email, credentials }) => {
+        if (account) {
+          const userFromDB = await prismaAdapter.getUser(user.id)
+          if (userFromDB) {
+            try {
+              await prisma.account.update({
+                where: {
+                  provider_providerAccountId: {
+                    provider: account.provider,
+                    providerAccountId: account.providerAccountId
+                  }
+                },
+                data: {
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  id_token: account.id_token,
+                  refresh_token: account.refresh_token,
+                  session_state: account.session_state,
+                  scope: account.scope
+                }
+              })  
+            } catch (err) {
+              if (err instanceof Error) {
+                console.error(err.message)
+              }
+              return false
+            }
+          }
+        }
+
+        return true
+      },
+
       // https://next-auth.js.org/configuration/callbacks#session-callback
       session: async ({ session, token, user }) => {
         // 데이터베이스(database) 세션일 경우 user가 반환됨
@@ -177,7 +213,7 @@ export var authOptions: AuthOptions = {
 
 // 개발 모드일 경우 디버그 활성화
 if (process.env.NODE_ENV !== "production") {
-  authOptions.debug = true
+  authOptions.debug = false
 }
 
 export default NextAuth(authOptions)
