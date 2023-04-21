@@ -239,7 +239,8 @@ model OrderDetail {
 
   // 주문번호
   orderId String
-  order Order @relation(fields: [orderId], references: [id])
+  // order 삭제 시 orderDetail 도 삭제
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   @@index([orderId])
 
   // 메뉴번호
