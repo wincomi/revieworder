@@ -7,6 +7,7 @@ import { Key, SetStateAction, useEffect, useState } from "react"
 
 import CartCard from '@/components/cartCard'
 import { CartAPIGETResponse, CartItem } from "./api/carts"
+import router from "next/router"
 
 interface CartPageProps {
     carts: CartItem[]
@@ -55,6 +56,27 @@ export default function CartPage({ carts }: CartPageProps) {
         result()
     },[cartItems])
 
+    // 주문 기능
+    const orderMenu = async () => {
+        const result = await fetch(`api/orders`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            // session의 쿠키를 보내는데 req가 없으면 필요
+            credentials: 'include',
+
+            body: JSON.stringify({
+                carts: cartItems
+            })
+        })
+
+        if (confirm('주문내역으로 이동하시겠습니까?')) {
+            router.push('/order')
+        }
+    }
+
+
     if (cartItems.length == 0) {
         return (
             <Layout>
@@ -102,7 +124,13 @@ export default function CartPage({ carts }: CartPageProps) {
                                     <Text h2 style={{textAlign: 'right'}}>
                                         {totalPrice.toLocaleString()}원
                                     </Text>
-                                    <Button color="gradient" css={{ width: '100%' }} icon={<FaRegCreditCard />}>주문하기</Button>
+                                    <Button 
+                                        color="gradient"
+                                        css={{ width: '100%' }} 
+                                        icon={<FaRegCreditCard />} 
+                                        onPress={ async () => await orderMenu() }>
+                                            주문하기
+                                    </Button>
                                 </div>
                             </Card.Footer>
                         </Card>
