@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Dispatch, ReactNode, SetStateAction, useState } from "react"
+import { Dispatch, Key, ReactNode, SetStateAction, useState } from "react"
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -46,13 +46,13 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
         return <Text h6 css={{ mt: "$4", mb: "$2" }}>{children}</Text>
     }
 
-    const RatingIcon = (rating: number) => {
+    const RatingIcons = (rating: number) => {
         return <>
-            {[...Array(rating)].map(() => {
-                return <><FaStar /><Spacer x={0.1} /></>
+            {[...Array(rating)].map((value: any, index: number) => {
+                return <span key={index}><FaRegStar /><Spacer x={0.1} /></span>
             })}
-            {[...Array(5 - rating)].map(() => {
-                return <><FaRegStar /><Spacer x={0.1} /></>
+            {[...Array(5 - rating)].map((value: any, index: number) => {
+                return <span key={index}><FaRegStar /><Spacer x={0.1} /></span>
             })}
         </>
     }
@@ -99,7 +99,7 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                             </Button>
                         </Tooltip>
                         <Tooltip content={"리뷰어가 선택한 별점"} placement="top" color="warning">
-                            <Button auto flat size="xs" color="warning" icon={RatingIcon(review.rating)}>
+                            <Button auto flat size="xs" color="warning" icon={RatingIcons(review.rating)}>
                                 ({review.rating}/5)
                             </Button>
                         </Tooltip>
@@ -107,13 +107,18 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                     <Spacer y={0.5} />
 
                     <div style={{ alignSelf: 'stretch' }}>
-                        {/* 여기 주석 이전 것 DB에 뛰어쓰기 없으면 이거 사용 */}
+                        {/* 여기 주석 이전 것 DB에 띄어쓰기 없으면 이거 사용 */}
                         {/*{review.content.split(" ").map((str) => { */}
                         {review.content.split("#").map((str) => {
                             if (str != '') str = "#" + str
                             if (str.startsWith("#")) {
-                                // return <><Link href="#">{str}</Link> </>
-                                return <><Link onClick={(e)=> onChangeQuery(e.currentTarget.text.replace('#',''))} href={{pathname:`/`, query: {search: `${str.replace('#','')}`}}}>{str}</Link> </>
+                                return 
+                                    <span key={str}>
+                                        <Link
+                                            onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#',''))} href={{ pathname:`/`, query: { search: `${str.replace('#','')}`} }}>
+                                                {str}
+                                        </Link>
+                                    </span>
                             }
                             return str + " "
                         })}
@@ -127,7 +132,7 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
 
                     <CardFooterTitle>주문한 메뉴</CardFooterTitle>
                     {review.order.orderDetails?.map((orderDetail) => (
-                        <Text css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
+                        <Text key={orderDetail.id} css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
                             - {orderDetail.menu.name} &times; {orderDetail.amount}<br />
                         </Text>
                     ))}

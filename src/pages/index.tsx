@@ -51,17 +51,16 @@ export default function Home({ reviewCards }: ReviewPageProps) {
                             />
                         </Grid>
                         <Grid css={{ml: '$4'}}>
-                            <Button auto flat css={{h: '100%'}} icon={<HiSearch />} onPress={exeSearch}>검색</Button>
+                            <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>검색</Button>
                         </Grid>
                     </Grid.Container>
                 </form>
                 <Grid.Container gap={2} alignItems="stretch" css={{px: 0}}>
                     {reviewCards.map((item: ReviewItem, index: Key) => (
-                        <Grid xs={12} sm={6} lg={4}>
+                        <Grid xs={12} sm={6} lg={4} key={item.id}>
                             <ReviewCard
-                                key={index} 
                                 review={item} 
-                                onChangeQuery={(data)=>setQuery(data)}
+                                onChangeQuery={(data) => setQuery(data)}
                             />
                         </Grid>
                     ))}
