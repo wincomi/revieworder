@@ -76,7 +76,7 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
             </Head>
             <Layout>
                 <Text h1>내 프로필</Text>
-                {accountProviders &&
+                {accountProviders.length > 0 &&
                     <Card css={{mb: '$12', $$cardColor: '$colors$gradient' }}>
                         <Card.Body>
                             <Text b color="white">현재 계정이 {accountProviders[0].toLocaleUpperCase()}(으)로 연결되어있습니다.</Text>
