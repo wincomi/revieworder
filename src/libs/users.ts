@@ -1,5 +1,5 @@
 import prisma from "@/libs/prismadb"
-import { Account, User } from "@prisma/client"
+import { User } from "@prisma/client"
 
 /// 연동된 유저의 계정 Provider 가져오기
 /// 예) kakao, naver, ...

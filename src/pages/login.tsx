@@ -57,8 +57,18 @@ export default (props: SignInPage) => {
       }, [ phoneNumber ])
     
     const sendVerificationCode = async () => {
-        alert(phoneNumber + " 번호로 인증코드를 전송하였습니다.")
-        // TODO
+        const result = await fetch(`api/auth/sms/request/`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify({
+                phoneNumber: phoneNumber
+            })
+        })
+
+        alert(phoneNumber + " 번호로 인증 번호를 전송하였습니다.")
     }
 
     /// 휴대폰 번호로 로그인

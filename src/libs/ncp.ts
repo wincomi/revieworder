@@ -9,6 +9,12 @@ const { NCP_SERVICE_ID, NCP_ACCESS_KEY, NCP_SECRET_KEY, NCP_SENDER_NUMBER } = pr
 // 메시지 발송 API 문서 참고:
 // https://api.ncloud-docs.com/docs/ai-application-service-sens-smsv2#메시지-발송
 export async function sendSMS(phoneNumber: string, content: string) {
+    // NCP_DEBUG_MODE일 경우
+    if (process.env.NCP_DEBUG_MODE == 1) {
+        console.log(`\n[NCP_DEBUG_MODE]\nphoneNumber: ${phoneNumber}\ncontent: ${content}\n`)
+        return
+    }
+    
     const method = 'POST'
     const queryString = `/sms/v2/services/${NCP_SERVICE_ID}/messages`
     const requestURL = NCP_API_URL + queryString
@@ -46,9 +52,11 @@ export async function sendSMS(phoneNumber: string, content: string) {
         body: body
     })
 
-    const test = await response.json()
-    console.log(test)
-    return test
+    const result = await response.json()
+    
+    console.log(result)
+
+    return result
 }
 
 // 메시지 발송 API의 x-ncp-apigw-signature-v2 값을 넣기 위해

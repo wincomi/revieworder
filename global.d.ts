@@ -24,5 +24,6 @@ declare namespace NodeJS {
         NCP_ACCESS_KEY: string;
         NCP_SECRET_KEY: string;
         NCP_SENDER_NUMBER: string;
+        NCP_DEBUG_MODE: number;
 	}
 }

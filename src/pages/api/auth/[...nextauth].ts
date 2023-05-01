@@ -4,13 +4,11 @@ import KakaoProvider from 'next-auth/providers/kakao'
 import NaverProvider from 'next-auth/providers/naver'
 import FacebookProvider from 'next-auth/providers/facebook'
 import InstagramProvider from 'next-auth/providers/instagram'
-import CredentialsProvider from 'next-auth/providers/credentials'
 
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
-import { AdapterAccount } from 'next-auth/adapters'
-import { regexNumber, regexPhoneNumber } from '@/utils/regex'
-import { User } from '@prisma/client'
+import PhoneNumberProvider from '@/libs/nextauth/phoneNumberProvider'
+import prismaAdapterLinkAccount from '@/libs/nextauth/prismaAdapterLinkAccount'
 
 const { 
   NEXTAUTH_APPLE_ID: APPLE_ID, 
@@ -31,81 +29,7 @@ const {
 
 var prismaAdapter = PrismaAdapter(prisma)
 
-prismaAdapter.linkAccount = (account: AdapterAccount) => {
-  // 디버그 코드
-  // console.log(account)
-  // return new Promise<void>(() => { })
-
-  // account를 AdapterAccount 타입에서 Account 테이블에 Create할 수 있는 형식으로 변경
-  // 다른 key가 있을 경우 Account 테이블에 컬럼이 없어 데이터를 추가할 수 없어서 오류가 발생함.
-  // 예) 카카오 로그인 Callback시 Unknown arg `refresh_token_expires_in` in data.refresh_token_expires_in for type AccountUncheckedCreateInput. 에러 발생
-  const newAccount = {
-    // 필수
-    userId: account.userId, // User 테이블의 id의 외래키. Instagram에서 반환하는 user_id와는 다름
-    type: account.type, // "oauth" | "email" | "credentials"
-    provider: account.provider,
-    providerAccountId: account.providerAccountId,
-
-    // 선택 사항 (SNS API에 따라 없을 수도 있음)
-    // TokenSetParameters
-    refresh_token: account.refresh_token,
-    access_token: account.access_token,
-    expires_at: account.expires_at,
-    token_type: account.token_type,
-    scope: account.scope,
-    id_token: account.id_token,
-    session_state: account.session_state,
-  }
-
-  return prisma.account.create({ data: newAccount }) as unknown as AdapterAccount
-}
-
-const phoneNumberProvider = CredentialsProvider({
-  id: "phonenumber",
-  name: "phonenumber", // await signIn("phonenumber", { ... }) 으로 사용 가능
-  credentials: {
-      phoneNumber: { label: "휴대폰 번호", type: "text", placeholder: "010-0000-0000" },
-      verificationCode: { label: "인증 코드", type: "number", placeholder: "123456" }
-  },
-  authorize: async (credentials, req) => {
-    // 휴대폰 번호와 인증 코드가 전달되지 않을 경우 null 반환
-    if (credentials?.phoneNumber == null || credentials.verificationCode == null) {
-      return null
-    }
-
-    const phoneNumber = credentials.phoneNumber.replace(/-/g, "") // 휴대폰 번호 하이픈(-) 제거
-    const { verificationCode }  = credentials
-
-    // 휴대폰 번호 유효성 검사
-    const isValidPhoneNumber = phoneNumber.match(regexPhoneNumber)
-
-    // 인증 코드 유효성 검사
-    const isValidVerificationCode = verificationCode.match(regexNumber)
-
-    if (!(isValidPhoneNumber && isValidVerificationCode)) {
-      return null
-    }
-  
-    var user: User | null
-    
-    // 휴대폰 번호와 같은 유저 검색
-    // TODO: findUnique로 변경 및 인증 코드(verificationCode) 확인 추가
-    user = await prisma.user.findFirst({
-      where: {
-        phoneNumber: phoneNumber
-      }
-    })
-
-    // 만약 유저가 없을 경우 가입
-    if (user == null) {
-      user = await prisma.user.create({ 
-        data: { phoneNumber: phoneNumber }
-      })
-    }
-
-    return user
-  }
-})
+prismaAdapter.linkAccount = prismaAdapterLinkAccount
 
 export var authOptions: AuthOptions = {
     adapter: prismaAdapter,
@@ -130,7 +54,7 @@ export var authOptions: AuthOptions = {
           clientId: INSTAGRAM_ID,
           clientSecret: INSTAGRAM_SECRET
         }),
-        phoneNumberProvider
+        PhoneNumberProvider()
     ],
     pages: {
       signIn: '/login'
