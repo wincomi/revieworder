@@ -168,14 +168,20 @@ export default (async (req: CartAPIRequest, res: NextApiResponse) => {
 
                     const putResult = await prisma.cart.updateMany(input)
 
-                    res.status(200).json({
-                        data: putResult
-                    })
+                    // Cannot set headers after they are sent to the client
+                    // res.status(200).json({
+                    //     data: putResult
+                    // })
+                })
+
+                res.status(200).json({
+                    data: { success: true }
                 })
 
             break
 
         // DELETE (cartId로 개별 삭제)
+        // TODO: 자신의 카트인지 확인해야함
         case "DELETE":
             const cart = req.body.cart
 

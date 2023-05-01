@@ -3,7 +3,8 @@ import { Button, Grid, Row, Text, Card, Spacer } from '@nextui-org/react'
 import { FaRegCreditCard } from "react-icons/fa"
 
 import { GetServerSideProps } from "next"
-import { Key, SetStateAction, useEffect, useState } from "react"
+import Head from "next/head"
+import { SetStateAction, useEffect, useState } from "react"
 
 import CartCard from '@/components/cartCard'
 import { CartAPIGETResponse, CartItem } from "./api/carts"
@@ -14,7 +15,6 @@ interface CartPageProps {
 }
 
 export default function CartPage({ carts }: CartPageProps) {
-
     const getTotalPrice = (cartItems: CartItem[]) => {
         return cartItems.reduce((totalPrice, item) => {
             return totalPrice + item.menu.price * item.amount
@@ -24,22 +24,29 @@ export default function CartPage({ carts }: CartPageProps) {
     const [cartItems, setCartItems] = useState(carts)
     const [totalPrice, setTotalPrice] = useState(getTotalPrice(cartItems))
 
-    const setCardItem = (data: SetStateAction<CartItem>, index: Key) => {
-        const updateCart = cartItems.map((item, idx) => {
-            if (idx === index) {
-                return data
-            }
-            else return item
-        })
-
-        setCartItems(Object.assign(updateCart))
+    const setCardItem = (data: SetStateAction<CartItem | null>, index: number) => {
+        if (data == null) {
+            // data가 null이면 index를 삭제함
+            const updateCart = cartItems.slice(index, 1)
+    
+            setCartItems(Object.assign(updateCart))
+        } else {
+            const updateCart = cartItems.map((item, idx) => {
+                if (idx === index) {
+                    return data
+                }
+                else return item
+            })
+    
+            setCartItems(Object.assign(updateCart))    
+        }
 
         setTotalPrice(getTotalPrice(cartItems))
     }
 
     // 값(amount) 변경 시 자동 업데이트 
     useEffect(() => {
-        const result = async() => {
+        const result = async () => {
             await fetch(`api/carts/`, {
                 method: 'PUT',
                 headers: {
@@ -54,7 +61,7 @@ export default function CartPage({ carts }: CartPageProps) {
             })
         }
         result()
-    },[cartItems])
+    }, [cartItems])
 
     // 주문 기능
     const orderMenu = async () => {
@@ -79,66 +86,99 @@ export default function CartPage({ carts }: CartPageProps) {
 
     if (cartItems.length == 0) {
         return (
-            <Layout>
-                <Text h1>장바구니</Text>
-                <p>장바구니가 비어있습니다.</p>
-            </Layout>
+            <>
+                <Head>
+                    <title>장바구니</title>
+                </Head>
+                <Layout>
+                    <Text h1>장바구니</Text>
+                    <p>장바구니가 비어있습니다.</p>
+                </Layout>
+            </>
         )
-    } else {
+    }
+
+    // 좌측 아이템 카드
+    const CartItemsCard = () => {
         return (
+            <>
+                {cartItems.map((cartItem: CartItem, index: number) => (
+                    <div key={cartItem.id}>
+                        <CartCard 
+                            key={cartItem.id}
+                            cartItem={cartItem}
+                            onChangeCartItem={(data) => setCardItem(data, index)}
+                        />
+                        <Spacer />
+                    </div>
+                ))}
+            </>
+        )
+    }
+    
+    // 우측 요약 카드
+    const SummaryCard = () => {
+        return (
+            <Card variant="flat">
+                <Card.Body css={{ p: 0 }}>
+                    <Grid justify="center">
+                        {cartItems.map((cartItem: CartItem, index: number) => (
+                            <div key={cartItem.id}>
+                                <Row justify="space-between">
+                                    <Text>{cartItem.menu.name} x {cartItem.amount}</Text>
+                                    <Text>{(cartItem.menu.price * cartItem.amount).toLocaleString()}원</Text>
+                                </Row>
+                                <Spacer y={0.2} />
+                            </div>
+                        ))}
+                    </Grid>
+                </Card.Body>
+                <Card.Divider />
+                <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
+                    <div style={{ width: '100%' }}>
+                        <Grid.Container justify="space-between" alignItems="center">
+                            <Grid>
+                                <Text h3>총 주문 금액</Text>
+                            </Grid>
+                            <Grid>
+                                <Text h2 style={{textAlign: 'right'}}>
+                                    {totalPrice.toLocaleString()}원
+                                </Text>
+                            </Grid>
+                        </Grid.Container>
+                        <Button 
+                            color="gradient"
+                            css={{ width: '100%' }} 
+                            icon={<FaRegCreditCard />} 
+                            onPress={ async () => await orderMenu() }>
+                                주문하기
+                        </Button>
+                    </div>
+                </Card.Footer>
+            </Card>
+        )
+    }
+
+    return (
+        <>
+            <Head>
+                <title>장바구니</title>
+            </Head>
             <Layout>
                 <Text h1>장바구니</Text>
                 <Grid.Container gap={2} alignItems="flex-start">
                     <Grid md={8} xs={12}>
                         <div style={{ width: '100%' }}>
-                            {cartItems.map((cartItem: CartItem, index: Key) => (
-                                <>
-                                    <CartCard 
-                                        key={index} 
-                                        cartItem={cartItem}
-                                        onChangeCartItem={(data) => setCardItem(data, index)}
-                                    />
-                                    <Spacer />
-                                </>
-                            ))}
+                            <CartItemsCard />
                         </div>
                     </Grid>
                     <Grid md={4} xs={12}>
-                        <Card variant="flat">
-                            <Card.Body css={{ p: 0 }}>
-                                <Grid justify="center">
-                                    {cartItems.map((cartItem: CartItem, index: Key) => (
-                                        <>
-                                            <Row justify="space-between">
-                                                <Text>{cartItem.menu.name} x {cartItem.amount}</Text>
-                                                <Text>{(cartItem.menu.price * cartItem.amount).toLocaleString()}</Text>
-                                            </Row>
-                                            <Spacer y={0.2} />
-                                        </>
-                                    ))}
-                                </Grid>
-                            </Card.Body>
-                            <Card.Divider />
-                            <Card.Footer css={{ color: "$accents7", fontWeight: "$semibold", fontSize: "$sm" }}>
-                                <div style={{ width: '100%' }}>
-                                    <Text h2 style={{textAlign: 'right'}}>
-                                        {totalPrice.toLocaleString()}원
-                                    </Text>
-                                    <Button 
-                                        color="gradient"
-                                        css={{ width: '100%' }} 
-                                        icon={<FaRegCreditCard />} 
-                                        onPress={ async () => await orderMenu() }>
-                                            주문하기
-                                    </Button>
-                                </div>
-                            </Card.Footer>
-                        </Card>
+                        <SummaryCard />
                     </Grid>
                 </Grid.Container>
             </Layout>
-        )
-    }
+        </>
+    )
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
