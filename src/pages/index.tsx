@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react'
 import router, { useRouter } from 'next/router'
-import ReviewCard from '@/components/reviewCard'
+import ReviewCard from '@/components/index/reviewCard'
 import { GetServerSideProps } from 'next/types'
 import { Key, SetStateAction, useState } from 'react'
 

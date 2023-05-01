@@ -6,7 +6,7 @@ import { GetServerSideProps } from "next"
 import Head from "next/head"
 import { SetStateAction, useEffect, useState } from "react"
 
-import CartCard from '@/components/cartCard'
+import CartCard from '@/components/cart/cartCard'
 import { CartAPIGETResponse, CartItem } from "./api/carts"
 import router from "next/router"
 

@@ -1,10 +1,9 @@
 import { Container } from '@nextui-org/react'
 import { ReactNode } from 'react'
-import Navbar from '@/components/navbar'
-import { NavbarMenuItem } from '@/components/navbar'
-import NavbarUserButton from '@/components/navbarUserDropdown'
-import NavbarThemeButton from '@/components/navbarThemeDropdown'
-import ShoppingCartButton from '@/components/shoppingCartButton'
+import Navbar, { NavbarMenuItem } from '@/components/_navbar/navbar'
+import UserButton from '@/components/_navbar/userDropdown'
+import ThemeButton from '@/components/_navbar/themeDropdown'
+import ShoppingCartButton from '@/components/_navbar/shoppingCartButton'
 
 interface LayoutProps {
     children: ReactNode
@@ -21,8 +20,8 @@ export default ({ children }: LayoutProps) => {
         <main>
             <Navbar title="리뷰오더" menu={menu} activeColor="primary">
                 <ShoppingCartButton count={0} />
-                <NavbarThemeButton />
-                <NavbarUserButton />
+                <ThemeButton />
+                <UserButton />
             </Navbar>
             <Container lg css={{ mt: 32 }}>
                 {children}
