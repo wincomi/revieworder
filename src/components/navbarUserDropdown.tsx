@@ -39,7 +39,7 @@ export default () => {
                             {session.data.user.name ?? "이름 없음"}
                         </Text>
                     </Dropdown.Item>
-                    <Dropdown.Item key="profile/edit" withDivider icon={<HiOutlinePencil />}>
+                    <Dropdown.Item key="profile" withDivider icon={<HiOutlinePencil />}>
                         회원정보 수정
                     </Dropdown.Item>
                     <Dropdown.Item key="profile/sns" icon={<HiOutlineSwitchHorizontal />}>
