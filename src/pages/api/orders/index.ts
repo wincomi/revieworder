@@ -34,7 +34,7 @@ export type OrderItem = Prisma.OrderGetPayload<typeof orderWithOrderDetail>
 
 export type OrderAPIGETResponse = {
     // 가게에서 보는 주문내역들
-    data: OrderItem
+    data: OrderItem[]
 }
 
 //
@@ -63,12 +63,17 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
         case "GET":
             
             const readResult = await prisma.order.findMany({
-                where: { id : userId },
+                where: { 
+                    userId: userId,
+                    // TODO: 나중에 쿼리로 할 변경
+                    OR: [{status: "REQUESTED"}, {status: "CONFIRMED"}] 
+                },
                 include: {
                     store: true, 
-                    orderDetails: { include: { menu: true }}}
+                    orderDetails: { include: { menu: true }}
+                }
             })
-
+            console.log(readResult)
             if (readResult != null) {
                 // 성공!!
                 res.status(200).json({
@@ -144,6 +149,42 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 })
             }
             break
+        
+        // UPDATE (주문 상태 변경)
+        case "PUT":
+
+            if (carts == undefined || carts == null) {
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: "order 값은 필수입니다."
+                    }
+                })
+                return
+            } 
+
+            // const updateResult = await prisma.order.create({
+            //     data: {
+            //         status: 
+            //     }
+            // })
+
+            // if (updateResult != null) {
+            //     // 성공!!
+            //     res.status(200).json({
+            //         data: updateResult
+            //     })
+            // } else {
+            //     // 결과 값이 없을때 오류
+            //     res.status(400).json({
+            //         error: {
+            //             code: 400,
+            //             message: "주문 상태 변경을 실패 하였습니다."
+            //         }
+            //     })
+            // }
+            // break
+
 
         // DELETE (몇 분이내면 삭제 가능?)
         case "DELETE":
