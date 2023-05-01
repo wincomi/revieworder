@@ -49,10 +49,10 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
     const RatingIcons = (rating: number) => {
         return <>
             {[...Array(rating)].map((value: any, index: number) => {
-                return <span key={index}><FaRegStar /><Spacer x={0.1} /></span>
+                return <FaStar key={index} />
             })}
             {[...Array(5 - rating)].map((value: any, index: number) => {
-                return <span key={index}><FaRegStar /><Spacer x={0.1} /></span>
+                return <FaRegStar key={index} />
             })}
         </>
     }
