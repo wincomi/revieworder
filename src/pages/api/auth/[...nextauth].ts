@@ -10,6 +10,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from "@/libs/prismadb"
 import { AdapterAccount } from 'next-auth/adapters'
 import { regexNumber, regexPhoneNumber } from '@/utils/regex'
+import { User } from '@prisma/client'
 
 const { 
   NEXTAUTH_APPLE_ID: APPLE_ID, 
@@ -85,7 +86,7 @@ const phoneNumberProvider = CredentialsProvider({
       return null
     }
   
-    var user
+    var user: User | null
     
     // 휴대폰 번호와 같은 유저 검색
     // TODO: findUnique로 변경 및 인증 코드(verificationCode) 확인 추가
@@ -96,9 +97,11 @@ const phoneNumberProvider = CredentialsProvider({
     })
 
     // 만약 유저가 없을 경우 가입
-    user = await prisma.user.create({ 
-      data: { phoneNumber: phoneNumber }
-    })
+    if (user == null) {
+      user = await prisma.user.create({ 
+        data: { phoneNumber: phoneNumber }
+      })
+    }
 
     return user
   }
@@ -139,6 +142,11 @@ export var authOptions: AuthOptions = {
       signIn: async ({ user, account, profile, email, credentials }) => {
         if (account) {
           const userFromDB = await prismaAdapter.getUser(user.id)
+
+          if (account.provider == "phonenumber") {
+            return true
+          }
+
           if (userFromDB) {
             try {
               await prisma.account.update({

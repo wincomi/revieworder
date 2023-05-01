@@ -81,7 +81,7 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
                     name: user.name,
                     email: user.email,
                     password: user.password,
-                    phoneNumber: user.phoneNumber,
+                    phoneNumber: user.phoneNumber?.replace(/-/g, ""), // 휴대폰 번호 하이픈(-) 제거
                     image: user.image,
                     emailVerified: user.emailVerified,
                 }
@@ -124,7 +124,7 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
                     name: user.name ?? undefined,
                     email: user.email ?? undefined, 
                     password: user.password ?? undefined, 
-                    phoneNumber: user.phoneNumber ?? undefined, 
+                    phoneNumber: user.phoneNumber?.replace(/-/g, "") ?? undefined, // 휴대폰 번호 하이픈(-) 제거
                     image: user.image ?? undefined, 
                     emailVerified: user.emailVerified ?? undefined ,
                     allergy: user.allergy ?? undefined

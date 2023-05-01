@@ -90,8 +90,9 @@ model User {
   /// SNS 연동 외 유저를 위한 비밀번호
   password      String?
 
-  /// 전화번호 형식: 01012345678
-  phoneNumber   String?
+  /// 휴대폰 번호
+  /// 형식: 01012345678
+  phoneNumber   String?   @unique
 
   // 회원 알러지 등록 text
   allergy       String?

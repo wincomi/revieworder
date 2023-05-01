@@ -55,7 +55,12 @@ export default (props: SignInPage) => {
           color: isValid ? "success" : "error"
         }
       }, [ phoneNumber ])
-      
+    
+    const sendVerificationCode = async () => {
+        alert(phoneNumber + " 번호로 인증코드를 전송하였습니다.")
+        // TODO
+    }
+
     /// 휴대폰 번호로 로그인
     const loginByPhoneNumber = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -102,7 +107,17 @@ export default (props: SignInPage) => {
                                         labelLeft={<FaCommentAlt />}
                                     />
                                     <Spacer />
-                                    <Button color="primary" size="sm" flat icon={<FaPaperPlane />} css={{ width: '100%' }}>인증번호 발송</Button>
+                                    <Button 
+                                        color="primary" 
+                                        size="sm" 
+                                        flat
+                                        icon={<FaPaperPlane />}
+                                        css={{ width: '100%' }}
+                                        onPress={ async () => await sendVerificationCode() }
+                                        disabled={phoneNumber.length == 0}
+                                        >
+                                            인증번호 발송
+                                        </Button>
                                     <Spacer />
                                     <Input 
                                         {...bindingsVerificationCode}
