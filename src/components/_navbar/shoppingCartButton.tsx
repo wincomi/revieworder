@@ -12,11 +12,17 @@ export default ({ count }: ShoppingCartButtonProps) => {
     const router = useRouter()
 
     if (session.data?.user != null) {
-        return (
-            <Badge color="error" content={count} shape="circle" disableAnimation>
-                <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient" />
-            </Badge>
-        )
+        if (count >= 0) {
+            return (
+                <Badge color="error" content={count} shape="circle" disableAnimation>
+                    <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient" />
+                </Badge>
+            )
+        } else {
+            return (
+                 <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient" />
+            )
+        }
     } else {
         return <></>
     }
