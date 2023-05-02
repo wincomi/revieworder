@@ -1,7 +1,7 @@
 import { Container } from '@nextui-org/react'
 import { ReactNode } from 'react'
 import Navbar, { NavbarMenuItem } from '@/components/_navbar/navbar'
-import UserButton from '@/components/_navbar/userDropdown'
+import UserButton from '@/components/_navbar/userButton'
 
 interface LayoutProps {
     children: ReactNode

@@ -3,6 +3,7 @@ import { useTheme } from '@nextui-org/react'
 
 import { Dropdown, Navbar } from "@nextui-org/react"
 import { FaBolt, FaMoon, FaSun } from "react-icons/fa"
+import { BsGearFill } from "react-icons/bs"
 import { useState } from 'react'
 
 export default () => {
@@ -14,7 +15,7 @@ export default () => {
   return (
     <Dropdown>
       <Navbar.Item>
-        <Dropdown.Button auto flat />
+        <Dropdown.Button auto flat icon={<BsGearFill />} />
       </Navbar.Item>
       <Dropdown.Menu
         color="primary"
