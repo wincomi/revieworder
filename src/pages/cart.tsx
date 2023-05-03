@@ -74,7 +74,22 @@ export default function CartPage({ carts }: CartPageProps) {
             credentials: 'include',
 
             body: JSON.stringify({
-                carts: cartItems
+                carts: cartItems,
+                money: totalPrice       
+            })
+        })
+
+        const Moneyresult = await fetch(`api/user/moneyapi`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            // session의 쿠키 전달
+            credentials: 'include',
+            body: JSON.stringify({
+                userId: cartItems[0].userId,
+                money: totalPrice,
+                opt: 'pay'
             })
         })
 

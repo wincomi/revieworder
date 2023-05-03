@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Button, Text, Spacer, Input, Card, Loading, Textarea } from "@nextui-org/react"
+import { Button, Text, Spacer, Input, Card, Loading, Textarea, Modal } from "@nextui-org/react"
 import Layout from '@/components/layout'
 import { TbPigMoney } from 'react-icons/tb'
 import { FaPencilAlt } from 'react-icons/fa'
@@ -9,6 +9,8 @@ import { GetServerSideProps } from 'next'
 import { getAccountProviders } from '@/libs/users'
 import { UserAPIGETResponse } from '../api/user'
 import { User } from '@prisma/client'
+import React from 'react'
+import router from 'next/router'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -58,6 +60,34 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
         setIsLoadingUpdate(false)
     }
 
+    // 충전
+    const charge = async () => {
+        setIsLoadingUpdate(true)
+
+        const result = await fetch(`/api/user/moneyapi`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            // session의 쿠키를 보내는데 req가 없으면 필요
+            credentials: 'include',
+
+            body: JSON.stringify({
+                userId: mutableUser.id,
+                money: point,
+                opt: 'charge'
+            })
+        })
+
+        if (result.status == 200) {
+            alert("충전 성공.")    
+        } else {
+            alert("충전 실패.")
+        }
+
+        setIsLoadingUpdate(false)
+    }
+
     // 자동 하이픈 처리
     const autoHyphen = (e: { currentTarget: { value: string } }) => {
         e.currentTarget.value = e.currentTarget.value
@@ -68,6 +98,16 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
             // 나중에 hyPhen 처리 수정 필요 !! (01056490485를 -삽입 및 제거 필요 - 현재는 타이핑때만 작동)
             setMutableUser({ ...mutableUser, phoneNumber: e.currentTarget.value })
     }
+
+    // 충전 창
+    const [point, setPoint] = useState(0)
+    const [visible, setVisible] = React.useState(false);
+    const handler = () => setVisible(true);
+    const closeHandler = () => {
+        setVisible(false);
+        console.log("closed");
+    }
+
 
     return (
         <>
@@ -88,7 +128,36 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
                     <Card.Body>
                         <Text b>리뷰오더 머니</Text>
                         <Text h3 css={{mb: 0}}>{mutableUser.money.toLocaleString()} 원</Text>
-                        <Button flat auto color="warning" size="sm" css={{ mt: 8, ml: 'auto' }} icon={<TbPigMoney />}>충전</Button>
+                        <Button flat auto color="warning" size="sm" css={{ mt: 8, ml: 'auto' }} icon={<TbPigMoney />} onPress={handler}>충전</Button>
+                        <Modal
+                            closeButton
+                            blur
+                            aria-labelledby="modal-title"
+                            open={visible}
+                            onClose={closeHandler}
+                        >
+                            <Modal.Header>
+                            <Text id="modal-title" size={18}>
+                                포인트 충전
+                            </Text>
+                            </Modal.Header>
+                            <Modal.Body>
+                            <Input
+                                clearable
+                                bordered
+                                fullWidth
+                                color="primary"
+                                size="lg"
+                                placeholder={String(point)}
+                                onChange={(e) => setPoint(Number(e.currentTarget.value))}
+                            />
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button auto onPress={charge}>
+                                    충전
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                     </Card.Body>
                 </Card>
                 
