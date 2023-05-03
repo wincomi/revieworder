@@ -1,5 +1,6 @@
-import { Navbar, Text, Link, Loading, User, Dropdown, Badge } from '@nextui-org/react'
+import { Navbar, Text, Link, Spacer } from '@nextui-org/react'
 import { useRouter } from 'next/router'
+import { ImSpoonKnife } from 'react-icons/im'
 
 import { ReactNode } from 'react'
 
@@ -7,6 +8,7 @@ export type NavbarMenuItem = {
   id: string
   name: string,
   path: string,
+  icon?: ReactNode
 }
 
 export interface NavbarProps {
@@ -24,17 +26,19 @@ export default ({ title, menu, activeColor, children }: NavbarProps) => {
       <Navbar.Brand>
         <Link onClick={() => router.push('/')}>
           <Text b color="text" css={{ fontSize: 20, ml: 8 }}>
-            {title}
+            <ImSpoonKnife style={{ verticalAlign: 'text-bottom'}} /> {title}
           </Text>
         </Link>
       </Navbar.Brand>
-      <Navbar.Content hideIn="xs" activeColor={activeColor} variant="highlight-rounded" enableCursorHighlight>
+      <Navbar.Content hideIn="xs" activeColor={activeColor} variant="underline-rounded" >
         {menu.map((item) =>
           <Navbar.Link
             key={item.id}
             onClick={() => router.push(item.path)}
             isActive={router.pathname == item.path}
           >
+            {item.icon}
+            <Spacer x={0.25} />
             {item.name}
           </Navbar.Link>
         )}

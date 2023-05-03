@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import Navbar, { NavbarMenuItem } from '@/components/_navbar/navbar'
 import UserButton from '@/components/_navbar/userButton'
 import SettingsButton from '@/components/_navbar/settingsButton'
-import ShoppingCartButton from '@/components/_navbar/shoppingCartButton'
+import { FaHome, FaShoppingCart, FaUser } from 'react-icons/fa'
 
 interface LayoutProps {
     children: ReactNode
@@ -11,9 +11,9 @@ interface LayoutProps {
 
 export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
-        { id: "index", name: "둘러보기", path: "/" },
-        { id: "cart", name: "주문하기", path: "/cart" },
-        { id: "profile", name: "내 프로필", path: "/profile" },
+        { id: "index", name: "둘러보기", path: "/", icon: <FaHome /> },
+        { id: "cart", name: "주문하기", path: "/cart", icon: <FaShoppingCart /> },
+        { id: "profile", name: "내 프로필", path: "/profile", icon: <FaUser /> },
     ]
 
     return (
