@@ -53,10 +53,11 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
                             width={128}
                             height={128}
                             alt=""
+                            css={{ borderRadius: 12 }}
                         />
                     </Grid>
                     <Spacer />
-                    <Grid css={{ flexGrow: 1 }}>
+                    <Grid css={{ flexGrow: 1, justifyContent: 'space-between' }}>
                         <Grid.Container justify="space-between" alignItems="center">
                             <Grid>
                                 <Text size="x-large">{cartItem.menu.name}</Text>

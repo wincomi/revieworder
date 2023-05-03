@@ -12,7 +12,7 @@ interface LayoutProps {
 export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
         { id: "index", name: "둘러보기", path: "/" },
-        { id: "order", name: "주문하기", path: "/order" },
+        { id: "cart", name: "주문하기", path: "/cart" },
         { id: "profile", name: "내 프로필", path: "/profile" },
     ]
 
@@ -20,7 +20,7 @@ export default ({ children }: LayoutProps) => {
         <main>
             <Navbar title="리뷰오더" menu={menu} activeColor="primary">
                 <SettingsButton />
-                <ShoppingCartButton count={-1} />
+                {/* <ShoppingCartButton count={-1} /> */}
                 <UserButton />
             </Navbar>
             <Container lg css={{ mt: 32 }}>
