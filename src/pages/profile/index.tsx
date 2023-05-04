@@ -10,7 +10,8 @@ import { getAccountProviders } from '@/libs/users'
 import { UserAPIGETResponse } from '../api/user'
 import { User } from '@prisma/client'
 import React from 'react'
-import router from 'next/router'
+
+import { loadTossPayments } from '@tosspayments/payment-sdk'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -60,30 +61,39 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
         setIsLoadingUpdate(false)
     }
 
+    // 토스 결제 창 불러오는 키
+    const clientKey = process.env.TOSS_CLIENT_KEY
+
     // 충전
     const charge = async () => {
         setIsLoadingUpdate(true)
 
-        const result = await fetch(`/api/user/moneyapi`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            // session의 쿠키를 보내는데 req가 없으면 필요
-            credentials: 'include',
+        const tossPayments = await loadTossPayments(clientKey)
+        // 주문번호 랜덤 생성
+        const orderId = Math.random().toString(36).substring(2, 12)
 
-            body: JSON.stringify({
-                userId: mutableUser.id,
-                money: point,
-                opt: 'charge'
+        if (user.name != null) {
+                // 결제 창 생성
+                tossPayments.requestPayment('카드',{ // 결제수단 파라미터
+                // 결제 정보 파라미터
+                amount: point,
+                orderId: orderId,
+                orderName: '리뷰오더 포인트 충전',
+                customerName: user.name,
+                // 환경변수 쓰면 작동 안됨..
+                successUrl: `https://revieworder.kr:3000/success?userId=${user.id}`,
+                failUrl: 'https://revieworder.kr:3000/fail',
             })
-        })
-
-        if (result.status == 200) {
-            alert("충전 성공.")    
-        } else {
-            alert("충전 실패.")
+            // 결제 실패 시
+            .catch(function (error) {
+                if (error.code === 'USER_CANCEL') {
+                // 결제 고객이 결제창을 닫았을 때 에러 처리
+                } else if (error.code === 'INVALID_CARD_COMPANY') {
+                // 유효하지 않은 카드 코드에 대한 에러 처리
+                }
+            })
         }
+    
 
         setIsLoadingUpdate(false)
     }
@@ -153,7 +163,7 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
                             />
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button auto onPress={charge}>
+                                <Button auto onPress={charge} onClick={closeHandler}>
                                     충전
                                 </Button>
                             </Modal.Footer>
