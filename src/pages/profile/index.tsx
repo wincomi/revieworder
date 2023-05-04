@@ -18,10 +18,16 @@ interface ProfileEditPageProps {
     user: User,
 
     /// 연결된 SNS 계정 종류
-    accountProviders: string[]
+    accountProviders: string[],
+
+    /// TOSS_CLIENT_KEY
+    tossClientKey: string,
+
+    /// NEXTAUTH_URL
+    tossRedirectURL: string
 }
 
-export default function profileEdit ({ user, accountProviders }: ProfileEditPageProps) {
+export default function profileEdit ({ user, accountProviders, tossClientKey, tossRedirectURL }: ProfileEditPageProps) {
 
     // input default 값들
     const [placeholder, setPlaceHolder] = useState({
@@ -61,39 +67,35 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
         setIsLoadingUpdate(false)
     }
 
-    // 토스 결제 창 불러오는 키
-    const clientKey = process.env.TOSS_CLIENT_KEY
-
     // 충전
     const charge = async () => {
         setIsLoadingUpdate(true)
 
-        const tossPayments = await loadTossPayments(clientKey)
+        const tossPayments = await loadTossPayments(tossClientKey)
+
         // 주문번호 랜덤 생성
         const orderId = Math.random().toString(36).substring(2, 12)
-
+        
         if (user.name != null) {
-                // 결제 창 생성
-                tossPayments.requestPayment('카드',{ // 결제수단 파라미터
+            // 결제 창 생성
+            tossPayments.requestPayment('카드', { // 결제수단 파라미터
                 // 결제 정보 파라미터
                 amount: point,
                 orderId: orderId,
                 orderName: '리뷰오더 포인트 충전',
                 customerName: user.name,
-                // 환경변수 쓰면 작동 안됨..
-                successUrl: `https://revieworder.kr:3000/success?userId=${user.id}`,
-                failUrl: 'https://revieworder.kr:3000/fail',
+                successUrl: `${tossRedirectURL}/success?userId=${user.id}`,
+                failUrl: `${tossRedirectURL}/fail`,
             })
             // 결제 실패 시
             .catch(function (error) {
                 if (error.code === 'USER_CANCEL') {
-                // 결제 고객이 결제창을 닫았을 때 에러 처리
+                    // 결제 고객이 결제창을 닫았을 때 에러 처리
                 } else if (error.code === 'INVALID_CARD_COMPANY') {
-                // 유효하지 않은 카드 코드에 대한 에러 처리
+                    // 유효하지 않은 카드 코드에 대한 에러 처리
                 }
             })
         }
-    
 
         setIsLoadingUpdate(false)
     }
@@ -117,7 +119,6 @@ export default function profileEdit ({ user, accountProviders }: ProfileEditPage
         setVisible(false);
         console.log("closed");
     }
-
 
     return (
         <>
@@ -256,7 +257,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         return {
             props: { 
                 user: user, 
-                accountProviders: accountProviders
+                accountProviders: accountProviders,
+                tossClientKey: process.env.TOSS_CLIENT_KEY,
+                tossRedirectURL: process.env.NEXTAUTH_URL
             }
         }
     } catch {
