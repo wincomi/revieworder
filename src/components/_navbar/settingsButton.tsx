@@ -15,7 +15,7 @@ export default () => {
   return (
     <Dropdown>
       <Navbar.Item>
-        <Dropdown.Button auto flat icon={<BsGearFill />} />
+        <Dropdown.Button auto flat light rounded icon={<BsGearFill />} />
       </Navbar.Item>
       <Dropdown.Menu
         color="primary"
