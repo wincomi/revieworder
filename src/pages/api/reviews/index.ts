@@ -1,26 +1,28 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from "next"
 import prisma from "@/libs/prismadb"
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]'
-import { Prisma, Review } from '@prisma/client'
+import { getServerSession } from "next-auth"
+import { authOptions } from "../auth/[...nextauth]"
+import { Prisma, Review } from "@prisma/client"
 
 // API Request 타입 지정
 export interface ReviewAPIRequest extends NextApiRequest {
     body: {
-        // 관리 할 리뷰  
+        // 관리 할 리뷰
         review?: Review
-
     }
 }
 
 // API Response 타입 지정
 const ReviewWithOrder = Prisma.validator<Prisma.ReviewArgs>()({
-    include: { 
-        order: { include: { 
-            store: true,
-            user: true, 
-            orderDetails: { include: { menu: true }}}}
-     }
+    include: {
+        order: {
+            include: {
+                store: true,
+                user: true,
+                orderDetails: { include: { menu: true } },
+            },
+        },
+    },
 })
 
 export type ReviewItem = Prisma.ReviewGetPayload<typeof ReviewWithOrder>
@@ -29,7 +31,6 @@ export type ReviewAPIGETResponse = {
     data: ReviewItem[]
 }
 
-
 // 모든 리뷰 조회 및 등록 API
 export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
@@ -37,89 +38,86 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
 
     // API method에 따라 작동
     switch (req.method) {
-
         // GET (모든 리뷰 조회)
         case "GET":
             // 검색 쿼리 없으면 모두 출력
-            if (query ==""){
-
+            if (query == "") {
                 const readResult = await prisma.review.findMany({
-                    include: { 
+                    include: {
                         order: {
                             include: {
                                 store: true,
-                                user: true, 
+                                user: true,
                                 orderDetails: {
-                                    include: { menu: true }
-                                }
-                            }
-                        }
+                                    include: { menu: true },
+                                },
+                            },
+                        },
                     },
                     orderBy: [
                         {
-                            order: { userId: 'desc' }
+                            order: { userId: "desc" },
                         },
                         {
-                            rating: 'desc'
-                        }
-                    ]
+                            rating: "desc",
+                        },
+                    ],
                 })
 
                 if (readResult != null) {
                     // 성공!!
                     res.status(200).json({
-                        data: readResult
+                        data: readResult,
                     })
                 } else {
                     res.status(404).json({
                         error: {
                             code: 400,
-                            message: "리뷰 조회를 실패하였습니다."
-                        }
+                            message: "리뷰 조회를 실패하였습니다.",
+                        },
                     })
                 }
                 break
-
             } else {
                 const readResult = await prisma.review.findMany({
-                    where: { 
+                    where: {
                         OR: [
-                            { content: { contains: query }},
-                            { order: { store: { name: { contains: query }}}}
-                        ]
+                            { content: { contains: query } },
+                            { order: { store: { name: { contains: query } } } },
+                        ],
                     },
-                    include: { 
+                    include: {
                         order: {
                             include: {
                                 store: true,
-                                user: true, 
+                                user: true,
                                 orderDetails: {
-                                    include: { menu: true }
-                                }
-                            }
-                        }
+                                    include: { menu: true },
+                                },
+                            },
+                        },
                     },
                     orderBy: [
                         {
-                            order: { userId: 'desc' }
+                            order: { userId: "desc" },
                         },
                         {
-                            rating: 'desc'
-                        }
-                    ]
+                            rating: "desc",
+                        },
+                    ],
                 })
 
                 if (readResult != null) {
                     // 성공!!
                     res.status(200).json({
-                        data: readResult
+                        data: readResult,
                     })
                 } else {
                     res.status(404).json({
                         error: {
                             code: 400,
-                            message: "리뷰 조회를 실패하였습니다."
-                        }
+                            message: "리뷰 조회를 실패하였습니다.",
+                        },
                     })
                 }
                 break
@@ -133,53 +131,53 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
             if (session == null) {
                 res.status(401).json({
                     error: {
-                    code: 401,
-                    message: "세션이 존재하지 않습니다."
-                    }
+                        code: 401,
+                        message: "세션이 존재하지 않습니다.",
+                    },
                 })
-            return
+                return
             }
 
             if (review == null || review == undefined) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "리뷰 값은 필수입니다."
-                    }
+                        message: "리뷰 값은 필수입니다.",
+                    },
                 })
                 return
             }
-            
+
             if (review.content == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "리뷰 내용을 입력해주세요."
-                    }
+                        message: "리뷰 내용을 입력해주세요.",
+                    },
                 })
             } else {
                 const createResult = await prisma.review.create({
-                    // 리뷰 
+                    // 리뷰
                     data: {
                         content: review.content,
                         image: review.image,
 
                         // 외래키 연결
                         order: {
-                            connect: { id: review.orderId }
-                        }
+                            connect: { id: review.orderId },
+                        },
                     },
                     include: {
                         order: true,
-                    }
+                    },
                 })
 
                 if (createResult != null) {
                     // 성공!!
                     res.status(200).json({
-                        data: createResult
+                        data: createResult,
                     })
-                } 
+                }
                 break
             }
 

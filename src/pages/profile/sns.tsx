@@ -25,7 +25,7 @@ export default ({ currentProviders }: SNSPageProvider) => {
                     <Grid>
                         <Text h2>카카오</Text>
                     </Grid>
-                    <Grid css={{ml: 'auto'}}>
+                    <Grid css={{ ml: 'auto' }}>
                         <Button auto flat color="warning">연동</Button>
                     </Grid>
                 </Grid.Container>
@@ -33,7 +33,7 @@ export default ({ currentProviders }: SNSPageProvider) => {
                     <Grid>
                         <Text h2>네이버</Text>
                     </Grid>
-                    <Grid css={{ml: 'auto'}}>
+                    <Grid css={{ ml: 'auto' }}>
                         <Button auto flat color="success">연동</Button>
                     </Grid>
                 </Grid.Container>
@@ -41,45 +41,45 @@ export default ({ currentProviders }: SNSPageProvider) => {
                     <Grid>
                         <Text h2>인스타그램</Text>
                     </Grid>
-                    <Grid css={{ml: 'auto'}}>
+                    <Grid css={{ ml: 'auto' }}>
                         <Grid.Container alignItems="center" gap={1}>
-                           <Grid><Text b>리뷰 자동 등록</Text></Grid>
-                           <Grid><Switch /></Grid>
+                            <Grid><Text b>리뷰 자동 등록</Text></Grid>
+                            <Grid><Switch /></Grid>
                         </Grid.Container>
                     </Grid>
                     <Spacer />
                     <Grid>
-                        <Button auto flat color="error" css={{ml: 'auto'}}>연동</Button>
+                        <Button auto flat color="error" css={{ ml: 'auto' }}>연동</Button>
                     </Grid>
                 </Grid.Container>
                 <Grid.Container alignItems="center">
                     <Grid>
                         <Text h2>페이스북</Text>
                     </Grid>
-                    <Grid css={{ml: 'auto'}}>
+                    <Grid css={{ ml: 'auto' }}>
                         <Grid.Container alignItems="center" gap={1}>
-                           <Grid><Text b>리뷰 자동 등록</Text></Grid>
-                           <Grid><Switch /></Grid>
+                            <Grid><Text b>리뷰 자동 등록</Text></Grid>
+                            <Grid><Switch /></Grid>
                         </Grid.Container>
                     </Grid>
                     <Spacer />
                     <Grid>
-                        <Button auto flat color="secondary" css={{ml: 'auto'}}>연동</Button>
+                        <Button auto flat color="secondary" css={{ ml: 'auto' }}>연동</Button>
                     </Grid>
                 </Grid.Container>
                 <Grid.Container alignItems="center">
                     <Grid>
                         <Text h2>트위터</Text>
                     </Grid>
-                    <Grid css={{ml: 'auto'}}>
+                    <Grid css={{ ml: 'auto' }}>
                         <Grid.Container alignItems="center" gap={1}>
-                           <Grid><Text b>리뷰 자동 등록</Text></Grid>
-                           <Grid><Switch /></Grid>
+                            <Grid><Text b>리뷰 자동 등록</Text></Grid>
+                            <Grid><Switch /></Grid>
                         </Grid.Container>
                     </Grid>
                     <Spacer />
                     <Grid>
-                        <Button auto flat color="primary" css={{ml: 'auto'}}>연동</Button>
+                        <Button auto flat color="primary" css={{ ml: 'auto' }}>연동</Button>
                     </Grid>
                 </Grid.Container>
             </Layout>

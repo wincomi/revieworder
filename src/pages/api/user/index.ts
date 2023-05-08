@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from "next"
 import prisma from "@/libs/prismadb"
-import { User } from '@prisma/client'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]'
+import { User } from "@prisma/client"
+import { getServerSession } from "next-auth"
+import { authOptions } from "../auth/[...nextauth]"
 
 // 모든 유저 조회 제거, 모든 유저 삭제 제거
 
@@ -10,8 +10,8 @@ import { authOptions } from '../auth/[...nextauth]'
 export interface UserAPIRequest extends NextApiRequest {
     body: {
         /// 현재 세션의 유저 정보
-        // 수정, 삭제 같은 경우 다른 정보도 받아와야해서 셰션 대신 타입 지정 
-        user?: User,
+        // 수정, 삭제 같은 경우 다른 정보도 받아와야해서 셰션 대신 타입 지정
+        user?: User
     }
 }
 
@@ -29,8 +29,8 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
         res.status(401).json({
             error: {
                 code: 401,
-                message: "세션이 존재하지 않습니다."
-            }
+                message: "세션이 존재하지 않습니다.",
+            },
         })
         return
     }
@@ -40,37 +40,35 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
 
     // API method에 따라 작동
     switch (req.method) {
-
         // GET (셰션 내 유저 정보 조회)
         case "GET":
-            
-            const readResult = await prisma.user.findUnique({where: { id : userId }})
+            const readResult = await prisma.user.findUnique({
+                where: { id: userId },
+            })
 
             if (readResult != null) {
                 // 성공!!
                 res.status(200).json({
-                    data: readResult
+                    data: readResult,
                 })
             } else {
                 res.status(404).json({
                     error: {
                         code: 400,
-                        message: "유저 정보 조회를 실패하였습니다."
-                    }
+                        message: "유저 정보 조회를 실패하였습니다.",
+                    },
                 })
             }
             break
 
-
         // CREATE (sns 연동 외 회원가입)
         case "POST":
-
             if (user == undefined || user == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "user 값은 필수입니다."
-                    }
+                        message: "user 값은 필수입니다.",
+                    },
                 })
                 return
             }
@@ -84,34 +82,33 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
                     phoneNumber: user.phoneNumber?.replace(/-/g, ""), // 휴대폰 번호 하이픈(-) 제거
                     image: user.image,
                     emailVerified: user.emailVerified,
-                }
+                },
             })
 
             if (createResult != null) {
                 // 성공!!
                 res.status(200).json({
-                    data: createResult
+                    data: createResult,
                 })
             } else {
                 // 결과 값이 없을때 오류
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "유저를 등록할 수 없습니다."
-                    }
+                        message: "유저를 등록할 수 없습니다.",
+                    },
                 })
             }
             break
 
         // PUT (userId에 해당되는 유저 정보 수정)
         case "PUT":
-        
             if (user == undefined || user == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "user 값은 필수입니다."
-                    }
+                        message: "user 값은 필수입니다.",
+                    },
                 })
                 return
             }
@@ -122,26 +119,27 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
                 data: {
                     // null : no value, undefined : do nothing => 변경사항 없으면 변경X
                     name: user.name ?? undefined,
-                    email: user.email ?? undefined, 
-                    password: user.password ?? undefined, 
-                    phoneNumber: user.phoneNumber?.replace(/-/g, "") ?? undefined, // 휴대폰 번호 하이픈(-) 제거
-                    image: user.image ?? undefined, 
-                    emailVerified: user.emailVerified ?? undefined ,
-                    allergy: user.allergy ?? undefined
-                }
+                    email: user.email ?? undefined,
+                    password: user.password ?? undefined,
+                    phoneNumber:
+                        user.phoneNumber?.replace(/-/g, "") ?? undefined, // 휴대폰 번호 하이픈(-) 제거
+                    image: user.image ?? undefined,
+                    emailVerified: user.emailVerified ?? undefined,
+                    allergy: user.allergy ?? undefined,
+                },
             })
 
             if (putResult != null) {
                 res.status(200).json({
-                    data: putResult
+                    data: putResult,
                 })
             } else {
                 // 수정 실패.
                 res.status(404).json({
                     error: {
                         code: 400,
-                        message: "해당 유저를 수정할 수 없습니다."
-                    }
+                        message: "해당 유저를 수정할 수 없습니다.",
+                    },
                 })
             }
 
@@ -151,21 +149,23 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
 
         // DELETE (userId에 해당되는 유저 탈퇴)
         case "DELETE":
-            const deleteResult = await prisma.user.delete({ where: { id: userId }})
+            const deleteResult = await prisma.user.delete({
+                where: { id: userId },
+            })
 
-            res.status(200).json({ 
-                data: deleteResult 
+            res.status(200).json({
+                data: deleteResult,
             })
 
             break
 
         default:
             // API method가 잘못되었을 때 오류
-            res.status(400).json({ 
+            res.status(400).json({
                 error: {
                     code: 400,
-                    message: "잘못된 요청입니다."
-                }
+                    message: "잘못된 요청입니다.",
+                },
             })
     }
 }

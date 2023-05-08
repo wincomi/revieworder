@@ -44,7 +44,7 @@ export async function postInstagramMedia(
     if (canPost.data.quota_usage == 25) {
         return "25개 이상 게시할 수 없습니다."
     }
-    
+
     // container 가져오기
     let container = await fetch(
         `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/media?image=${image}&caption=${caption}&access_token=${account.access_token}`,
@@ -65,7 +65,7 @@ export async function postInstagramMedia(
         `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/media_publish?creation_id=${container}&access_token=${account.access_token}`
     )
     //}
-    
+
     return await mediaId.json()
 }
 

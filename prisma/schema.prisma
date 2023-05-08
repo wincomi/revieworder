@@ -1,12 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 
-  relationMode = "prisma"
+    relationMode = "prisma"
 }
 
 // NextAuth Adapter (@next-auth/prisma-adapter)
@@ -14,309 +14,311 @@ datasource db {
 
 /// 계정 (NextAuth)
 model Account {
-  /// SNS 계정 고유 번호
-  id                 String  @id @default(cuid())
+    /// SNS 계정 고유 번호
+    id String @id @default(cuid())
 
-  // 아래는 AdapterAccount interface에서 필수로 요구
+    // 아래는 AdapterAccount interface에서 필수로 요구
 
-  /// User 테이블의 id의 외래키
-  userId             String
+    /// User 테이블의 id의 외래키
+    userId String
 
-  /// 이 계정의 프로바이더 타입 ("oauth" | "email" | "credentials")
-  type               String
+    /// 이 계정의 프로바이더 타입 ("oauth" | "email" | "credentials")
+    type String
 
-  /// 이 계정에서 사용된 프로바이더의 ID
-  provider           String
+    /// 이 계정에서 사용된 프로바이더의 ID
+    provider String
 
-  /// 이 값은 Account를 생성하는데 사용된 프로바이더의 종류에 따라 다름.
-  /// - oauth: `profile()` callback으로 반환된 OAuth 계정의 아이디.
-  /// - email: 유저의 이메일 주소
-  /// - credential: `authorize()` callback으로 반환된 `id`
-  providerAccountId  String
+    /// 이 값은 Account를 생성하는데 사용된 프로바이더의 종류에 따라 다름.
+    /// - oauth: `profile()` callback으로 반환된 OAuth 계정의 아이디.
+    /// - email: 유저의 이메일 주소
+    /// - credential: `authorize()` callback으로 반환된 `id`
+    providerAccountId String
 
-  // 아래는 OAuth에서 사용되는 TokenSet (TokenSetParameters) interface에서 필수로 요구함
-  // node_modules/openid-client/types/index.d.ts 참고
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    // 아래는 OAuth에서 사용되는 TokenSet (TokenSetParameters) interface에서 필수로 요구함
+    // node_modules/openid-client/types/index.d.ts 참고
+    refresh_token String? @db.Text
+    access_token  String? @db.Text
+    expires_at    Int?
+    token_type    String?
+    scope         String?
+    id_token      String? @db.Text
+    session_state String?
+    user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Warning 해결을 위한 index
-  // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
-  @@index([userId])
-
-  @@unique([provider, providerAccountId])
+    @@unique([provider, providerAccountId])
+    // Warning 해결을 위한 index
+    // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
+    @@index([userId])
 }
 
 /// 세션 (NextAuth)
 /// 데이터베이스 세션을 위한 모델. JSON 웹 토큰이 활성화되어 있으면 사용되지 않음.
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Warning 해결을 위한 index
-  // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
-  @@index([userId])
+    // Warning 해결을 위한 index
+    // With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood.
+    @@index([userId])
 }
 
 /// 유저 (NextAuth)
 /// NextAuth으로 첫 로그인 후 자동으로 생성됨.
 model User {
-  /// 고유 번호
-  id            String    @id @default(cuid())
-  name          String?
+    /// 고유 번호
+    id   String  @id @default(cuid())
+    name String?
 
-  /// SNS 연동 외 유저를 위한 ID
-  email         String?   @unique
+    /// SNS 연동 외 유저를 위한 ID
+    email String? @unique
 
-  /// 이메일 인증된 시간
-  emailVerified DateTime?
-  
-  /// 프로필 사진 URL
-  /// Facebook 로그인시 이미지 URL이 길기 때문에 에러가 발생하여 임의로 길이를 늘림 (기본: varchar(191))
-  image         String?   @db.Text
+    /// 이메일 인증된 시간
+    emailVerified DateTime?
 
-  accounts      Account[]
-  
-  sessions      Session[]
+    /// 프로필 사진 URL
+    /// Facebook 로그인시 이미지 URL이 길기 때문에 에러가 발생하여 임의로 길이를 늘림 (기본: varchar(191))
+    image String? @db.Text
 
-  /// SNS 연동 외 유저를 위한 비밀번호
-  password      String?
+    accounts Account[]
 
-  /// 휴대폰 번호
-  /// 형식: 01012345678
-  phoneNumber   String?   @unique
+    sessions Session[]
 
-  // 회원 알러지 등록 text
-  allergy       String?
+    /// SNS 연동 외 유저를 위한 비밀번호
+    password String?
 
-  /// 리뷰오더 머니
-  money         Int @default(0)
+    /// 휴대폰 번호
+    /// 형식: 01012345678
+    phoneNumber String? @unique
 
-  /// 관리하는 매장들
-  stores        Store[]
+    // 회원 알러지 등록 text
+    allergy String?
 
-  // 내 주문 내역들 (Order)
-  orders        Order[]
+    /// 리뷰오더 머니
+    money Int @default(0)
 
-  // 내 장바구니 메뉴들
-  carts         Cart[]
+    /// 관리하는 매장들
+    stores Store[]
+
+    // 내 주문 내역들 (Order)
+    orders Order[]
+
+    // 내 장바구니 메뉴들
+    carts Cart[]
 }
 
 /// 확인 토큰 (NextAuth)
 /// 비밀번호 없는 로그인을 위해 사용함. 한 유저가 여러 토큰을 가질 수 있음.
 model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+    identifier String
+    token      String   @unique
+    expires    DateTime
 
-  @@unique([identifier, token])
+    @@unique([identifier, token])
 }
 
 /// SMS 인증번호
 model VerificationCode {
-  phoneNumber String @unique
+    phoneNumber String @unique
 
-  /// 인증번호 (6자리 숫자)
-  verificationCode String
+    /// 인증번호 (6자리 숫자)
+    verificationCode String
 
-  /// 인증번호 생성 시간
-  regdate DateTime @default(now())
+    /// 인증번호 생성 시간
+    regdate DateTime @default(now())
 }
 
 /// 매장 모델
 model Store {
-  /// 고유 번호
-  id Int @id @default(autoincrement())
+    /// 고유 번호
+    id Int @id @default(autoincrement())
 
-  /// 매장 이름
-  name String
+    /// 매장 이름
+    name String
 
-  /// 매장 설명 (해시태그 포함)
-  description String?
+    /// 매장 설명 (해시태그 포함)
+    description String?
 
-  /// 매장 주소
-  address String?
+    /// 매장 주소
+    address String?
 
-  /// 매장 이미지
-  image String?
+    /// 매장 이미지
+    image String?
 
-  /// 매장 전화 번호
-  phoneNumber String?
+    /// 매장 전화 번호
+    phoneNumber String?
 
-  /// 매장 관리 유저
-  userId String
+    /// 매장 관리 유저
+    userId String
 
-  // Error validating field `stores` in model `User`: The relation field `stores` on model `User` is missing an opposite relation field on the model `Store`. Either run `prisma format` or add it manually.
-  user User @relation(fields: [userId], references: [id])
+    // Error validating field `stores` in model `User`: The relation field `stores` on model `User` is missing an opposite relation field on the model `Store`. Either run `prisma format` or add it manually.
+    user User @relation(fields: [userId], references: [id])
 
-  @@index([userId])
+    /// 매장 내 메뉴
+    menus Menu[]
 
-  /// 매장 내 메뉴
-  menus Menu[]
+    // 매장에서 판매된 주문내역들
+    orders Order[]
 
-  // 매장에서 판매된 주문내역들
-  orders Order[]
-
+    @@index([userId])
 }
 
 // 매장 메뉴
 model Menu {
-  /// 메뉴 고유번호
-  id Int @id @default(autoincrement())
+    /// 메뉴 고유번호
+    id Int @id @default(autoincrement())
 
-  /// 메뉴 이름
-  name String
+    /// 메뉴 이름
+    name String
 
-  /// 메뉴 설명
-  description String?
+    /// 메뉴 설명
+    description String?
 
-  /// 메뉴 가격
-  price Int @default(0)
-  
-  /// 메뉴 이미지
-  image String?
+    /// 메뉴 가격
+    price Int @default(0)
 
-  /// 메뉴 구매 가능 여부
-  status MenuStatus @default(AVAILABLE)
+    /// 메뉴 이미지
+    image String?
 
-  // 매장 FK키
-  storeId Int
-  store Store @relation(fields: [storeId], references: [id])
+    /// 메뉴 구매 가능 여부
+    status MenuStatus @default(AVAILABLE)
 
-  /// index 추가 사유
-  // Warning : With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. 
-  @@index([storeId])
+    // 매장 FK키
+    storeId Int
+    store   Store @relation(fields: [storeId], references: [id])
 
-  // 주문상세 메뉴들
-  orderDetails OrderDetail[]
+    // 주문상세 메뉴들
+    orderDetails OrderDetail[]
 
-  // 장바구니에 추가된 메뉴들
-  carts Cart[]
+    // 장바구니에 추가된 메뉴들
+    carts Cart[]
+
+    /// index 추가 사유
+    // Warning : With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. 
+    @@index([storeId])
 }
 
 /// AVAILABLE: 판매 가능
 /// UNAVAILABLE: 판매 불가
 enum MenuStatus {
-  AVAILABLE
-  UNAVAILABLE
+    AVAILABLE
+    UNAVAILABLE
 }
 
 /// Order (최종 주문 내역) 
 // 거래 내역보면 결제자, 결제장소랑, 최종금액 표시 뜨는 것 나타냄 
 model Order {
-  // 주문 고유 번호
-  id String @id @default(cuid())
+    // 주문 고유 번호
+    id String @id @default(cuid())
 
-  // 매장 FK키
-  storeId Int
-  store Store @relation(fields: [storeId], references: [id])
-  @@index([storeId])
+    // 매장 FK키
+    storeId Int
+    store   Store @relation(fields: [storeId], references: [id])
 
-  // 유저 FK키
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  @@index([userId])
-  
-  // 주문일자
-  orderDate DateTime @default(now())
+    // 유저 FK키
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 
-  status OrderStatus @default(REQUESTED)
+    // 주문일자
+    orderDate DateTime @default(now())
 
-  orderDetails OrderDetail[]
+    status OrderStatus @default(REQUESTED)
 
-  // 리뷰에 개시된 주문들
-  // 리뷰랑 주문이랑 1:1 or 1:0 관계
-  review Review?
+    orderDetails OrderDetail[]
+
+    // 리뷰에 개시된 주문들
+    // 리뷰랑 주문이랑 1:1 or 1:0 관계
+    review Review?
+
+    @@index([storeId])
+    @@index([userId])
 }
 
 enum OrderStatus {
-  REQUESTED // 주문 요청
-  CONFIRMED // 주문 확인
-  COMPLETED // 주문 완료
-  CANCELED // 주문 취소
+    REQUESTED // 주문 요청
+    CONFIRMED // 주문 확인
+    COMPLETED // 주문 완료
+    CANCELED // 주문 취소
 }
 
 // 주문 상세
 model OrderDetail {
-  // 주문 상세 고유 번호
-  id String @id @default(cuid())
+    // 주문 상세 고유 번호
+    id String @id @default(cuid())
 
-  // 주문번호
-  orderId String
-  // order 삭제 시 orderDetail 도 삭제
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  @@index([orderId])
+    // 주문번호
+    orderId String
+    // order 삭제 시 orderDetail 도 삭제
+    order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  // 메뉴번호
-  menuId Int
-  menu Menu @relation(fields: [menuId], references: [id])
-  @@index([menuId])
+    // 메뉴번호
+    menuId Int
+    menu   Menu @relation(fields: [menuId], references: [id])
 
-  // 수량
-  amount Int
+    // 수량
+    amount Int
 
-  // 가격
-  price Int
+    // 가격
+    price Int
+
+    @@index([orderId])
+    @@index([menuId])
 }
 
 // 장바구니에 추가된 메뉴들
 model Cart {
-  // 장바구니 고유 번호
-  id String @id @default(cuid())
+    // 장바구니 고유 번호
+    id String @id @default(cuid())
 
-  // 유저 FK키
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  @@index([userId])
+    // 유저 FK키
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 
-  // 장바구니 FK키
-  menuId Int
-  menu Menu @relation(fields: [menuId], references: [id])
-  @@index([menuId])
+    // 장바구니 FK키
+    menuId Int
+    menu   Menu @relation(fields: [menuId], references: [id])
 
-  // 주문 수량
-  amount Int @default(1)
+    // 주문 수량
+    amount Int @default(1)
 
-  // 장바구니 추가 시간
-  regdate DateTime @default(now())
+    // 장바구니 추가 시간
+    regdate DateTime @default(now())
+
+    @@index([userId])
+    @@index([menuId])
 }
 
 model Review {
-  // 리뷰 고유 번호
-  id Int @id @default(autoincrement())
+    // 리뷰 고유 번호
+    id Int @id @default(autoincrement())
 
-  // 유저 FK키 삭제
-  // 이유: order에서 user가 이중 참조가 일어나서 에러! 어차피 order에서 userId를 받아올 수 있어서 삭제
+    // 유저 FK키 삭제
+    // 이유: order에서 user가 이중 참조가 일어나서 에러! 어차피 order에서 userId를 받아올 수 있어서 삭제
 
-  // 주문내역 FK키
-  /// 주문내역에 맞는 리뷰만 제작 가능
-  orderId String @unique
-  order Order @relation(fields: [orderId], references: [id])
-  @@index([orderId])
-  
-  /// 내용 (해시태그 등등)
-  content String
+    // 주문내역 FK키
+    /// 주문내역에 맞는 리뷰만 제작 가능
+    orderId String @unique
+    order   Order  @relation(fields: [orderId], references: [id])
 
-  // 좋아요 수
-  favorite Int @default(0)
+    /// 내용 (해시태그 등등)
+    content String
 
-  // 조회 수
-  views  Int @default(0)
-  
-  // 리뷰 이미지
-  image String?
+    // 좋아요 수
+    favorite Int @default(0)
 
-  // 리뷰 별점 or 평점
-  rating Int @db.TinyInt @default(0)
+    // 조회 수
+    views Int @default(0)
 
-  // 리뷰 생성일자
-  createTime DateTime @default(now())
+    // 리뷰 이미지
+    image String?
+
+    // 리뷰 별점 or 평점
+    rating Int @default(0) @db.TinyInt
+
+    // 리뷰 생성일자
+    createTime DateTime @default(now())
+
+    @@index([orderId])
 }

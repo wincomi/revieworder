@@ -30,18 +30,18 @@ export default function Home({ reviewCards }: ReviewPageProps) {
     }
 
     return (
-        <>        
+        <>
             <Head>
                 <title>리뷰오더</title>
             </Head>
             <Layout>
                 <Text h1>둘러보기</Text>
                 <form onSubmit={sumbit}>
-                    <Grid.Container justify="flex-start" css={{mb: '$8'}}>
+                    <Grid.Container justify="flex-start" css={{ mb: '$8' }}>
                         <Grid>
                             <Input
-                                size="xl" 
-                                shadow={false} 
+                                size="xl"
+                                shadow={false}
                                 clearable
                                 placeholder="검색"
                                 initialValue={query}
@@ -50,16 +50,16 @@ export default function Home({ reviewCards }: ReviewPageProps) {
                                 onChange={(e) => setQuery(e.currentTarget.value)}
                             />
                         </Grid>
-                        <Grid css={{ml: '$4'}}>
+                        <Grid css={{ ml: '$4' }}>
                             <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>검색</Button>
                         </Grid>
                     </Grid.Container>
                 </form>
-                <Grid.Container gap={2} alignItems="stretch" css={{px: 0}}>
+                <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {reviewCards.map((item: ReviewItem, index: Key) => (
                         <Grid xs={12} sm={6} lg={4} key={item.id}>
                             <ReviewCard
-                                review={item} 
+                                review={item}
                                 onChangeQuery={(data) => setQuery(data)}
                             />
                         </Grid>
@@ -70,7 +70,7 @@ export default function Home({ reviewCards }: ReviewPageProps) {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ( context ) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
     // 검색 쿼리
     const search = context.query.search ?? ""
 

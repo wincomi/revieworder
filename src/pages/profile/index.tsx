@@ -27,7 +27,7 @@ interface ProfileEditPageProps {
     tossRedirectURL: string
 }
 
-export default function profileEdit ({ user, accountProviders, tossClientKey, tossRedirectURL }: ProfileEditPageProps) {
+export default function profileEdit({ user, accountProviders, tossClientKey, tossRedirectURL }: ProfileEditPageProps) {
 
     // input default 값들
     const [placeholder, setPlaceHolder] = useState({
@@ -75,7 +75,7 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
 
         // 주문번호 랜덤 생성
         const orderId = Math.random().toString(36).substring(2, 12)
-        
+
         if (user.name != null) {
             // 결제 창 생성
             tossPayments.requestPayment('카드', { // 결제수단 파라미터
@@ -87,14 +87,14 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
                 successUrl: `${tossRedirectURL}/success?userId=${user.id}`,
                 failUrl: `${tossRedirectURL}/fail`,
             })
-            // 결제 실패 시
-            .catch(function (error) {
-                if (error.code === 'USER_CANCEL') {
-                    // 결제 고객이 결제창을 닫았을 때 에러 처리
-                } else if (error.code === 'INVALID_CARD_COMPANY') {
-                    // 유효하지 않은 카드 코드에 대한 에러 처리
-                }
-            })
+                // 결제 실패 시
+                .catch(function (error) {
+                    if (error.code === 'USER_CANCEL') {
+                        // 결제 고객이 결제창을 닫았을 때 에러 처리
+                    } else if (error.code === 'INVALID_CARD_COMPANY') {
+                        // 유효하지 않은 카드 코드에 대한 에러 처리
+                    }
+                })
         }
 
         setIsLoadingUpdate(false)
@@ -106,9 +106,9 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
             .replace(/[^0-9]/g, '')
             .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "")
 
-            // 전화번호 value 값 저장 -- 124 주석 참고
-            // 나중에 hyPhen 처리 수정 필요 !! (01056490485를 -삽입 및 제거 필요 - 현재는 타이핑때만 작동)
-            setMutableUser({ ...mutableUser, phoneNumber: e.currentTarget.value })
+        // 전화번호 value 값 저장 -- 124 주석 참고
+        // 나중에 hyPhen 처리 수정 필요 !! (01056490485를 -삽입 및 제거 필요 - 현재는 타이핑때만 작동)
+        setMutableUser({ ...mutableUser, phoneNumber: e.currentTarget.value })
     }
 
     // 충전 창
@@ -128,7 +128,7 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
             <Layout>
                 <Text h1>내 프로필</Text>
                 {accountProviders.length > 0 &&
-                    <Card css={{mb: '$12', $$cardColor: '$colors$gradient' }}>
+                    <Card css={{ mb: '$12', $$cardColor: '$colors$gradient' }}>
                         <Card.Body>
                             <Text b color="white">현재 계정이 {accountProviders[0].toLocaleUpperCase()}(으)로 연결되어있습니다.</Text>
                         </Card.Body>
@@ -138,7 +138,7 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
                 <Card variant="flat">
                     <Card.Body>
                         <Text b>리뷰오더 머니</Text>
-                        <Text h3 css={{mb: 0}}>{mutableUser.money.toLocaleString()} 원</Text>
+                        <Text h3 css={{ mb: 0 }}>{mutableUser.money.toLocaleString()} 원</Text>
                         <Button flat auto color="warning" size="sm" css={{ mt: 8, ml: 'auto' }} icon={<TbPigMoney />} onPress={handler}>충전</Button>
                         <Modal
                             closeButton
@@ -148,20 +148,20 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
                             onClose={closeHandler}
                         >
                             <Modal.Header>
-                            <Text id="modal-title" size={18}>
-                                포인트 충전
-                            </Text>
+                                <Text id="modal-title" size={18}>
+                                    포인트 충전
+                                </Text>
                             </Modal.Header>
                             <Modal.Body>
-                            <Input
-                                clearable
-                                bordered
-                                fullWidth
-                                color="primary"
-                                size="lg"
-                                placeholder={String(point)}
-                                onChange={(e) => setPoint(Number(e.currentTarget.value))}
-                            />
+                                <Input
+                                    clearable
+                                    bordered
+                                    fullWidth
+                                    color="primary"
+                                    size="lg"
+                                    placeholder={String(point)}
+                                    onChange={(e) => setPoint(Number(e.currentTarget.value))}
+                                />
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button auto onPress={charge} onClick={closeHandler}>
@@ -171,44 +171,44 @@ export default function profileEdit ({ user, accountProviders, tossClientKey, to
                         </Modal>
                     </Card.Body>
                 </Card>
-                
+
                 <Spacer />
 
                 <form>
                     <fieldset disabled={isLoadingUpdate} style={{ margin: 0, padding: 0, borderWidth: '0' }}>
-                        <Input 
+                        <Input
                             type="text"
                             name="name"
                             label="이름"
                             placeholder={placeholder.name}
-                            initialValue={mutableUser.name ?? undefined} 
+                            initialValue={mutableUser.name ?? undefined}
                             shadow={false}
                             fullWidth={true}
                             helperText="주문 혹은 리뷰 작성시 나타나는 이름을 입력하세요."
                             onChange={(e) => setMutableUser({ ...mutableUser, name: e.currentTarget.value })}
-                            />
+                        />
                         <Spacer y={2} />
-                        <Input 
-                            type="email" 
+                        <Input
+                            type="email"
                             label="이메일"
                             placeholder={placeholder.email}
-                            initialValue={mutableUser.email ?? undefined} 
+                            initialValue={mutableUser.email ?? undefined}
                             shadow={false}
                             fullWidth={true}
                             onChange={(e) => setMutableUser({ ...mutableUser, email: e.currentTarget.value })}
-                            />
+                        />
                         <Spacer y={2} />
-                        <Input 
-                            type="tel" 
+                        <Input
+                            type="tel"
                             label="휴대폰 번호"
                             placeholder={placeholder.tel}
-                            initialValue={mutableUser.phoneNumber ?? undefined} 
+                            initialValue={mutableUser.phoneNumber ?? undefined}
                             shadow={false}
                             fullWidth={true}
 
                             // onChange에 이벤트 2개를 동시에 못해서 autoHyphen에서 value값 저장
                             onChange={autoHyphen}
-                            />
+                        />
                         <Spacer y={2} />
                         <Textarea
                             // 초기 TextArea 크기 ex) 5줄
@@ -255,8 +255,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         const accountProviders = await getAccountProviders(user.id)
 
         return {
-            props: { 
-                user: user, 
+            props: {
+                user: user,
                 accountProviders: accountProviders,
                 tossClientKey: process.env.TOSS_CLIENT_KEY,
                 tossRedirectURL: process.env.NEXTAUTH_URL
@@ -264,7 +264,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         }
     } catch {
         // JSON 파싱 실패시 리다이렉트
-        return { 
+        return {
             redirect: {
                 permanent: false,
                 destination: "/login",

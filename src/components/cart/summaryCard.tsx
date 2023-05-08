@@ -40,17 +40,17 @@ export default ({ cartItems, onPressOrderButton }: SummaryCardProps) => {
                             <Text h3>총 결제금액</Text>
                         </Grid>
                         <Grid>
-                            <Text h2 style={{textAlign: 'right'}}>
+                            <Text h2 style={{ textAlign: 'right' }}>
                                 {totalPrice.toLocaleString()}원
                             </Text>
                         </Grid>
                     </Grid.Container>
-                    <Button 
+                    <Button
                         color="gradient"
-                        css={{ width: '100%' }} 
-                        icon={<FaRegCreditCard />} 
-                        onPress={ async () => await onPressOrderButton() }>
-                            주문하기
+                        css={{ width: '100%' }}
+                        icon={<FaRegCreditCard />}
+                        onPress={async () => await onPressOrderButton()}>
+                        주문하기
                     </Button>
                 </div>
             </Card.Footer>

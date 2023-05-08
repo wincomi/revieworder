@@ -15,8 +15,8 @@ export interface NavbarProps {
     menu: NavbarMenuItem[],
     activeColor?: "default" | "primary" | "secondary" | "success" | "warning" | "error" | "neutral",
     children?: ReactNode
-}  
-  
+}
+
 export default ({ title, menu, activeColor, children }: NavbarProps) => {
     const router = useRouter()
 
@@ -25,7 +25,7 @@ export default ({ title, menu, activeColor, children }: NavbarProps) => {
             <Navbar.Brand>
                 <Link onClick={() => router.push('/')}>
                     <Text b color="text" css={{ fontSize: 20, ml: 8 }}>
-                        <ImSpoonKnife style={{ verticalAlign: 'text-bottom'}} /> {title}
+                        <ImSpoonKnife style={{ verticalAlign: 'text-bottom' }} /> {title}
                     </Text>
                 </Link>
             </Navbar.Brand>

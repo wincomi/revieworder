@@ -20,7 +20,7 @@ export default ({ store_id }: StorePageProps) => {
     )
 }
 
-export const getStaticProps: GetStaticProps<StorePageProps, StorePageParams> = async ({ params }) =>  {
+export const getStaticProps: GetStaticProps<StorePageProps, StorePageParams> = async ({ params }) => {
     return {
         props: { store_id: Number(params?.store_id) }
     }

@@ -17,12 +17,12 @@ interface CartPageProps {
 export default function CartPage({ carts }: CartPageProps) {
     const [cartItems, setCartItems] = useState(carts)
     const [totalPrice, setTotalPrice] = useState(0)
-    
+
     const setCardItem = (data: SetStateAction<CartItem | null>, index: number) => {
         if (data == null) {
             // data가 null이면 index를 삭제함
             const updateCart = cartItems.slice(index, 1)
-    
+
             setCartItems(Object.assign(updateCart))
         } else {
             const updateCart = cartItems.map((item, idx) => {
@@ -31,8 +31,8 @@ export default function CartPage({ carts }: CartPageProps) {
                 }
                 else return item
             })
-    
-            setCartItems(Object.assign(updateCart))    
+
+            setCartItems(Object.assign(updateCart))
         }
     }
 
@@ -52,7 +52,7 @@ export default function CartPage({ carts }: CartPageProps) {
                 })
             })
         }
-        
+
         result()
     }, [cartItems])
 
@@ -68,7 +68,7 @@ export default function CartPage({ carts }: CartPageProps) {
 
             body: JSON.stringify({
                 carts: cartItems,
-                money: totalPrice       
+                money: totalPrice
             })
         })
 
@@ -87,7 +87,7 @@ export default function CartPage({ carts }: CartPageProps) {
         })
 
         // if (confirm('주문내역으로 이동하시겠습니까?')) {
-            router.push('/order')
+        router.push('/order')
         // }
     }
 
@@ -117,7 +117,7 @@ export default function CartPage({ carts }: CartPageProps) {
                         <div style={{ width: '100%' }}>
                             {cartItems.map((cartItem: CartItem, index: number) => (
                                 <div key={cartItem.id}>
-                                    <CartCard 
+                                    <CartCard
                                         key={cartItem.id}
                                         cartItem={cartItem}
                                         onChangeCartItem={(data) => setCardItem(data, index)}
@@ -128,8 +128,8 @@ export default function CartPage({ carts }: CartPageProps) {
                         </div>
                     </Grid>
                     <Grid md={4} xs={12}>
-                        <SummaryCard 
-                            cartItems={cartItems} 
+                        <SummaryCard
+                            cartItems={cartItems}
                             onPressOrderButton={onPressOrderButton}
                         />
                     </Grid>
@@ -145,10 +145,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
         headers: {
             // session의 쿠키 전달
             cookie: req.headers.cookie || "",
-          }
+        }
     })
-    
-    const response = await result.json().then(data => data as CartAPIGETResponse) 
+
+    const response = await result.json().then(data => data as CartAPIGETResponse)
     const carts = response.data
 
     return {

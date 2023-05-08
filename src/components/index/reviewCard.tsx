@@ -112,13 +112,13 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                         {review.content.split("#").map((str) => {
                             if (str != '') str = "#" + str
                             if (str.startsWith("#")) {
-                                return 
-                                    <span key={str}>
-                                        <Link
-                                            onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#',''))} href={{ pathname:`/`, query: { search: `${str.replace('#','')}`} }}>
-                                                {str}
-                                        </Link>
-                                    </span>
+                                return
+                                <span key={str}>
+                                    <Link
+                                        onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#', ''))} href={{ pathname: `/`, query: { search: `${str.replace('#', '')}` } }}>
+                                        {str}
+                                    </Link>
+                                </span>
                             }
                             return str + " "
                         })}
@@ -138,11 +138,11 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                     ))}
                     <Spacer y={0.5} />
 
-                    <Button 
-                        css={{ width: '100%' }} 
-                        color="gradient" 
+                    <Button
+                        css={{ width: '100%' }}
+                        color="gradient"
                         icon={<FaShoppingCart />}
-                        onPress={ async () => await addToCart() }
+                        onPress={async () => await addToCart()}
                         disabled={isAddingToCart}
                     >
                         {isAddingToCart ? <Loading type="points" color="currentColor" size="sm" /> : <>장바구니에 담기</>}

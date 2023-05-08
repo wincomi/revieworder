@@ -36,7 +36,7 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
                     cart: cartItem
                 })
             })
-            
+
             // 새로고침
             onChangeCartItem(null)
         }

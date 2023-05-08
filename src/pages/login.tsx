@@ -18,7 +18,7 @@ interface SignInPage {
 }
 
 export default (props: SignInPage) => {
-    const errorTexts: {[key: string]: string} = {
+    const errorTexts: { [key: string]: string } = {
         Signin: "Try signing in with a different account.",
         OAuthSignin: "Try signing in with a different account.",
         OAuthCallback: "Try signing in with a different account.",
@@ -42,20 +42,20 @@ export default (props: SignInPage) => {
         text?: string,
         color?: "default" | "primary" | "secondary" | "success" | "warning" | "error"
     }
-    
+
     // @ts-ignore: 타입스크립트 에러 무시
     const phoneNumberHelper = React.useMemo<HelperType>(() => {
         if (!phoneNumber)
-          return { text: "", color: "" }
+            return { text: "", color: "" }
 
         const isValid = phoneNumber.match(regexPhoneNumber)
 
         return {
-          text: !isValid && "올바른 휴대폰 번호를 입력하세요.",
-          color: isValid ? "success" : "error"
+            text: !isValid && "올바른 휴대폰 번호를 입력하세요.",
+            color: isValid ? "success" : "error"
         }
-      }, [ phoneNumber ])
-    
+    }, [phoneNumber])
+
     const sendVerificationCode = async () => {
         const result = await fetch(`api/auth/sms/request/`, {
             method: 'POST',
@@ -89,7 +89,7 @@ export default (props: SignInPage) => {
             </Head>
             <Layout>
                 {error &&
-                    <Card css={{$$cardColor: '$colors$error' }}>
+                    <Card css={{ $$cardColor: '$colors$error' }}>
                         <Card.Body>
                             <Text h6 size={15} color="white" css={{ m: 0, ta: 'center' }}>
                                 <FaExclamationTriangle style={{ verticalAlign: 'text-bottom' }} />{` `}{errorTexts[error]}
@@ -100,16 +100,16 @@ export default (props: SignInPage) => {
                 <Grid.Container gap={4} justify="center">
                     <Grid xs={12} md={3} alignItems="baseline">
                         <Card variant="flat">
-                            <Card.Body css={{ta: 'center'}}>
+                            <Card.Body css={{ ta: 'center' }}>
                                 <form onSubmit={loginByPhoneNumber}>
                                     <Text h3>휴대폰 번호로 로그인</Text>
-                                    <Input 
+                                    <Input
                                         {...bindingsPhoneNumber}
                                         color={phoneNumberHelper.color}
                                         helperColor={phoneNumberHelper.color}
                                         helperText={phoneNumberHelper.text}
                                         name="phoneNumber"
-                                        type="tel" 
+                                        type="tel"
                                         placeholder='010-0000-0000'
                                         shadow={false}
                                         fullWidth={true}
@@ -117,22 +117,22 @@ export default (props: SignInPage) => {
                                         labelLeft={<FaCommentAlt />}
                                     />
                                     <Spacer />
-                                    <Button 
-                                        color="primary" 
-                                        size="sm" 
+                                    <Button
+                                        color="primary"
+                                        size="sm"
                                         flat
                                         icon={<FaPaperPlane />}
                                         css={{ width: '100%' }}
-                                        onPress={ async () => await sendVerificationCode() }
+                                        onPress={async () => await sendVerificationCode()}
                                         disabled={phoneNumber.length == 0}
-                                        >
-                                            인증번호 발송
-                                        </Button>
+                                    >
+                                        인증번호 발송
+                                    </Button>
                                     <Spacer />
-                                    <Input 
+                                    <Input
                                         {...bindingsVerificationCode}
                                         name="verificationCode"
-                                        type="number" 
+                                        type="number"
                                         placeholder='인증번호 6자리'
                                         shadow={false}
                                         fullWidth={true}
@@ -140,30 +140,30 @@ export default (props: SignInPage) => {
                                         labelLeft={<FaLock />}
                                     />
                                     <Spacer />
-                                    <Button type="submit" color="primary" size="sm" icon={<FaSignInAlt />} css={{width: '100%'}} disabled={(phoneNumber.length * verificationCode.length) == 0}>로그인</Button>
+                                    <Button type="submit" color="primary" size="sm" icon={<FaSignInAlt />} css={{ width: '100%' }} disabled={(phoneNumber.length * verificationCode.length) == 0}>로그인</Button>
                                 </form>
                             </Card.Body>
                         </Card>
                     </Grid>
                     <Grid xs={10} md={3}>
                         <div style={{ width: '100%' }}>
-                            <Button color="primary" size="lg" onPress={() => signIn("facebook")} icon={<SiFacebook />} css={{width: '100%'}}>
+                            <Button color="primary" size="lg" onPress={() => signIn("facebook")} icon={<SiFacebook />} css={{ width: '100%' }}>
                                 페이스북으로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="error" size="lg" onPress={() => signIn("instagram")} icon={<SiInstagram />} css={{width: '100%'}}>
+                            <Button color="error" size="lg" onPress={() => signIn("instagram")} icon={<SiInstagram />} css={{ width: '100%' }}>
                                 인스타그램으로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="warning" size="lg" onPress={() => signIn("kakao")} icon={<SiKakaotalk />} css={{width: '100%'}}>
+                            <Button color="warning" size="lg" onPress={() => signIn("kakao")} icon={<SiKakaotalk />} css={{ width: '100%' }}>
                                 카카오로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="success" size="lg" onPress={() => signIn("naver")} icon={<SiNaver />} css={{width: '100%'}}>
+                            <Button color="success" size="lg" onPress={() => signIn("naver")} icon={<SiNaver />} css={{ width: '100%' }}>
                                 네이버로 로그인
                             </Button>
                             <Spacer />
-                            <Button color="secondary" size="lg" onPress={() => signIn("apple")} icon={<SiApple />} css={{width: '100%'}}>
+                            <Button color="secondary" size="lg" onPress={() => signIn("apple")} icon={<SiApple />} css={{ width: '100%' }}>
                                 Apple로 로그인
                             </Button>
                         </div>
@@ -173,18 +173,18 @@ export default (props: SignInPage) => {
         </>
     )
 }
-  
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions)
 
     // 로그인되어 있을 경우 메인 페이지로 보냄
     if (session) {
         return {
-            redirect: { 
+            redirect: {
                 permanent: false,
-                destination: "/" 
+                destination: "/"
             },
-            props: { }
+            props: {}
         }
     }
 

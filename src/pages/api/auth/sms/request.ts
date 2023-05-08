@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { requestVerificationCode } from '@/libs/smsAuth'
+import { NextApiRequest, NextApiResponse } from "next"
+import { requestVerificationCode } from "@/libs/smsAuth"
 
 export interface SMSRequestAPIRequest extends NextApiRequest {
     body: {
@@ -14,8 +14,8 @@ export default async (req: SMSRequestAPIRequest, res: NextApiResponse) => {
         res.status(400).json({
             error: {
                 code: 400,
-                message: "휴대폰 번호는 필수 값입니다."
-            }
+                message: "휴대폰 번호는 필수 값입니다.",
+            },
         })
         return
     }
@@ -24,7 +24,7 @@ export default async (req: SMSRequestAPIRequest, res: NextApiResponse) => {
 
     res.status(200).json({
         data: {
-            verificationCode: verificationCode
-        }
+            verificationCode: verificationCode,
+        },
     })
 }
