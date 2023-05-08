@@ -139,6 +139,7 @@ export var authOptions: AuthOptions = {
     session: {
       // CredentialsProvider 사용을 위해 (jwt만 사용 가능) 세션을 database 대신 jwt로 사용함
       // Session 테이블을 사용하지 않음
+      maxAge: 4000000, //access_token이 재생산되지 않는 오류 해결해보기
       strategy: "jwt"
     },
 }

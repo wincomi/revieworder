@@ -16,7 +16,8 @@ interface CartPageProps {
 
 export default function CartPage({ carts }: CartPageProps) {
     const [cartItems, setCartItems] = useState(carts)
-
+    const [totalPrice, setTotalPrice] = useState(0)
+    
     const setCardItem = (data: SetStateAction<CartItem | null>, index: number) => {
         if (data == null) {
             // data가 null이면 index를 삭제함
