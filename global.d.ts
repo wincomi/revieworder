@@ -27,6 +27,6 @@ declare namespace NodeJS {
         NCP_DEBUG_MODE: number;
 
         TOSS_CLIENT_KEY: string;
-        TOSS_SECRET_KEY: number;
+        TOSS_SECRET_KEY: string;
 	}
 }
