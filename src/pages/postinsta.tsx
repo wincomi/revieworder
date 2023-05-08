@@ -5,8 +5,8 @@ import { authOptions } from './api/auth/[...nextauth]'
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { GetServerSideProps } from 'next/types'
-import { getFacebookUser, getInstaFeedbyAccount, getInstaUser } from '@/libs/sns'
-import { User, Modal,  Card, Grid, Row, Text, Button, Input, Tooltip, Textarea } from "@nextui-org/react"
+import { getUserAccount, getInstaFeedbyAccount } from '@/libs/sns'
+import { User, Modal, Card, Grid, Row, Text, Button, Input, Tooltip, Textarea } from "@nextui-org/react"
 import { ReviewItem } from '@/pages/api/reviews'
 
 export type ReviewCardProps = {
@@ -14,18 +14,18 @@ export type ReviewCardProps = {
     onChangeQuery: Dispatch<SetStateAction<string>>
 }
 //export default function postinsta({feed}:any, {insta}:Account, {facebook}:Account) {
-export default function postinsta({feed}:any) {
-    if(feed==null){
+export default function postinsta({ feed }: any) {
+    if (feed == null) {
         return (
             <Layout>
                 <Text h3>로그인 후 접속해주세요</Text>
             </Layout>
         )
     }
-    if(feed!=null){
-        const [visible, setVisible]=useState(false)
-        const reviewHandler = ()=>setVisible(true)
-        const reviewCloser = ()=>{
+    if (feed != null) {
+        const [visible, setVisible] = useState(false)
+        const reviewHandler = () => setVisible(true)
+        const reviewCloser = () => {
             setVisible(false)
         }
         let caption = ""
@@ -35,36 +35,36 @@ export default function postinsta({feed}:any) {
         return (
             <Layout>
                 {`instagram feed 부분임`}
-                <Grid.Container gap={2} alignItems="stretch" css={{px: 0}}>
+                <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {images && images.map((image: any) => (
                         <Grid xs={12} sm={6} lg={4} key={image.id}>
-                        <Card variant="flat">
-                            <Card.Header>
-                                <Row wrap="wrap" justify="space-between" align="center">
-                                    <User
-                                        name={image.username ?? ""}
-                                        size="sm"
-                                        css={{ px: 0 }}
+                            <Card variant="flat">
+                                <Card.Header>
+                                    <Row wrap="wrap" justify="space-between" align="center">
+                                        <User
+                                            name={image.username ?? ""}
+                                            size="sm"
+                                            css={{ px: 0 }}
+                                        />
+                                        <Tooltip content={format(new Date(image.timestamp), 'yyyy-MM-dd HH:mm:ss')} placement="left" color="invert">
+                                            <Text css={{ color: "$accents7", fontSize: "$xs" }}>
+                                                {formatDistance(new Date(image.timestamp), new Date(), { addSuffix: true, locale: ko })}
+                                            </Text>
+                                        </Tooltip>
+                                    </Row>
+                                </Card.Header>
+                                <Card.Body css={{ p: 0, flexGrow: 'unset' }}>
+                                    <Card.Image
+                                        src={image.media_url ?? "http://via.placeholder.com/640x480"}
+                                        objectFit="cover"
+                                        width="100%"
+                                        height={300}
+                                        alt={image.caption ?? ""}
+                                        showSkeleton
                                     />
-                                    <Tooltip content={format(new Date(image.timestamp), 'yyyy-MM-dd HH:mm:ss')} placement="left" color="invert">
-                                        <Text css={{ color: "$accents7", fontSize: "$xs" }}>
-                                            {formatDistance(new Date(image.timestamp), new Date(), { addSuffix: true, locale: ko })}
-                                        </Text>
-                                    </Tooltip>
-                                </Row>
-                            </Card.Header>
-                            <Card.Body css={{ p: 0, flexGrow: 'unset' }}>
-                                <Card.Image
-                                    src={image.media_url ?? "http://via.placeholder.com/640x480"}
-                                    objectFit="cover"
-                                    width="100%"
-                                    height={300}
-                                    alt={image.caption ?? ""}
-                                    showSkeleton
-                                />
-                            </Card.Body>
-                        </Card>
-                    </Grid>
+                                </Card.Body>
+                            </Card>
+                        </Grid>
                     ))}
                 </Grid.Container>
                 {`리뷰 작성 부분임`}
@@ -72,12 +72,12 @@ export default function postinsta({feed}:any) {
                     리뷰 작성
                 </Button>
                 <Modal
-                closeButton
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
-                open={visible}
-                onClose={reviewCloser}
-                width="600px"
+                    closeButton
+                    aria-labelledby="modal-title"
+                    aria-describedby="modal-description"
+                    open={visible}
+                    onClose={reviewCloser}
+                    width="600px"
                 >
                     <Modal.Header>
                         <Text id="modal-title" size={18}>
@@ -88,24 +88,24 @@ export default function postinsta({feed}:any) {
                         <Grid.Container gap={2} justify="center">
                             <Grid xs={8}>
                                 <Input
-                                id="modal-description"
-                                bordered
-                                labelPlaceholder="제목"
-                                color="primary"
+                                    id="modal-description"
+                                    bordered
+                                    labelPlaceholder="제목"
+                                    color="primary"
                                 />
                             </Grid>
                             <Grid xs={8}>
-                                <Textarea 
-                                placeholder="내용"
-                                id="modal-description"
+                                <Textarea
+                                    placeholder="내용"
+                                    id="modal-description"
                                 />
                             </Grid>
                             <Grid xs={8}>
                                 <Input
-                                id="modal-description"
-                                bordered
-                                labelPlaceholder="해시태그"
-                                color="secondary"
+                                    id="modal-description"
+                                    bordered
+                                    labelPlaceholder="해시태그"
+                                    color="secondary"
                                 />
                             </Grid>
                         </Grid.Container>
@@ -113,8 +113,8 @@ export default function postinsta({feed}:any) {
                     <Modal.Footer>
                         {`instagram post 연동`}
                         {`facebook post 연동`}
-                        <Button flat auto color="error" onPress={()=>{setVisible(false)}}>작성 취소</Button>
-                        <Button onPress={()=>{setVisible(false)}}>게시</Button>
+                        <Button flat auto color="error" onPress={() => { setVisible(false) }}>작성 취소</Button>
+                        <Button onPress={() => { setVisible(false) }}>게시</Button>
                     </Modal.Footer>
                 </Modal>
             </Layout>
@@ -122,31 +122,31 @@ export default function postinsta({feed}:any) {
     }
 }
 
-export const getServerSideProps: GetServerSideProps = async ( context ) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions)
-    if(!session) { // session 에러 처리
-        return{ // 추후 return null 없애버리고 redirect to login page로 처리
-            props:{
+    if (!session) { // session 에러 처리
+        return { // 추후 return null 없애버리고 redirect to login page로 처리
+            props: {
                 feed: null
             }
         }
     }
     let userId = session?.user.id
     // user의 instagram account 를 받아옴
-    const insta = await getInstaUser(userId)
-    if(!insta){
-        const facebook = await getFacebookUser(userId)
-        if(!facebook){
-            return{
-                props:{
+    const insta = await getUserAccount(userId, "instagram")
+    if (!insta) {
+        const facebook = await getUserAccount(userId, "facebook")
+        if (!facebook) {
+            return {
+                props: {
                     instaAccount: null,
                     facebookAccount: null,
                     feed: null
                 }
             }
         }
-        return{
-            props:{
+        return {
+            props: {
                 instaAccount: null,
                 facebookAccount: facebook,
                 feed: null
