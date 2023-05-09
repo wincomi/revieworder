@@ -149,18 +149,6 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 return
             }
 
-            // updateMany 하려다 실패..
-
-            // const putResult = await prisma.cart.updateMany({
-            //     data: carts.map((cart) => {
-            //         const input: Prisma.CartUpdateManyWithWhereWithoutUserInput = {
-            //             where: { id: cart.id },
-            //             data: { amount: cart.amount }
-            //         }
-            //         return input
-            //     }),
-            // })
-
             carts.map(async (cart) => {
                 const input: Prisma.CartUpdateManyWithWhereWithoutUserInput = {
                     where: { id: cart.id },
@@ -182,7 +170,6 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             break
 
         // DELETE (cartId로 개별 삭제)
-        // TODO: 자신의 카트인지 확인해야함
         case "DELETE":
             const cart = req.body.cart
 
@@ -191,6 +178,25 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                     error: {
                         code: 400,
                         message: "cart 값은 필수입니다.",
+                    },
+                })
+                return
+            }
+
+            // 세션이 존재하는지 확인 + 본인 확인
+            if (session == null) {
+                res.status(401).json({
+                    error: {
+                        code: 401,
+                        message: "세션이 존재하지 않습니다.",
+                    },
+                })
+                return
+            } else if (userId != cart.userId) {
+                res.status(401).json({
+                    error: {
+                        code: 401,
+                        message: "권한 불일치.",
                     },
                 })
                 return
@@ -205,5 +211,14 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             })
 
             break
+
+        default:
+            // API method가 잘못되었을 때 오류
+            res.status(400).json({
+                error: {
+                    code: 400,
+                    message: "잘못된 요청입니다.",
+                },
+            })
     }
 }
