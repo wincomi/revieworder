@@ -1,4 +1,4 @@
-import { Button, Grid, Link, Navbar, Spacer, Text } from '@nextui-org/react'
+import { Grid, Link, Navbar, Spacer, Text } from '@nextui-org/react'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
 import { ImSpoonKnife } from 'react-icons/im'
