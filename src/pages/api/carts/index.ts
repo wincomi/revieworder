@@ -24,6 +24,7 @@ export interface CartAPIRequest extends NextApiRequest {
 // API Response 타입 지정
 const cartWithMenu = Prisma.validator<Prisma.CartArgs>()({
     include: {
+        user: true,
         menu: { include: { store: true } },
     },
 })
@@ -59,6 +60,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             const readResult = await prisma.cart.findMany({
                 where: { user: { id: userId } },
                 include: {
+                    user: true,
                     menu: { include: { store: true } },
                 },
             })
