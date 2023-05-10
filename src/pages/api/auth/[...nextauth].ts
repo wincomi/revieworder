@@ -27,11 +27,11 @@ const {
     NEXTAUTH_INSTAGRAM_SECRET: INSTAGRAM_SECRET,
 } = process.env
 
-var prismaAdapter = PrismaAdapter(prisma)
+const prismaAdapter = PrismaAdapter(prisma)
 
 prismaAdapter.linkAccount = prismaAdapterLinkAccount
 
-export var authOptions: AuthOptions = {
+export const authOptions: AuthOptions = {
     adapter: prismaAdapter,
     providers: [
         AppleProvider({

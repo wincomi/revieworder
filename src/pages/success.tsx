@@ -21,10 +21,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context)
 
     // URL 쿼리
-    let paymentKey = context.query.paymentKey
-    let amount = context.query.amount
-    let orderId = context.query.orderId
-    let userId = context.query.userId
+    const paymentKey = context.query.paymentKey
+    const amount = context.query.amount
+    const orderId = context.query.orderId
+    const userId = context.query.userId
 
     // 토스 결제 승인 시 시크릿키 사용
     const secretKey = process.env.TOSS_SECRET_KEY

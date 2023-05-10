@@ -48,7 +48,7 @@ export default () =>
                 return null
             }
 
-            var user: User | null
+            let user: User | null
 
             // 휴대폰 번호와 같은 유저 검색
             user = await prisma.user.findUnique({

@@ -28,7 +28,7 @@ export default function postinsta({ feed }: any) {
         const reviewCloser = () => {
             setVisible(false)
         }
-        let caption = ''
+        const caption = ''
 
         console.log(feed)
         const images = feed.data
@@ -139,7 +139,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             },
         }
     }
-    let userId = session?.user.id
+    const userId = session?.user.id
     // user의 instagram account 를 받아옴
     const insta = await getUserAccount(userId, 'instagram')
     if (!insta) {
