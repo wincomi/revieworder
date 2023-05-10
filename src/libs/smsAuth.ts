@@ -14,7 +14,7 @@ function createVerificationCode(): string {
 export async function requestVerificationCode(phoneNumber: string) {
     // 인증번호가 있는지 확인 후 이미 있을 경우 삭제
     try {
-        const deleteResult = await prisma.verificationCode.delete({
+        await prisma.verificationCode.delete({
             where: {
                 phoneNumber: phoneNumber,
             },
@@ -24,7 +24,7 @@ export async function requestVerificationCode(phoneNumber: string) {
     const verificationCode = createVerificationCode()
     console.log(`phoneNumber: ${phoneNumber}\nverificationCode: ${verificationCode}`)
 
-    const result = await prisma.verificationCode.create({
+    await prisma.verificationCode.create({
         data: {
             phoneNumber: phoneNumber,
             verificationCode: verificationCode,
@@ -48,7 +48,7 @@ export async function validateVerificationCode(phoneNumber: string, verification
 
     if (result.verificationCode == verificationCode) {
         // DB에서 인증코드 삭제
-        const deleteResult = await prisma.verificationCode.delete({
+        await prisma.verificationCode.delete({
             where: {
                 phoneNumber: phoneNumber,
             },
