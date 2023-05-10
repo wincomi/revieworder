@@ -1,13 +1,13 @@
 import { User } from '@prisma/client'
 import { loadTossPayments } from '@tosspayments/payment-sdk'
-import { Session } from 'inspector'
 
 export async function tossPayment(
     // 일반 toss 변수
     tossClientKey: string,
     amount: number,
     tossRedirectURL: string,
-    orderId?: string,
+    // 지금은 고정 중
+    _orderId?: string,
     orderName?: string,
     // custorm
     user?: User
@@ -18,7 +18,7 @@ export async function tossPayment(
     const randomOrderId = Math.random().toString(36).substring(2, 12)
 
     // TODO: 나중에 조건문 수정
-    if (user != null && user != undefined && user.name != null) {
+    if (user != null && user != undefined && user.name != null && orderName) {
         // 결제 창 생성
         tossPayments
             .requestPayment('카드', {
@@ -26,7 +26,7 @@ export async function tossPayment(
                 // 결제 정보 파라미터
                 amount: amount,
                 orderId: randomOrderId,
-                orderName: '리뷰오더 포인트 충전',
+                orderName: orderName,
                 customerName: user.name,
                 successUrl: `${tossRedirectURL}/success?userId=${user.id}`,
                 failUrl: `${tossRedirectURL}/fail`,
