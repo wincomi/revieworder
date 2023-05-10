@@ -11,7 +11,6 @@ import { UserAPIGETResponse } from '../api/user'
 import { User } from '@prisma/client'
 import React from 'react'
 
-import { loadTossPayments } from '@tosspayments/payment-sdk'
 import { tossPayment } from '@/libs/tossPay'
 
 interface ProfileEditPageProps {
@@ -30,7 +29,7 @@ interface ProfileEditPageProps {
 
 export default function profileEdit({ user, accountProviders, tossClientKey, tossRedirectURL }: ProfileEditPageProps) {
     // input default 값들
-    const [placeholder, setPlaceHolder] = useState({
+    const [placeholder] = useState({
         name: '이름을 입력하세요.',
         email: 'example@naver.com',
         tel: '010-0000-0000',
@@ -71,8 +70,8 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
     const charge = async () => {
         setIsLoadingUpdate(true)
 
-        // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
-        tossPayment(tossClientKey, point, tossRedirectURL, undefined, undefined, user)
+        // // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
+        tossPayment(tossClientKey, point, tossRedirectURL, undefined, '리뷰오더 포인트 충전', user)
 
         setIsLoadingUpdate(false)
     }
@@ -228,7 +227,7 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     const result = await fetch(`${process.env.NEXTAUTH_URL}/api/user/`, {
         method: 'GET',
         headers: {

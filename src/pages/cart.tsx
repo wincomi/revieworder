@@ -8,15 +8,19 @@ import { SetStateAction, useEffect, useState } from 'react'
 import CartCard from '@/components/cart/cartCard'
 import SummaryCard from '@/components/cart/summaryCard'
 import { CartAPIGETResponse, CartItem } from './api/carts'
-import router from 'next/router'
 
 interface CartPageProps {
     carts: CartItem[]
+
+    /// TOSS_CLIENT_KEY
+    tossClientKey: string
+
+    /// NEXTAUTH_URL
+    tossRedirectURL: string
 }
 
-export default function CartPage({ carts }: CartPageProps) {
+export default function CartPage({ carts, tossClientKey, tossRedirectURL }: CartPageProps) {
     const [cartItems, setCartItems] = useState(carts)
-    const [totalPrice, setTotalPrice] = useState(0)
 
     const setCardItem = (data: SetStateAction<CartItem | null>, index: number) => {
         if (data == null) {
@@ -34,7 +38,6 @@ export default function CartPage({ carts }: CartPageProps) {
             setCartItems(Object.assign(updateCart))
         }
     }
-
     // 값(amount) 변경 시 자동 업데이트
     useEffect(() => {
         const result = async () => {
@@ -54,41 +57,6 @@ export default function CartPage({ carts }: CartPageProps) {
 
         result()
     }, [cartItems])
-
-    // 주문 기능
-    const onPressOrderButton = async () => {
-        const result = await fetch(`api/orders`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // session의 쿠키를 보내는데 req가 없으면 필요
-            credentials: 'include',
-
-            body: JSON.stringify({
-                carts: cartItems,
-                money: totalPrice,
-            }),
-        })
-
-        const Moneyresult = await fetch(`api/user/moneyapi`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // session의 쿠키 전달
-            credentials: 'include',
-            body: JSON.stringify({
-                userId: cartItems[0].userId,
-                money: totalPrice,
-                opt: 'pay',
-            }),
-        })
-
-        // if (confirm('주문내역으로 이동하시겠습니까?')) {
-        router.push('/order')
-        // }
-    }
 
     if (cartItems.length == 0) {
         return (
@@ -127,7 +95,11 @@ export default function CartPage({ carts }: CartPageProps) {
                         </div>
                     </Grid>
                     <Grid md={4} xs={12}>
-                        <SummaryCard cartItems={cartItems} onPressOrderButton={onPressOrderButton} />
+                        <SummaryCard
+                            cartItems={cartItems}
+                            tossClientKey={tossClientKey}
+                            tossRedirectURL={tossRedirectURL}
+                        />
                     </Grid>
                 </Grid.Container>
             </Layout>
@@ -135,7 +107,7 @@ export default function CartPage({ carts }: CartPageProps) {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     const result = await fetch(`${process.env.NEXTAUTH_URL}/api/carts/`, {
         method: 'GET',
         headers: {
@@ -148,6 +120,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const carts = response.data
 
     return {
-        props: { carts },
+        props: {
+            carts: carts,
+            tossClientKey: process.env.TOSS_CLIENT_KEY,
+            tossRedirectURL: process.env.NEXTAUTH_URL,
+        },
     }
 }
