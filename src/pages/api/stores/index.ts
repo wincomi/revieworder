@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "@/libs/prismadb"
-import { Prisma, Store } from "@prisma/client"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "../auth/[...nextauth]"
+import { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/libs/prismadb'
+import { Prisma, Store } from '@prisma/client'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]'
 
 // API Request 타입 지정
 export interface CartAPIRequest extends NextApiRequest {
@@ -25,7 +25,6 @@ export type CartAPIGETResponse = {
     data: StoreInfo[]
 }
 
-
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
     const query = req.query.q as string | undefined
@@ -35,10 +34,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     // API method에 따라 작동
     switch (req.method) {
-        
-        case "GET":
-        // 검색 쿼리 없으면 모두 출력
-            if (query == "") {
+        case 'GET':
+            // 검색 쿼리 없으면 모두 출력
+            if (query == '') {
                 const readResult = await prisma.store.findMany({})
 
                 if (readResult != null) {
@@ -50,7 +48,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     res.status(404).json({
                         error: {
                             code: 400,
-                            message: "매장 조회를 실패하였습니다.",
+                            message: '매장 조회를 실패하였습니다.',
                         },
                     })
                 }
@@ -60,9 +58,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     where: {
                         OR: [
                             // 쿼리에서 매장 이름, 주소, 설명 검색
-                            { name: { contains: query }},
-                            { address: { contains: query }},
-                            { description: { contains: query }},
+                            { name: { contains: query } },
+                            { address: { contains: query } },
+                            { description: { contains: query } },
                         ],
                     },
                 })
@@ -76,7 +74,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     res.status(404).json({
                         error: {
                             code: 400,
-                            message: "매장 조회를 실패하였습니다.",
+                            message: '매장 조회를 실패하였습니다.',
                         },
                     })
                 }
@@ -84,14 +82,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
 
         // CREATE (매장 등록)
-        case "POST":
-
+        case 'POST':
             // 세션이 존재하는지 확인
             if (session == null) {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "세션이 존재하지 않습니다.",
+                        message: '세션이 존재하지 않습니다.',
                     },
                 })
                 return
@@ -102,7 +99,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "등록 할 매장 정보을 입력해주세요.",
+                        message: '등록 할 매장 정보을 입력해주세요.',
                     },
                 })
                 return
@@ -121,31 +118,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                     // 결과 값이 없을때 오류
                     res.status(400).json({
-                        message: "매장을 등록할 수 없습니다.",
+                        message: '매장을 등록할 수 없습니다.',
                     })
                 }
             }
             break
 
         // PUT (storeId에 해당되는 매장 정보 수정)
-        case "PUT":
-
+        case 'PUT':
             if (store == null || store == undefined) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "관리 매장 없음.",
+                        message: '관리 매장 없음.',
                     },
                 })
                 return
             }
-            
+
             // 세션이 존재하는지 확인
             if (session == null) {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "세션이 존재하지 않습니다.",
+                        message: '세션이 존재하지 않습니다.',
                     },
                 })
                 return
@@ -153,7 +149,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "매장 관리자 불일치.",
+                        message: '매장 관리자 불일치.',
                     },
                 })
                 return
@@ -179,32 +175,31 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "해당 매장을 수정할 수 없습니다.",
+                        message: '해당 매장을 수정할 수 없습니다.',
                     },
                 })
             }
-            
+
             break
 
         // DELETE (storeId에 해당되는 매장 정보 삭제)
-        case "DELETE":
-
+        case 'DELETE':
             if (store == null || store == undefined) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "관리 매장 없음.",
+                        message: '관리 매장 없음.',
                     },
                 })
                 return
             }
-            
+
             // 세션이 존재하는지 확인
             if (session == null) {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "세션이 존재하지 않습니다.",
+                        message: '세션이 존재하지 않습니다.',
                     },
                 })
                 return
@@ -212,7 +207,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "매장 관리자 불일치.",
+                        message: '매장 관리자 불일치.',
                     },
                 })
                 return
@@ -230,18 +225,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "해당 store를 삭제할 수 없습니다.",
+                        message: '해당 store를 삭제할 수 없습니다.',
                     },
                 })
             }
             break
-        
+
         default:
             // API method가 잘못되었을 때 오류
             res.status(400).json({
                 error: {
                     code: 400,
-                    message: "잘못된 요청입니다.",
+                    message: '잘못된 요청입니다.',
                 },
             })
     }

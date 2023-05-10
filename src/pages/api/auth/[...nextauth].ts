@@ -1,14 +1,14 @@
-import NextAuth, { AuthOptions } from "next-auth"
-import AppleProvider from "next-auth/providers/apple"
-import KakaoProvider from "next-auth/providers/kakao"
-import NaverProvider from "next-auth/providers/naver"
-import FacebookProvider from "next-auth/providers/facebook"
-import InstagramProvider from "next-auth/providers/instagram"
+import NextAuth, { AuthOptions } from 'next-auth'
+import AppleProvider from 'next-auth/providers/apple'
+import KakaoProvider from 'next-auth/providers/kakao'
+import NaverProvider from 'next-auth/providers/naver'
+import FacebookProvider from 'next-auth/providers/facebook'
+import InstagramProvider from 'next-auth/providers/instagram'
 
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import prisma from "@/libs/prismadb"
-import PhoneNumberProvider from "@/libs/nextauth/phoneNumberProvider"
-import prismaAdapterLinkAccount from "@/libs/nextauth/prismaAdapterLinkAccount"
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import prisma from '@/libs/prismadb'
+import PhoneNumberProvider from '@/libs/nextauth/phoneNumberProvider'
+import prismaAdapterLinkAccount from '@/libs/nextauth/prismaAdapterLinkAccount'
 
 const {
     NEXTAUTH_APPLE_ID: APPLE_ID,
@@ -57,7 +57,7 @@ export var authOptions: AuthOptions = {
         PhoneNumberProvider(),
     ],
     pages: {
-        signIn: "/login",
+        signIn: '/login',
     },
     callbacks: {
         // https://next-auth.js.org/configuration/callbacks#sign-in-callback
@@ -67,7 +67,7 @@ export var authOptions: AuthOptions = {
             if (account) {
                 const userFromDB = await prismaAdapter.getUser(user.id)
 
-                if (account.provider == "phonenumber") {
+                if (account.provider == 'phonenumber') {
                     return true
                 }
 
@@ -77,8 +77,7 @@ export var authOptions: AuthOptions = {
                             where: {
                                 provider_providerAccountId: {
                                     provider: account.provider,
-                                    providerAccountId:
-                                        account.providerAccountId,
+                                    providerAccountId: account.providerAccountId,
                                 },
                             },
                             data: {
@@ -128,11 +127,11 @@ export var authOptions: AuthOptions = {
     // https://next-auth.js.org/configuration/options#cookies
     cookies: {
         pkceCodeVerifier: {
-            name: "next-auth.pkce.code_verifier",
+            name: 'next-auth.pkce.code_verifier',
             options: {
                 httpOnly: true,
-                sameSite: "none",
-                path: "/",
+                sameSite: 'none',
+                path: '/',
                 secure: true,
             },
         },
@@ -141,12 +140,12 @@ export var authOptions: AuthOptions = {
         // CredentialsProvider 사용을 위해 (jwt만 사용 가능) 세션을 database 대신 jwt로 사용함
         // Session 테이블을 사용하지 않음
         maxAge: 4000000, //access_token이 재생산되지 않는 오류 해결해보기
-        strategy: "jwt",
+        strategy: 'jwt',
     },
 }
 
 // 개발 모드일 경우 디버그 활성화
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
     authOptions.debug = false
 }
 

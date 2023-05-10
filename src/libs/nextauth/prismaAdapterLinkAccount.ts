@@ -1,5 +1,5 @@
-import prisma from "@/libs/prismadb"
-import { AdapterAccount } from "next-auth/adapters"
+import prisma from '@/libs/prismadb'
+import { AdapterAccount } from 'next-auth/adapters'
 
 export default (account: AdapterAccount) => {
     // 디버그 코드

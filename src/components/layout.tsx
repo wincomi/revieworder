@@ -11,9 +11,9 @@ interface LayoutProps {
 
 export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
-        { id: "index", name: "둘러보기", path: "/", icon: <FaHome /> },
-        { id: "cart", name: "주문하기", path: "/cart", icon: <FaShoppingCart /> },
-        { id: "profile", name: "내 프로필", path: "/profile", icon: <FaUser /> },
+        { id: 'index', name: '둘러보기', path: '/', icon: <FaHome /> },
+        { id: 'cart', name: '주문하기', path: '/cart', icon: <FaShoppingCart /> },
+        { id: 'profile', name: '내 프로필', path: '/profile', icon: <FaUser /> },
     ]
 
     return (

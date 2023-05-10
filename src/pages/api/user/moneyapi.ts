@@ -1,7 +1,7 @@
-import { authOptions } from "@/pages/api/auth/[...nextauth]"
-import { NextApiRequest, NextApiResponse } from "next"
-import { getServerSession } from "next-auth/next"
-import prisma from "@/libs/prismadb"
+import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth/next'
+import prisma from '@/libs/prismadb'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
@@ -16,7 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(401).json({
             error: {
                 code: 401,
-                message: "세션이 존재하지 않습니다.",
+                message: '세션이 존재하지 않습니다.',
             },
         })
         return
@@ -24,19 +24,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(401).json({
             error: {
                 code: 401,
-                message: "유저 정보 불일치.",
+                message: '유저 정보 불일치.',
             },
         })
         return
     }
 
     const pointOpt = (readMoney: number) => {
-        if (opt == "pay") return readMoney - money
-        else if (opt == "charge") return readMoney + money
+        if (opt == 'pay') return readMoney - money
+        else if (opt == 'charge') return readMoney + money
     }
 
     switch (req.method) {
-        case "PUT":
+        case 'PUT':
             const readMoney = await prisma.user.findUnique({
                 where: { id: userId },
                 select: { money: true },
@@ -59,7 +59,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     res.status(404).json({
                         error: {
                             code: 400,
-                            message: "머니 변경을 실패하였습니다.",
+                            message: '머니 변경을 실패하였습니다.',
                         },
                     })
                 }

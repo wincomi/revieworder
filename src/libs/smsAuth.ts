@@ -1,12 +1,11 @@
-import prisma from "@/libs/prismadb"
-import { sendSMS } from "./ncp"
+import prisma from '@/libs/prismadb'
+import { sendSMS } from './ncp'
 
 /// 휴대폰 번호 인증
 
 /// 인증번호 생성
 function createVerificationCode(): string {
-    const verificationCode =
-        Math.floor(Math.random() * (999999 - 100000)) + 100000
+    const verificationCode = Math.floor(Math.random() * (999999 - 100000)) + 100000
     return verificationCode.toString()
 }
 
@@ -23,9 +22,7 @@ export async function requestVerificationCode(phoneNumber: string) {
     } catch {}
 
     const verificationCode = createVerificationCode()
-    console.log(
-        `phoneNumber: ${phoneNumber}\nverificationCode: ${verificationCode}`
-    )
+    console.log(`phoneNumber: ${phoneNumber}\nverificationCode: ${verificationCode}`)
 
     const result = await prisma.verificationCode.create({
         data: {
@@ -38,10 +35,7 @@ export async function requestVerificationCode(phoneNumber: string) {
 }
 
 /// 인증번호 비교 및 확인
-export async function validateVerificationCode(
-    phoneNumber: string,
-    verificationCode: string
-): Promise<boolean> {
+export async function validateVerificationCode(phoneNumber: string, verificationCode: string): Promise<boolean> {
     const result = await prisma.verificationCode.findUnique({
         where: {
             phoneNumber: phoneNumber,

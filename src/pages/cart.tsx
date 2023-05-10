@@ -1,14 +1,14 @@
-import Layout from "@/components/layout"
+import Layout from '@/components/layout'
 import { Grid, Text, Spacer } from '@nextui-org/react'
 
-import Head from "next/head"
-import { GetServerSideProps } from "next"
-import { SetStateAction, useEffect, useState } from "react"
+import Head from 'next/head'
+import { GetServerSideProps } from 'next'
+import { SetStateAction, useEffect, useState } from 'react'
 
 import CartCard from '@/components/cart/cartCard'
-import SummaryCard from "@/components/cart/summaryCard"
-import { CartAPIGETResponse, CartItem } from "./api/carts"
-import router from "next/router"
+import SummaryCard from '@/components/cart/summaryCard'
+import { CartAPIGETResponse, CartItem } from './api/carts'
+import router from 'next/router'
 
 interface CartPageProps {
     carts: CartItem[]
@@ -28,28 +28,27 @@ export default function CartPage({ carts }: CartPageProps) {
             const updateCart = cartItems.map((item, idx) => {
                 if (idx === index) {
                     return data
-                }
-                else return item
+                } else return item
             })
 
             setCartItems(Object.assign(updateCart))
         }
     }
 
-    // 값(amount) 변경 시 자동 업데이트 
+    // 값(amount) 변경 시 자동 업데이트
     useEffect(() => {
         const result = async () => {
             await fetch(`api/carts/`, {
                 method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 // session의 쿠키를 보내는데 req가 없으면 필요
                 credentials: 'include',
 
                 body: JSON.stringify({
-                    carts: cartItems
-                })
+                    carts: cartItems,
+                }),
             })
         }
 
@@ -61,29 +60,29 @@ export default function CartPage({ carts }: CartPageProps) {
         const result = await fetch(`api/orders`, {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             // session의 쿠키를 보내는데 req가 없으면 필요
             credentials: 'include',
 
             body: JSON.stringify({
                 carts: cartItems,
-                money: totalPrice
-            })
+                money: totalPrice,
+            }),
         })
 
         const Moneyresult = await fetch(`api/user/moneyapi`, {
             method: 'PUT',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             // session의 쿠키 전달
             credentials: 'include',
             body: JSON.stringify({
                 userId: cartItems[0].userId,
                 money: totalPrice,
-                opt: 'pay'
-            })
+                opt: 'pay',
+            }),
         })
 
         // if (confirm('주문내역으로 이동하시겠습니까?')) {
@@ -128,10 +127,7 @@ export default function CartPage({ carts }: CartPageProps) {
                         </div>
                     </Grid>
                     <Grid md={4} xs={12}>
-                        <SummaryCard
-                            cartItems={cartItems}
-                            onPressOrderButton={onPressOrderButton}
-                        />
+                        <SummaryCard cartItems={cartItems} onPressOrderButton={onPressOrderButton} />
                     </Grid>
                 </Grid.Container>
             </Layout>
@@ -141,17 +137,17 @@ export default function CartPage({ carts }: CartPageProps) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const result = await fetch(`${process.env.NEXTAUTH_URL}/api/carts/`, {
-        method: "GET",
+        method: 'GET',
         headers: {
             // session의 쿠키 전달
-            cookie: req.headers.cookie || "",
-        }
+            cookie: req.headers.cookie || '',
+        },
     })
 
-    const response = await result.json().then(data => data as CartAPIGETResponse)
+    const response = await result.json().then((data) => data as CartAPIGETResponse)
     const carts = response.data
 
     return {
-        props: { carts }
+        props: { carts },
     }
 }

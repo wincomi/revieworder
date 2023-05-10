@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "@/libs/prismadb"
+import { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/libs/prismadb'
 
 // res.status(200) - 성공!, res.status(400) - 실패!
 
@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // API method에 따라 작동
     switch (req.method) {
         // READ (menuId에 해당하는 메뉴 정보 조회)
-        case "GET":
+        case 'GET':
             const readResult = await prisma.menu.findUnique({
                 where: { id: menuId },
             })
@@ -21,27 +21,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 res.status(200).json(readResult)
             } else {
                 res.status(400).json({
-                    message: "해당 메뉴 정보가 없습니다.",
+                    message: '해당 메뉴 정보가 없습니다.',
                 })
             }
             break
 
         // PUT (meunId에 해당되는 메뉴 정보 수정)
-        case "PUT":
+        case 'PUT':
             const putResult = await prisma.menu.update({
                 where: { id: menuId },
                 // 유저 이름, 주소, 전화번호, 프로필 사진
                 data: {
                     // null : no value, undefined : do nothing => 변경사항 없으면 변경X
                     name: req.body.name != null ? req.body.name : undefined,
-                    description:
-                        req.body.description != null
-                            ? req.body.description
-                            : undefined,
+                    description: req.body.description != null ? req.body.description : undefined,
                     price: req.body.price != null ? req.body.price : undefined,
                     image: req.body.image != null ? req.body.image : undefined,
-                    status:
-                        req.body.status != null ? req.body.status : undefined,
+                    status: req.body.status != null ? req.body.status : undefined,
                 },
             })
 
@@ -51,13 +47,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 수정 실패.
                 res.status(400).json({
-                    message: "해당 메뉴를 수정할 수 없습니다.",
+                    message: '해당 메뉴를 수정할 수 없습니다.',
                 })
             }
             break
 
         // DELETE (menuId에 해당되는 메뉴 삭제)
-        case "DELETE":
+        case 'DELETE':
             const deleteResult = await prisma.menu.delete({
                 where: { id: menuId },
             })
@@ -68,7 +64,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 삭제 실패.
                 res.status(400).json({
-                    message: "해당 메뉴를 삭제할 수 없습니다.",
+                    message: '해당 메뉴를 삭제할 수 없습니다.',
                 })
             }
             break

@@ -51,17 +51,16 @@ export default function Home({ reviewCards }: ReviewPageProps) {
                             />
                         </Grid>
                         <Grid css={{ ml: '$4' }}>
-                            <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>검색</Button>
+                            <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>
+                                검색
+                            </Button>
                         </Grid>
                     </Grid.Container>
                 </form>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {reviewCards.map((item: ReviewItem, index: Key) => (
                         <Grid xs={12} sm={6} lg={4} key={item.id}>
-                            <ReviewCard
-                                review={item}
-                                onChangeQuery={(data) => setQuery(data)}
-                            />
+                            <ReviewCard review={item} onChangeQuery={(data) => setQuery(data)} />
                         </Grid>
                     ))}
                 </Grid.Container>
@@ -72,14 +71,14 @@ export default function Home({ reviewCards }: ReviewPageProps) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     // 검색 쿼리
-    const search = context.query.search ?? ""
+    const search = context.query.search ?? ''
 
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews?q=${search}`, { method: "GET" })
-    const response = await result.json().then(data => data as ReviewAPIGETResponse) // any to ReviewCardProps
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews?q=${search}`, { method: 'GET' })
+    const response = await result.json().then((data) => data as ReviewAPIGETResponse) // any to ReviewCardProps
 
     const reviewCards = response.data
 
     return {
-        props: { reviewCards }
+        props: { reviewCards },
     }
 }

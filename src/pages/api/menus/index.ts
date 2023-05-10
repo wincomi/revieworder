@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "@/libs/prismadb"
+import { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/libs/prismadb'
 
 // res.status(200) - 성공!, res.status(400) - 실패!
 
@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // API method에 따라 작동
     switch (req.method) {
         // GET (모든 메뉴 조회)
-        case "GET":
+        case 'GET':
             const readResult = await prisma.menu.findMany()
 
             if (readResult != null) {
@@ -17,16 +17,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             } else {
                 // 요청된 정보가 없음
                 res.status(400).json({
-                    message: "메뉴 정보가 없습니다.",
+                    message: '메뉴 정보가 없습니다.',
                 })
             }
             break
 
         // CREATE (메뉴 등록)
-        case "POST":
+        case 'POST':
             if (req.body.content == null) {
                 res.status(400).json({
-                    message: "리뷰 내용을 입력해주세요.",
+                    message: '리뷰 내용을 입력해주세요.',
                 })
             } else {
                 const createResult = await prisma.menu.create({
@@ -53,7 +53,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 } else {
                     // 결과 값이 없을때 오류
                     res.status(400).json({
-                        message: "메뉴를 등록할 수 없습니다.",
+                        message: '메뉴를 등록할 수 없습니다.',
                     })
                 }
                 break
@@ -61,6 +61,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
         default:
             // API method가 잘못되었을 때 오류
-            res.status(400).json({ message: "잘못된 요청입니다." })
+            res.status(400).json({ message: '잘못된 요청입니다.' })
     }
 }

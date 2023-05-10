@@ -1,11 +1,8 @@
-import prisma from "@/libs/prismadb"
-import { Account } from "@prisma/client"
+import prisma from '@/libs/prismadb'
+import { Account } from '@prisma/client'
 
 // userId로 유저 찾기
-export async function getUserAccount(
-    userId: string,
-    provider: "instagram" | "facebook"
-): Promise<Account | undefined> {
+export async function getUserAccount(userId: string, provider: 'instagram' | 'facebook'): Promise<Account | undefined> {
     const userResult = await prisma.user.findUnique({
         where: { id: userId },
         select: { accounts: { where: { provider: provider } } },
@@ -22,12 +19,8 @@ export async function getUserAccount(
 
 /// 인스타그램 단일 미디어 게시
 /// TODO: 리뷰 폼 구현 후 테스트 필요
-export async function postInstagramMedia(
-    account: Account,
-    caption: string,
-    image: string
-) {
-    if (caption == "" && image == "") {
+export async function postInstagramMedia(account: Account, caption: string, image: string) {
+    if (caption == '' && image == '') {
         return null
     }
 
@@ -42,13 +35,13 @@ export async function postInstagramMedia(
     )
     canPost = await canPost.json()
     if (canPost.data.quota_usage == 25) {
-        return "25개 이상 게시할 수 없습니다."
+        return '25개 이상 게시할 수 없습니다.'
     }
 
     // container 가져오기
     let container = await fetch(
         `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/media?image=${image}&caption=${caption}&access_token=${account.access_token}`,
-        { method: "POST" }
+        { method: 'POST' }
     )
     container = await container.json()
     console.log(container)
@@ -75,13 +68,8 @@ export async function postInstagramMedia(
 
 // TODO: 로그인되지 않은 계정의 access-code를 가져와야함. 어떻게?
 // 1. 페이스북 페이지 글쓰기
-export async function postFacebookPage(
-    account: Account,
-    caption: string,
-    image: string,
-    link: string
-) {
-    if (image != "") {
+export async function postFacebookPage(account: Account, caption: string, image: string, link: string) {
+    if (image != '') {
         let pagePostId = await fetch(
             `https://graph.facebook.com/${process.env.NEXTAUTH_FACEBOOK_ID}/photos?url=${image}&access_token=${account.access_token}`
         )

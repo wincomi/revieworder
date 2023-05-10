@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "@/libs/prismadb"
-import { Prisma, OrderDetail, Cart, Menu } from "@prisma/client"
-import { getServerSession } from "next-auth"
-import { authOptions } from "../auth/[...nextauth]"
+import { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/libs/prismadb'
+import { Prisma, OrderDetail, Cart, Menu } from '@prisma/client'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../auth/[...nextauth]'
 
 // API Request 타입 지정
 export interface CartAPIRequest extends NextApiRequest {
@@ -44,7 +44,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
         res.status(401).json({
             error: {
                 code: 401,
-                message: "세션이 존재하지 않습니다.",
+                message: '세션이 존재하지 않습니다.',
             },
         })
         return
@@ -55,7 +55,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
     // API method에 따라 작동
     switch (req.method) {
         // READ (세션에서 받아온 userId에 해당되는 내 장바구니 목록 조회)
-        case "GET":
+        case 'GET':
             const readResult = await prisma.cart.findMany({
                 where: { user: { id: userId } },
                 include: {
@@ -72,7 +72,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 res.status(404).json({
                     error: {
                         code: 400,
-                        message: "장바구니 조회를 실패하였습니다.",
+                        message: '장바구니 조회를 실패하였습니다.',
                     },
                 })
             }
@@ -81,7 +81,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
         // CREATE
         // 리뷰페이지에서 담으면 orderDetails로
         // 가게 메뉴페이지에서 담으면 menu 참조. 이때 장바구니에 담기는 메뉴는 amount 1로 고정, 나중에 고객이 수정.
-        case "POST":
+        case 'POST':
             const orderDetails = req.body.order_details
             const menu = req.body.menu
 
@@ -127,7 +127,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "필요(orderDetail or menu) 값은 필수입니다.",
+                        message: '필요(orderDetail or menu) 값은 필수입니다.',
                     },
                 })
                 return
@@ -136,14 +136,14 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             break
 
         // PUT 수정 시 전체 업데이트
-        case "PUT":
+        case 'PUT':
             const carts = req.body.carts
 
             if (carts == undefined || carts.length == 0) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "cart 값은 필수입니다.",
+                        message: 'cart 값은 필수입니다.',
                     },
                 })
                 return
@@ -170,14 +170,14 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             break
 
         // DELETE (cartId로 개별 삭제)
-        case "DELETE":
+        case 'DELETE':
             const cart = req.body.cart
 
             if (cart == undefined || cart == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "cart 값은 필수입니다.",
+                        message: 'cart 값은 필수입니다.',
                     },
                 })
                 return
@@ -188,7 +188,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "세션이 존재하지 않습니다.",
+                        message: '세션이 존재하지 않습니다.',
                     },
                 })
                 return
@@ -196,7 +196,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 res.status(401).json({
                     error: {
                         code: 401,
-                        message: "권한 불일치.",
+                        message: '권한 불일치.',
                     },
                 })
                 return
@@ -217,7 +217,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             res.status(400).json({
                 error: {
                     code: 400,
-                    message: "잘못된 요청입니다.",
+                    message: '잘못된 요청입니다.',
                 },
             })
     }

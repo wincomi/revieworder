@@ -19,9 +19,7 @@ export default ({ count }: ShoppingCartButtonProps) => {
                 </Badge>
             )
         } else {
-            return (
-                <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient" />
-            )
+            return <Button onPress={() => router.push('/cart')} icon={<FaShoppingCart />} auto color="gradient" />
         }
     } else {
         return <></>

@@ -9,9 +9,9 @@ interface LayoutProps {
 
 export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
-        { id: "index", name: "홈", path: "/admin" },
-        { id: "order", name: "주문", path: "/admin/order" },
-        { id: "setup", name: "설정", path: "/admin/setup" },
+        { id: 'index', name: '홈', path: '/admin' },
+        { id: 'order', name: '주문', path: '/admin/order' },
+        { id: 'setup', name: '설정', path: '/admin/setup' },
     ]
 
     return (

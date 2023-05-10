@@ -10,11 +10,11 @@ export default () => {
 
     const dropdownAction: (key: Key) => void = (key) => {
         switch (key) {
-            case "logout":
+            case 'logout':
                 signOut()
                 break
             default:
-                router.push("/" + key)
+                router.push('/' + key)
                 break
         }
     }
@@ -28,15 +28,15 @@ export default () => {
                             bordered
                             as="button"
                             size="md"
-                            name={session.data.user.name ?? "이름 없음"}
+                            name={session.data.user.name ?? '이름 없음'}
                             src={session.data.user.image ?? undefined}
                         />
                     </Dropdown.Trigger>
                 </Navbar.Item>
                 <Dropdown.Menu onAction={dropdownAction} disabledKeys={[router.pathname.substring(1)]}>
                     <Dropdown.Item key="profile">
-                        <Text b color="inherit" css={{ d: "flex" }}>
-                            {session.data.user.name ?? "이름 없음"}
+                        <Text b color="inherit" css={{ d: 'flex' }}>
+                            {session.data.user.name ?? '이름 없음'}
                         </Text>
                     </Dropdown.Item>
                     <Dropdown.Item key="profile" withDivider icon={<HiOutlinePencil />}>
@@ -55,8 +55,15 @@ export default () => {
         // 로그인이 되어 있지 않을 때
         return (
             <Navbar.Item>
-                <Button auto flat as={Link} onPress={() => { signIn() }}>
-                    {session.status == "loading" ? <Loading type="points-opacity" /> : <>로그인</>}
+                <Button
+                    auto
+                    flat
+                    as={Link}
+                    onPress={() => {
+                        signIn()
+                    }}
+                >
+                    {session.status == 'loading' ? <Loading type="points-opacity" /> : <>로그인</>}
                 </Button>
             </Navbar.Item>
         )

@@ -4,11 +4,11 @@ import { createTheme, NextUIProvider, useSSR } from '@nextui-org/react'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
 const lightTheme = createTheme({
-    type: 'light'
+    type: 'light',
 })
 
 const darkTheme = createTheme({
-    type: 'dark'
+    type: 'dark',
 })
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -17,7 +17,11 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         isBrowser && (
             <SessionProvider session={pageProps.session}>
-                <NextThemesProvider defaultTheme="system" attribute="class" value={{ light: lightTheme.className, dark: darkTheme.className }}>
+                <NextThemesProvider
+                    defaultTheme="system"
+                    attribute="class"
+                    value={{ light: lightTheme.className, dark: darkTheme.className }}
+                >
                     <NextUIProvider>
                         <Component {...pageProps} />
                     </NextUIProvider>

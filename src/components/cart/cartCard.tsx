@@ -1,11 +1,11 @@
-import { Card, Row, Text, Button, Spacer, Col, Grid } from "@nextui-org/react"
-import { FaMinus, FaPlus, FaTimes } from "react-icons/fa"
+import { Card, Row, Text, Button, Spacer, Col, Grid } from '@nextui-org/react'
+import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
 
-import { Dispatch, SetStateAction } from "react"
-import { CartItem } from "@/pages/api/carts"
+import { Dispatch, SetStateAction } from 'react'
+import { CartItem } from '@/pages/api/carts'
 
 export type CartCardProps = {
-    cartItem: CartItem,
+    cartItem: CartItem
     onChangeCartItem: Dispatch<SetStateAction<CartItem | null>>
 }
 
@@ -27,14 +27,14 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
             const result = await fetch(`api/carts/`, {
                 method: 'DELETE',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 // session의 쿠키를 보내는데 req가 없으면 필요
                 credentials: 'include',
 
                 body: JSON.stringify({
-                    cart: cartItem
-                })
+                    cart: cartItem,
+                }),
             })
 
             // 새로고침
@@ -48,7 +48,7 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
                 <Grid.Container>
                     <Grid>
                         <Card.Image
-                            src={cartItem.menu.image ?? "http://via.placeholder.com/128x128"}
+                            src={cartItem.menu.image ?? 'http://via.placeholder.com/128x128'}
                             objectFit="fill"
                             width={128}
                             height={128}
@@ -63,14 +63,22 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
                                 <Text size="x-large">{cartItem.menu.name}</Text>
                             </Grid>
                             <Grid>
-                                <Button light auto onPress={del} color="error" icon={<FaTimes fill="currentColor" />}></Button>
+                                <Button
+                                    light
+                                    auto
+                                    onPress={del}
+                                    color="error"
+                                    icon={<FaTimes fill="currentColor" />}
+                                ></Button>
                             </Grid>
                         </Grid.Container>
                         <Grid.Container justify="space-between" alignItems="center">
                             <Grid>
                                 <Button.Group flat auto>
                                     <Button onPress={minus} icon={<FaMinus />} disabled={cartItem.amount == 1}></Button>
-                                    <Button disabled={true} css={{ minWidth: '64px' }}>{cartItem.amount}</Button>
+                                    <Button disabled={true} css={{ minWidth: '64px' }}>
+                                        {cartItem.amount}
+                                    </Button>
                                     <Button onPress={plus} icon={<FaPlus />}></Button>
                                 </Button.Group>
                             </Grid>

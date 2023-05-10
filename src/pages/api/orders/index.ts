@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import prisma from "@/libs/prismadb"
-import { Cart, Order, Prisma, Store } from "@prisma/client"
-import { getServerSession } from "next-auth"
-import { authOptions } from "../auth/[...nextauth]"
-import { CartItem } from "../carts"
+import { NextApiRequest, NextApiResponse } from 'next'
+import prisma from '@/libs/prismadb'
+import { Cart, Order, Prisma, Store } from '@prisma/client'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../auth/[...nextauth]'
+import { CartItem } from '../carts'
 
 // 무슨 기능이나, 업데이트 내역...
 
@@ -46,7 +46,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
         res.status(401).json({
             error: {
                 code: 401,
-                message: "세션이 존재하지 않습니다.",
+                message: '세션이 존재하지 않습니다.',
             },
         })
         return
@@ -59,12 +59,12 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     // API method에 따라 작동
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
-        case "GET":
+        case 'GET':
             const readResult = await prisma.order.findMany({
                 where: {
                     userId: userId,
                     // TODO: 나중에 쿼리로 할 변경
-                    OR: [{ status: "REQUESTED" }, { status: "CONFIRMED" }],
+                    OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
                 },
                 include: {
                     store: true,
@@ -81,19 +81,19 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 res.status(404).json({
                     error: {
                         code: 400,
-                        message: "주문내역 조회를 실패하였습니다.",
+                        message: '주문내역 조회를 실패하였습니다.',
                     },
                 })
             }
             break
 
         // CREATE (장바구니에서 주문)
-        case "POST":
+        case 'POST':
             if (carts == undefined || carts == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "carts 값은 필수입니다.",
+                        message: 'carts 값은 필수입니다.',
                     },
                 })
                 return
@@ -101,7 +101,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "유저 정보 불일치.",
+                        message: '유저 정보 불일치.',
                     },
                 })
                 return
@@ -116,12 +116,11 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                     orderDetails: {
                         createMany: {
                             data: carts.map((menu) => {
-                                const input: Prisma.OrderDetailCreateManyOrderInput =
-                                    {
-                                        menuId: menu.menuId,
-                                        amount: menu.amount,
-                                        price: menu.amount * menu.menu.price,
-                                    }
+                                const input: Prisma.OrderDetailCreateManyOrderInput = {
+                                    menuId: menu.menuId,
+                                    amount: menu.amount,
+                                    price: menu.amount * menu.menu.price,
+                                }
                                 return input
                             }),
                         },
@@ -140,19 +139,19 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "주문을 실패 하였습니다.",
+                        message: '주문을 실패 하였습니다.',
                     },
                 })
             }
             break
 
         // UPDATE (주문 상태 변경)
-        case "PUT":
+        case 'PUT':
             if (carts == undefined || carts == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "order 값은 필수입니다.",
+                        message: 'order 값은 필수입니다.',
                     },
                 })
                 return
@@ -181,12 +180,12 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
         // break
 
         // DELETE (몇 분이내면 삭제 가능?)
-        case "DELETE":
+        case 'DELETE':
             if (order == undefined || order == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "삭제 할 order가 없습니다.",
+                        message: '삭제 할 order가 없습니다.',
                     },
                 })
                 return
@@ -194,7 +193,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: "유저 정보 불일치.",
+                        message: '유저 정보 불일치.',
                     },
                 })
                 return
@@ -215,7 +214,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
             res.status(400).json({
                 error: {
                     code: 400,
-                    message: "잘못된 요청입니다.",
+                    message: '잘못된 요청입니다.',
                 },
             })
     }

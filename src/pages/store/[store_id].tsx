@@ -1,7 +1,7 @@
-import Layout from "@/components/layout"
+import Layout from '@/components/layout'
 import { Button, Text } from '@nextui-org/react'
-import { GetStaticProps, GetStaticPaths } from "next"
-import { ParsedUrlQuery } from "querystring"
+import { GetStaticProps, GetStaticPaths } from 'next'
+import { ParsedUrlQuery } from 'querystring'
 
 interface StorePageParams extends ParsedUrlQuery {
     store_id?: string
@@ -22,7 +22,7 @@ export default ({ store_id }: StorePageProps) => {
 
 export const getStaticProps: GetStaticProps<StorePageProps, StorePageParams> = async ({ params }) => {
     return {
-        props: { store_id: Number(params?.store_id) }
+        props: { store_id: Number(params?.store_id) },
     }
 }
 
