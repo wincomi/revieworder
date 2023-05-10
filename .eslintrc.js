@@ -6,17 +6,18 @@ module.exports = {
     },
     extends: [
         'plugin:react/recommended',
-        'standard-with-typescript',
         'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended',
+        'plugin:@next/next/recommended',
+        'plugin:prettier/recommended'
     ],
     overrides: [],
     parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
+        'project': './tsconfig.json'
     },
     plugins: ['react'],
     rules: {
-        'linebreak-style': 0,
+        'react/react-in-jsx-scope': 'off',
+        'react/display-name': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off'
     },
 }
