@@ -8,16 +8,15 @@ module.exports = {
         'plugin:react/recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@next/next/recommended',
-        'plugin:prettier/recommended'
+        'plugin:prettier/recommended',
     ],
     overrides: [],
-    parserOptions: {
-        'project': './tsconfig.json'
-    },
+    parserOptions: {},
     plugins: ['react'],
     rules: {
         'react/react-in-jsx-scope': 'off',
         'react/display-name': 'off',
-        '@typescript-eslint/ban-ts-comment': 'off'
+        '@typescript-eslint/ban-ts-comment': 'off',
+        'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
 }
