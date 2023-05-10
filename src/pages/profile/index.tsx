@@ -12,6 +12,7 @@ import { User } from '@prisma/client'
 import React from 'react'
 
 import { loadTossPayments } from '@tosspayments/payment-sdk'
+import { tossPayment } from '@/libs/tossPay'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -71,31 +72,8 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
     const charge = async () => {
         setIsLoadingUpdate(true)
 
-        const tossPayments = await loadTossPayments(tossClientKey)
-
-        // 주문번호 랜덤 생성
-        const orderId = Math.random().toString(36).substring(2, 12)
-
-        if (user.name != null) {
-            // 결제 창 생성
-            tossPayments.requestPayment('카드', { // 결제수단 파라미터
-                // 결제 정보 파라미터
-                amount: point,
-                orderId: orderId,
-                orderName: '리뷰오더 포인트 충전',
-                customerName: user.name,
-                successUrl: `${tossRedirectURL}/success?userId=${user.id}`,
-                failUrl: `${tossRedirectURL}/fail`,
-            })
-                // 결제 실패 시
-                .catch(function (error) {
-                    if (error.code === 'USER_CANCEL') {
-                        // 결제 고객이 결제창을 닫았을 때 에러 처리
-                    } else if (error.code === 'INVALID_CARD_COMPANY') {
-                        // 유효하지 않은 카드 코드에 대한 에러 처리
-                    }
-                })
-        }
+        // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
+        tossPayment(tossClientKey, point, tossRedirectURL, undefined, undefined, user)
 
         setIsLoadingUpdate(false)
     }
