@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/libs/prismadb'
-import { Cart, Order, Prisma, Store } from '@prisma/client'
+import { Order, Prisma, Store } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 import { CartItem } from '../carts'
@@ -71,7 +71,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                     orderDetails: { include: { menu: true } },
                 },
             })
-            console.log(readResult)
+
             if (readResult != null) {
                 // 성공!!
                 res.status(200).json({

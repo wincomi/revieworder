@@ -155,7 +155,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                     data: { amount: cart.amount },
                 }
 
-                const putResult = await prisma.cart.updateMany(input)
+                await prisma.cart.updateMany(input)
 
                 // Cannot set headers after they are sent to the client
                 // res.status(200).json({
