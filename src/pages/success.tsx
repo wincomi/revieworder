@@ -18,7 +18,7 @@ export default function SuccessPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context)
+    await getSession(context)
 
     // URL 쿼리
     const paymentKey = context.query.paymentKey
@@ -28,45 +28,44 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     // 토스 결제 승인 시 시크릿키 사용
     const secretKey = process.env.TOSS_SECRET_KEY
-    let basic64
-
     if (secretKey != undefined) {
         //basic64로 인코딩
-        basic64 = Buffer.from(secretKey, 'utf8').toString('base64')
+        const basic64 = Buffer.from(secretKey, 'utf8').toString('base64')
+
+        // 결제 승인 api
+        await fetch('https://api.tosspayments.com/v1/payments/confirm', {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${basic64}`,
+                'Content-Type': 'application/json',
+                // session의 쿠키 전달
+                cookie: context.req.headers.cookie || '',
+            },
+            body: JSON.stringify({
+                paymentKey: paymentKey,
+                amount: amount,
+                orderId: orderId,
+            }),
+        }).then(async (res) => {
+            if (res.status == 200) {
+                // 결제승인 성공 후 리뷰머니 충전 - 결제 승인은 한번만 되서 새로고침해도 충전x
+                console.log('성공')
+                await fetch(`${process.env.NEXTAUTH_URL}/api/user/moneyapi`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // session의 쿠키 전달
+                        cookie: context.req.headers.cookie || '',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        money: Number(amount),
+                        opt: 'charge',
+                    }),
+                })
+            }
+        })
     }
-    // 결제 승인 api
-    const result = await fetch('https://api.tosspayments.com/v1/payments/confirm', {
-        method: 'POST',
-        headers: {
-            Authorization: `Basic ${basic64}`,
-            'Content-Type': 'application/json',
-            // session의 쿠키 전달
-            cookie: context.req.headers.cookie || '',
-        },
-        body: JSON.stringify({
-            paymentKey: paymentKey,
-            amount: amount,
-            orderId: orderId,
-        }),
-    }).then(async (res) => {
-        if (res.status == 200) {
-            // 결제승인 성공 후 리뷰머니 충전 - 결제 승인은 한번만 되서 새로고침해도 충전x
-            console.log('성공')
-            await fetch(`${process.env.NEXTAUTH_URL}/api/user/moneyapi`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // session의 쿠키 전달
-                    cookie: context.req.headers.cookie || '',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                    money: Number(amount),
-                    opt: 'charge',
-                }),
-            })
-        }
-    })
 
     return {
         props: {},

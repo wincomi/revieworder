@@ -1,4 +1,4 @@
-import { Card, Row, Text, Button, Spacer, Col, Grid } from '@nextui-org/react'
+import { Card, Text, Button, Spacer, Grid } from '@nextui-org/react'
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa'
 
 import { Dispatch, SetStateAction } from 'react'
@@ -24,7 +24,7 @@ export default ({ cartItem, onChangeCartItem }: CartCardProps) => {
 
     const del = async () => {
         if (confirm('장바구니에서 삭제하시겠습니까?')) {
-            const result = await fetch(`api/carts/`, {
+            await fetch(`api/carts/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

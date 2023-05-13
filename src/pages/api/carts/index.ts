@@ -24,6 +24,7 @@ export interface CartAPIRequest extends NextApiRequest {
 // API Response 타입 지정
 const cartWithMenu = Prisma.validator<Prisma.CartArgs>()({
     include: {
+        user: true,
         menu: { include: { store: true } },
     },
 })
@@ -59,6 +60,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             const readResult = await prisma.cart.findMany({
                 where: { user: { id: userId } },
                 include: {
+                    user: true,
                     menu: { include: { store: true } },
                 },
             })
@@ -155,7 +157,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                     data: { amount: cart.amount },
                 }
 
-                const putResult = await prisma.cart.updateMany(input)
+                await prisma.cart.updateMany(input)
 
                 // Cannot set headers after they are sent to the client
                 // res.status(200).json({

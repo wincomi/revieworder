@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Dispatch, Key, ReactNode, SetStateAction, useState } from 'react'
+import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
@@ -21,7 +21,7 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
     const addToCart = async () => {
         setIsAddingToCart(true)
 
-        const result = await fetch(`api/carts`, {
+        await fetch(`api/carts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,17 +53,17 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
     const RatingIcons = (rating: number) => {
         return (
             <>
-                {[...Array(rating)].map((value: any, index: number) => {
+                {[...Array(rating)].map((index: number) => {
                     return <FaStar key={index} />
                 })}
-                {[...Array(5 - rating)].map((value: any, index: number) => {
+                {[...Array(5 - rating)].map((index: number) => {
                     return <FaRegStar key={index} />
                 })}
             </>
         )
     }
 
-    const createTimeText = new Date(review.createTime).toLocaleString()
+    //const createTimeText = new Date(review.createTime).toLocaleString()
 
     return (
         <Card variant="flat">
