@@ -44,6 +44,7 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
         case 'GET':
             const readResult = await prisma.user.findUnique({
                 where: { id: userId },
+                include: { accounts: true },
             })
 
             if (readResult != null) {
