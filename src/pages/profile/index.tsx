@@ -7,15 +7,14 @@ import { FaPencilAlt } from 'react-icons/fa'
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { getAccountProviders } from '@/libs/users'
-import { UserAPIGETResponse } from '../api/user'
-import { User } from '@prisma/client'
+import { UserAPIGETResponse, UserInfo } from '../api/user'
 import React from 'react'
 
 import { tossPayment } from '@/libs/tossPay'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
-    user: User
+    user: UserInfo
 
     /// 연결된 SNS 계정 종류
     accountProviders: string[]
@@ -222,6 +221,7 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                         </Button>
                     </fieldset>
                 </form>
+                {user.stores[0].id ? <Button> 매장 관리 </Button> : <Button disabled> 매장 관리 </Button>}
             </Layout>
         </>
     )
