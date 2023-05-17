@@ -20,7 +20,7 @@ export default () =>
                 placeholder: '123456',
             },
         },
-        authorize: async (credentials, req) => {
+        authorize: async (credentials) => {
             // 휴대폰 번호와 인증번호가 전달되지 않을 경우 null 반환
             if (credentials?.phoneNumber == null || credentials.verificationCode == null) {
                 return null

@@ -1,12 +1,12 @@
 import { useSession } from 'next-auth/react'
-import router, { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import ReviewCard from '@/components/index/reviewCard'
 import { GetServerSideProps } from 'next/types'
-import { Key, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 
 import Head from 'next/head'
 import Layout from '@/components/layout'
-import { Button, Grid, Input, Spacer, Text } from '@nextui-org/react'
+import { Button, Grid, Input, Text } from '@nextui-org/react'
 import { HiSearch } from 'react-icons/hi'
 import { ReviewAPIGETResponse, ReviewItem } from './api/reviews'
 
@@ -15,7 +15,7 @@ interface ReviewPageProps {
 }
 
 export default function Home({ reviewCards }: ReviewPageProps) {
-    const session = useSession()
+    useSession()
     const router = useRouter()
 
     const [query, setQuery] = useState('')
@@ -58,7 +58,7 @@ export default function Home({ reviewCards }: ReviewPageProps) {
                     </Grid.Container>
                 </form>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
-                    {reviewCards.map((item: ReviewItem, index: Key) => (
+                    {reviewCards.map((item: ReviewItem) => (
                         <Grid xs={12} sm={6} lg={4} key={item.id}>
                             <ReviewCard review={item} onChangeQuery={(data) => setQuery(data)} />
                         </Grid>

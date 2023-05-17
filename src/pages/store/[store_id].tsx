@@ -1,5 +1,5 @@
 import Layout from '@/components/layout'
-import { Button, Text } from '@nextui-org/react'
+import { Text } from '@nextui-org/react'
 import { GetStaticProps, GetStaticPaths } from 'next'
 import { ParsedUrlQuery } from 'querystring'
 
