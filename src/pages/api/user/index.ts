@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/libs/prismadb'
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 
@@ -15,9 +15,19 @@ export interface UserAPIRequest extends NextApiRequest {
     }
 }
 
+// API Response 타입 지정
+const UserWithOtherInfo = Prisma.validator<Prisma.UserArgs>()({
+    include: {
+        accounts: true,
+        stores: true,
+    },
+})
+
+export type UserInfo = Prisma.UserGetPayload<typeof UserWithOtherInfo>
+
 export type UserAPIGETResponse = {
     // TODO: password 컬럼도 포함되어 있음
-    data: User
+    data: UserInfo
 }
 
 // 모든 유저 조회 및 등록 API
@@ -44,7 +54,7 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
         case 'GET':
             const readResult = await prisma.user.findUnique({
                 where: { id: userId },
-                include: { accounts: true },
+                include: { accounts: true, stores: true },
             })
 
             if (readResult != null) {
