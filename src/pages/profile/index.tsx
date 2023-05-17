@@ -70,8 +70,8 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
     const charge = async () => {
         setIsLoadingUpdate(true)
 
-        // // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
-        tossPayment(tossClientKey, point, tossRedirectURL, undefined, '리뷰오더 포인트 충전', user)
+        // clientKey, 충전 금액, redirect host url, 결제 방식 여부 ,주문번호, 표시 내용, 유저 정보
+        tossPayment(tossClientKey, point, tossRedirectURL, false, undefined, '리뷰오더 포인트 충전', user)
 
         setIsLoadingUpdate(false)
     }

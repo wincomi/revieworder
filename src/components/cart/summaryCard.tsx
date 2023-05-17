@@ -28,11 +28,11 @@ export default ({ cartItems, tossClientKey, tossRedirectURL }: SummaryCardProps)
         console.log('closed')
     }
 
-    // 충전
-    const charge = async () => {
+    // 바로 결제
+    const pay = async () => {
         // // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
         // tossPayment(tossClientKey, point, tossRedirectURL, undefined, undefined, user)
-        tossPayment(tossClientKey, totalPrice, tossRedirectURL, undefined, '리뷰오더 결제', cartItems[0].user)
+        tossPayment(tossClientKey, totalPrice, tossRedirectURL, true, undefined, '리뷰오더 결제', cartItems[0].user)
     }
 
     // 주문 기능
@@ -126,7 +126,7 @@ export default ({ cartItems, tossClientKey, tossRedirectURL }: SummaryCardProps)
                             <Text> 결제 후 포인트: {(cartItems[0].user.money - totalPrice).toLocaleString()} RP</Text>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button auto onPress={closeHandler} onClick={charge}>
+                            <Button auto onPress={closeHandler} onClick={pay}>
                                 바로 결제
                             </Button>
                             <Button auto onPress={closeHandler} onClick={() => onPressOrderButton('point')}>

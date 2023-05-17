@@ -6,6 +6,8 @@ export async function tossPayment(
     tossClientKey: string,
     amount: number,
     tossRedirectURL: string,
+    // false: 바로 결제, true: 포인트 결제
+    pointPay: boolean,
     // 지금은 고정 중
     _orderId?: string,
     orderName?: string,
@@ -28,7 +30,7 @@ export async function tossPayment(
                 orderId: randomOrderId,
                 orderName: orderName,
                 customerName: user.name,
-                successUrl: `${tossRedirectURL}/success?userId=${user.id}`,
+                successUrl: `${tossRedirectURL}/success?userId=${user.id}&payMethod=${pointPay}`,
                 failUrl: `${tossRedirectURL}/fail`,
             })
 
