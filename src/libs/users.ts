@@ -21,3 +21,13 @@ export async function getAccountProviders(userId: string): Promise<string[] | un
 export async function getUsers(): Promise<User[]> {
     return await prisma.user.findMany()
 }
+
+///  userId로 유저 찾기
+export async function getUserAccount(userId: string, provider: 'instagram' | 'facebook'): Promise<Account | undefined> {
+    const userResult = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { accounts: { where: { provider: provider } } },
+    })
+
+    return userResult?.accounts[0]
+}

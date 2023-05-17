@@ -1,7 +1,7 @@
 import Layout from '@/components/layout'
 import { Text } from '@nextui-org/react'
 
-export default () => {
+export default function dataRemovalPage() {
     return (
         <Layout>
             <Text h1>데이터 삭제 요청 방법</Text>
