@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]'
 
 // API Request 타입 지정
-export interface CartAPIRequest extends NextApiRequest {
+export interface StoreAPIRequest extends NextApiRequest {
     body: {
         //관리 할 매장
         store?: Store
@@ -21,7 +21,7 @@ const store = Prisma.validator<Prisma.StoreArgs>()({})
 export type StoreInfo = Prisma.StoreGetPayload<typeof store>
 
 // 가게 메뉴 출력은 menus API 사용
-export type CartAPIGETResponse = {
+export type StoreAPIGETResponse = {
     data: StoreInfo[]
 }
 
