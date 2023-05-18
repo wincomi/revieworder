@@ -1,5 +1,5 @@
 import Layout from '@/components/layout'
-import { Grid, Text, Spacer } from '@nextui-org/react'
+import { Grid, Text, Spacer, Button } from '@nextui-org/react'
 
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
@@ -8,6 +8,7 @@ import { SetStateAction, useEffect, useState } from 'react'
 import CartCard from '@/components/cart/cartCard'
 import SummaryCard from '@/components/cart/summaryCard'
 import { CartAPIGETResponse, CartItem } from './api/carts'
+import { FaTrashAlt } from 'react-icons/fa'
 
 interface CartPageProps {
     carts: CartItem[]
@@ -58,6 +59,25 @@ export default function CartPage({ carts, tossClientKey, tossRedirectURL }: Cart
         result()
     }, [cartItems])
 
+    const resetCart = async () => {
+        if (confirm('장바구니를 초기화하겠습니까?')) {
+            await fetch(`api/carts`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // session의 쿠키를 보내는데 req가 없으면 필요
+                credentials: 'include',
+
+                body: JSON.stringify({
+                    cart: cartItems[0],
+                    reset: true,
+                }),
+            })
+        }
+        // TODO: 새로고침 추가
+    }
+
     if (cartItems.length == 0) {
         return (
             <>
@@ -79,6 +99,8 @@ export default function CartPage({ carts, tossClientKey, tossRedirectURL }: Cart
             </Head>
             <Layout>
                 <Text h1>장바구니</Text>
+                {/* TODO: 버튼 위치 수정하기 */}
+                <Button auto color="error" icon={<FaTrashAlt fill="currentColor" />} onPress={resetCart}></Button>
                 <Grid.Container gap={2} alignItems="flex-start">
                     <Grid md={8} xs={12}>
                         <div style={{ width: '100%' }}>

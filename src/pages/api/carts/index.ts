@@ -18,6 +18,9 @@ export interface CartAPIRequest extends NextApiRequest {
 
         // 개별 삭제용
         cart?: Cart
+
+        // 초기화 옵션 true: 초기화
+        reset?: boolean
     }
 }
 
@@ -174,6 +177,7 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
         // DELETE (cartId로 개별 삭제)
         case 'DELETE':
             const cart = req.body.cart
+            const reset = req.body.reset
 
             if (cart == undefined || cart == null) {
                 res.status(400).json({
@@ -204,14 +208,23 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 return
             }
 
-            const deleteResult = await prisma.cart.delete({
-                where: { id: cart.id },
-            })
+            if (reset != undefined && reset) {
+                const deleteResult = await prisma.cart.deleteMany({
+                    where: { user: { id: userId } },
+                })
 
-            res.status(200).json({
-                data: deleteResult,
-            })
+                res.status(200).json({
+                    data: deleteResult,
+                })
+            } else {
+                const deleteResult = await prisma.cart.delete({
+                    where: { id: cart.id },
+                })
 
+                res.status(200).json({
+                    data: deleteResult,
+                })
+            }
             break
 
         default:
