@@ -45,6 +45,14 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
         return
     }
 
+    // https://www.prisma.io/docs/concepts/components/prisma-client/excluding-fields
+    function exclude<UserInfo, Key extends keyof UserInfo>(user: UserInfo, keys: Key[]): Omit<UserInfo, Key> {
+        for (const key of keys) {
+            delete user[key]
+        }
+        return user
+    }
+
     const userId = session.user.id
     const user = req.body.user
 
@@ -52,12 +60,13 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
     switch (req.method) {
         // GET (셰션 내 유저 정보 조회)
         case 'GET':
-            const readResult = await prisma.user.findUnique({
+            const readUser = await prisma.user.findUnique({
                 where: { id: userId },
                 include: { accounts: true, stores: true },
             })
 
-            if (readResult != null) {
+            if (readUser != null) {
+                const readResult = exclude(readUser, ['password'])
                 // 성공!!
                 res.status(200).json({
                     data: readResult,
