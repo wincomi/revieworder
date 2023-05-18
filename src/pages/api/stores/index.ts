@@ -16,7 +16,10 @@ export interface StoreAPIRequest extends NextApiRequest {
 }
 
 // API Response 타입 지정
-const store = Prisma.validator<Prisma.StoreArgs>()({})
+// 관리자 아니면 받는 타입에서 store로 지정
+const store = Prisma.validator<Prisma.StoreArgs>()({
+    include: { user: true },
+})
 
 export type StoreInfo = Prisma.StoreGetPayload<typeof store>
 
@@ -27,7 +30,7 @@ export type StoreAPIGETResponse = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
-    const query = req.query.q as string | undefined
+    const query = req.query.q as string | number | undefined
 
     const store = req.body.store
     const inputStore = req.body.inputStore
@@ -36,7 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     switch (req.method) {
         case 'GET':
             // 검색 쿼리 없으면 모두 출력
-            if (query == '') {
+            if (query == undefined) {
                 const readResult = await prisma.store.findMany({})
 
                 if (readResult != null) {
@@ -53,7 +56,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else {
+                // 검색 쿼리
+            } else if (typeof query == 'string') {
                 const readResult = await prisma.store.findMany({
                     where: {
                         OR: [
@@ -62,6 +66,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                             { address: { contains: query } },
                             { description: { contains: query } },
                         ],
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '매장 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+                // 매장 조회(storeId) 쿼리
+            } else if (typeof query == 'number') {
+                const readResult = await prisma.store.findMany({
+                    where: {
+                        id: query,
+                        userId: session?.user.id,
                     },
                 })
 
