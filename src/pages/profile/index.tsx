@@ -11,6 +11,7 @@ import { UserAPIGETResponse, UserInfo } from '../api/user'
 import React from 'react'
 
 import { tossPayment } from '@/libs/tossPay'
+import router from 'next/router'
 
 interface ProfileEditPageProps {
     /// 현재 세션의 유저 정보
@@ -221,7 +222,11 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                         </Button>
                     </fieldset>
                 </form>
-                {user.stores[0].id ? <Button> 매장 관리 </Button> : <Button disabled> 매장 관리 </Button>}
+                {user.stores[0] != undefined || user.stores != null ? (
+                    <Button onPress={() => router.push('/admin')}> 매장 관리 </Button>
+                ) : (
+                    <Button disabled> 매장 없어 </Button>
+                )}
             </Layout>
         </>
     )
