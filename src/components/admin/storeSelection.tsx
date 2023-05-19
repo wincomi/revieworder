@@ -10,7 +10,7 @@ export type storeSeletionProps = {
 
 export default ({ stores }: storeSeletionProps) => {
     const dropdownAction: (key: Key) => void = (key) => {
-        router.push('/admin?storeId=' + key)
+        router.push('/admin/store?id=' + key)
     }
 
     return (
