@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/libs/prismadb'
-import { Order, Prisma, Store } from '@prisma/client'
+import { Order, Prisma } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 import { CartItem } from '../carts'
+import { StoreInfo } from '../stores'
 
 // 무슨 기능이나, 업데이트 내역...
 
@@ -13,9 +14,6 @@ export interface OrderAPIRequest extends NextApiRequest {
         /// 장바구니 추가된 정보 목록
         // cart안에 storeId 찾는 용도
         carts?: CartItem[]
-
-        /// 매장 측 정보 - 매장 측에서 주문 내역 조회 할 때
-        store?: Store[]
 
         // 주문 취소용
         order?: Order
@@ -55,37 +53,75 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     const userId = session.user.id
     const carts = req.body.carts
     const order = req.body.order
+    const receiveQuery = req.query.q
+
+    // GET method에서 json파일을 query로 변환시켜서 GET에서 파라미터(쿼리)를 받아 다시 json으로 파싱
+    // https://www.slingacademy.com/article/how-to-pass-a-javascript-array-within-a-query-string/
+    const stores = JSON.parse(receiveQuery as string)
 
     // API method에 따라 작동
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
         case 'GET':
-            const readResult = await prisma.order.findMany({
-                where: {
-                    userId: userId,
-                    // TODO: 나중에 쿼리로 할 변경
-                    OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
-                },
-                include: {
-                    store: true,
-                    orderDetails: { include: { menu: true } },
-                },
-            })
-
-            if (readResult != null) {
-                // 성공!!
-                res.status(200).json({
-                    data: readResult,
-                })
-            } else {
-                res.status(404).json({
-                    error: {
-                        code: 400,
-                        message: '주문내역 조회를 실패하였습니다.',
+            if (stores == undefined) {
+                const readResult = await prisma.order.findMany({
+                    where: {
+                        userId: userId,
+                        // TODO: 나중에 쿼리로 할 변경
+                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
+                    },
+                    include: {
+                        store: true,
+                        orderDetails: { include: { menu: true } },
                     },
                 })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '주문내역 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else if (stores != undefined) {
+                const readResult = await prisma.order.findMany({
+                    where: {
+                        status: 'COMPLETED',
+                        OR: stores.map((store: StoreInfo) => {
+                            const input: Prisma.OrderWhereInput = {
+                                storeId: Number(store.id),
+                            }
+                            return input
+                        }),
+                    },
+                    include: {
+                        store: true,
+                        orderDetails: { include: { menu: true } },
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '주문내역 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
             }
-            break
 
         // CREATE (장바구니에서 주문)
         case 'POST':
