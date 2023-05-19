@@ -28,7 +28,7 @@ export type StoreAPIGETResponse = {
     data: StoreInfo[]
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (req: StoreAPIRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
 
     const query = req.query.q as string | undefined
@@ -41,9 +41,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     switch (req.method) {
         // 매장 검색 시에는 query만 이용하다 해당 매장 페이지 들어가면 storeId 쿼리 사용
         case 'GET':
-            // 검색 쿼리 쓸 때 사용
             if (query == '' && storeId == undefined) {
-                // 검색 쿼리 없을 때
+                // 검색 쿼리, storeId 없을 때
                 const readResult = await prisma.store.findMany({})
 
                 if (readResult != null) {
@@ -88,8 +87,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
                 break
             }
-
-            // storeId에 해당하는 매장 정보
             if (query == undefined && storeId == '') {
                 // 검색 쿼리 없을 때 userId 토대로 조회 (admin 용)
                 const readResult = await prisma.store.findMany({
@@ -111,7 +108,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 }
                 break
             } else if (storeId != undefined) {
-                // 검색 쿼리 있을 때
+                // storeId에 해당하는 매장 정보
                 const readResult = await prisma.store.findUnique({
                     where: {
                         id: Number(storeId),
@@ -198,7 +195,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     },
                 })
                 return
-            } else if (session.user.id != store.id) {
+            } else if (session.user.id != store.userId) {
                 res.status(401).json({
                     error: {
                         code: 401,
@@ -256,7 +253,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     },
                 })
                 return
-            } else if (session.user.id != store.id) {
+            } else if (session.user.id != store.userId) {
                 res.status(401).json({
                     error: {
                         code: 401,
