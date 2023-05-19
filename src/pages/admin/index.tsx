@@ -55,7 +55,7 @@ export default function adminPage({ storeOrders, storesInfo }: adminPageProps) {
             <>
                 <Layout>
                     <Text>홈</Text>
-                    <Text>매장 만들기</Text>
+                    <Link href="/admin">매장 만들기</Link>
                 </Layout>
             </>
         )
@@ -70,13 +70,16 @@ export default function adminPage({ storeOrders, storesInfo }: adminPageProps) {
                 <StoreSelection stores={storesInfo} />
                 */}
                 <Grid.Container xs={12} sm={6} gap={2}>
+                    <Grid>
+                        <Text>통합 총 매출: {totalSales.toLocaleString()}원</Text>
+                    </Grid>
                     <Text>매장 별 매출</Text>
                     {total.map((sales: number, index) => (
                         <Grid key={index}>
                             <Link color="default" href={`/admin/store?id=${storesInfo[index].id}`}>
                                 {storesInfo[index].name}
                             </Link>
-                            <Text>매출: {sales} 원</Text>
+                            <Text>매출: {sales.toLocaleString()} 원</Text>
                             <Progress value={sales} max={totalSales} color={setColor(index)} status="primary" />
                         </Grid>
                     ))}
@@ -99,22 +102,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const storesInfo = response.data
 
-    // 선택 된 매장 정보
-
-    // // 검색 쿼리
-    // const selectedStoreId = context.query.storeId ?? ''
-
-    // const selectedResult = await fetch(`${process.env.NEXTAUTH_URL}/api/stores?id=${selectedStoreId}`, {
-    //     method: 'GET',
-    //     headers: {
-    //         // session의 쿠키 전달
-    //         cookie: context.req.headers.cookie || '',
-    //     },
-    // })
-    // const selectedRes = await selectedResult.json().then((data) => data as StoreAPIGETResponse)
-
-    //const selectedStore = selectedRes.data
-
+    // 매장 주문내역들
     const queryString = '?q=' + encodeURIComponent(JSON.stringify(storesInfo))
 
     const orderResult = await fetch(`${process.env.NEXTAUTH_URL}/api/orders` + queryString, {
