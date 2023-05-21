@@ -4,6 +4,7 @@ import { GetServerSideProps } from 'next/types'
 import { MenuAPIGETResponse, MenuItem } from '../api/menus'
 import { StoreAPIGETResponse, StoreInfo } from '../api/stores'
 import StoreSelection from '@/components/admin/storeSelection'
+import router from 'next/router'
 
 // TODO: 메뉴 표시 + selection 사용 (처음에는 가지고 있는 첫 매장으로 이동 이후 셀렉터로 이동) + 메뉴 관리로 이동 + 매장 설정 변경
 
@@ -62,14 +63,14 @@ export default function adminStorePage({ storeInfo, menuItems }: adminStorePageP
                             </Grid>
 
                             <Grid>
-                                <Button>메뉴 등록</Button>
+                                <Button onPress={() => router.push('/admin/menuUpdate')}>메뉴 등록</Button>
                             </Grid>
                         </Grid.Container>
                         {menuItems.map((menu: MenuItem, index) => (
                             <Grid key={index}>
-                                <Text h6>
-                                    {menu.name} &nbsp; {'('} {menu.status == 'AVAILABLE' ? '판매가능' : '판매 불가'}{' '}
-                                    {')'}
+                                <Link href={`/admin/menuUpdate?id=${menu.id}`}>{menu.name}</Link>
+                                <Text>
+                                    {'('} {menu.status == 'AVAILABLE' ? '판매가능' : '판매 불가'} {')'}
                                 </Text>
                                 <Text>{menu.price.toLocaleString()}원</Text>
                             </Grid>
@@ -96,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const storeInfo = response.data
 
     // storeId 해당 매장 메뉴들 정보
-    const menuResult = await fetch(`${process.env.NEXTAUTH_URL}/api/menus?storeId=2`, {
+    const menuResult = await fetch(`${process.env.NEXTAUTH_URL}/api/menus?storeId=${storeId}`, {
         method: 'GET',
         headers: {
             // session의 쿠키 전달
