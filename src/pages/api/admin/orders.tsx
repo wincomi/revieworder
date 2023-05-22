@@ -1,9 +1,9 @@
 import { NextApiResponse } from 'next'
 import prisma from '@/libs/prismadb'
-import { Order } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 import { OrderAPIRequest, OrderItem } from '../orders'
+import { Prisma } from '@prisma/client'
 
 // 무슨 기능이나, 업데이트 내역...
 
@@ -13,7 +13,6 @@ export type OrderAPIGETResponse = {
     data: OrderItem[]
 }
 
-//
 export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions)
 
@@ -106,6 +105,7 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 const readResult = await prisma.order.findMany({
                     where: {
                         storeId: Number(storeId),
+                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }, { status: 'CANCELED' }],
                     },
                     include: {
                         store: true,
@@ -131,35 +131,30 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
 
         // UPDATE (주문 상태 변경)
         case 'PUT':
-            if (order == undefined || order == null) {
+            const orders = req.body.orders
+
+            if (orders == undefined || orders == null) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: 'order 값은 필수입니다.',
+                        message: 'orders 값은 필수입니다.',
                     },
                 })
                 return
             }
 
-            const updateResult = await prisma.order.update({
-                where: { id: order.id },
-                data: order as Order,
+            orders.map(async (order) => {
+                const input: Prisma.OrderUpdateManyWithWhereWithoutUserInput = {
+                    where: { id: order.id },
+                    data: { status: order.status },
+                }
+                await prisma.order.updateMany(input)
             })
 
-            if (updateResult != null) {
-                // 성공!!
-                res.status(200).json({
-                    data: updateResult,
-                })
-            } else {
-                // 결과 값이 없을때 오류
-                res.status(400).json({
-                    error: {
-                        code: 400,
-                        message: '주문 상태 변경을 실패 하였습니다.',
-                    },
-                })
-            }
+            res.status(200).json({
+                data: { success: true },
+            })
+
             break
 
         // DELETE
