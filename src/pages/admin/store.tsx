@@ -8,12 +8,12 @@ import StoreSelection from '@/components/admin/storeSelection'
 // TODO: 메뉴 표시 + selection 사용 (처음에는 가지고 있는 첫 매장으로 이동 이후 셀렉터로 이동) + 메뉴 관리로 이동 + 매장 설정 변경
 
 // 매장은 있는데 메뉴 등록을 아예 안 한 경우??? -> 매장, 메뉴 따로따로 불러와야?
-interface adminStorePageProps {
+interface AdminStorePageProps {
     storeInfo: StoreInfo | StoreInfo[]
     menuItems: MenuItem[]
 }
 
-export default function adminStorePage({ storeInfo, menuItems }: adminStorePageProps) {
+export default function adminStorePage({ storeInfo, menuItems }: AdminStorePageProps) {
     // 매장 없을 시
     if (storeInfo == undefined) {
         return (
