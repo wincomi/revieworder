@@ -4,7 +4,6 @@ import { Order, Prisma } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 import { CartItem } from '../carts'
-import { StoreInfo } from '../stores'
 
 // 무슨 기능이나, 업데이트 내역...
 
@@ -53,17 +52,26 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     const userId = session.user.id
     const carts = req.body.carts
     const order = req.body.order
-    const receiveQuery = req.query.q
 
-    // GET method에서 json파일을 query로 변환시켜서 GET에서 파라미터(쿼리)를 받아 다시 json으로 파싱
-    // https://www.slingacademy.com/article/how-to-pass-a-javascript-array-within-a-query-string/
-    const stores = JSON.parse(receiveQuery as string)
+    // const receiveQuery = req.query.q
+    // // GET method에서 json파일을 query로 변환시켜서 GET에서 파라미터(쿼리)를 받아 다시 json으로 파싱
+    // // https://www.slingacademy.com/article/how-to-pass-a-javascript-array-within-a-query-string/'
+    // const stores = JSON.parse(receiveQuery as string)
 
     // API method에 따라 작동
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
         case 'GET':
-            if (stores == undefined) {
+            if (order == undefined || order == null) {
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: '조회 할 주문 내역이 없습니다.',
+                    },
+                })
+                return
+            }
+            if (userId == order.userId) {
                 const readResult = await prisma.order.findMany({
                     where: {
                         userId: userId,
@@ -90,38 +98,33 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else if (stores != undefined) {
-                const readResult = await prisma.order.findMany({
-                    where: {
-                        status: 'COMPLETED',
-                        OR: stores.map((store: StoreInfo) => {
-                            const input: Prisma.OrderWhereInput = {
-                                storeId: Number(store.id),
-                            }
-                            return input
-                        }),
-                    },
-                    include: {
-                        store: true,
-                        orderDetails: { include: { menu: true } },
-                    },
-                })
-
-                if (readResult != null) {
-                    // 성공!!
-                    res.status(200).json({
-                        data: readResult,
-                    })
-                } else {
-                    res.status(404).json({
-                        error: {
-                            code: 400,
-                            message: '주문내역 조회를 실패하였습니다.',
-                        },
-                    })
-                }
-                break
             }
+        // else {
+        //     const readResult = await prisma.order.findMany({
+        //         where: {
+        //             storeId: Number(storeId),
+        //         },
+        //         include: {
+        //             store: true,
+        //             orderDetails: { include: { menu: true } },
+        //         },
+        //     })
+
+        //     if (readResult != null) {
+        //         // 성공!!
+        //         res.status(200).json({
+        //             data: readResult,
+        //         })
+        //     } else {
+        //         res.status(404).json({
+        //             error: {
+        //                 code: 400,
+        //                 message: '주문내역 조회를 실패하였습니다.',
+        //             },
+        //         })
+        //     }
+        //     break
+        // }
 
         // CREATE (장바구니에서 주문)
         case 'POST':
@@ -180,43 +183,12 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                 })
             }
             break
-
-        // UPDATE (주문 상태 변경)
-        case 'PUT':
-            if (carts == undefined || carts == null) {
-                res.status(400).json({
-                    error: {
-                        code: 400,
-                        message: 'order 값은 필수입니다.',
-                    },
-                })
-                return
-            }
-
-        // const updateResult = await prisma.order.create({
-        //     data: {
-        //         status:
-        //     }
-        // })
-
-        // if (updateResult != null) {
-        //     // 성공!!
-        //     res.status(200).json({
-        //         data: updateResult
-        //     })
-        // } else {
-        //     // 결과 값이 없을때 오류
-        //     res.status(400).json({
-        //         error: {
-        //             code: 400,
-        //             message: "주문 상태 변경을 실패 하였습니다."
-        //         }
-        //     })
-        // }
-        // break
-
-        // DELETE (몇 분이내면 삭제 가능?)
+        // DELETE (5분이내면 삭제 가능?)
         case 'DELETE':
+            // 현재 시간
+            const date = new Date()
+            const now = date.getDate()
+
             if (order == undefined || order == null) {
                 res.status(400).json({
                     error: {
@@ -233,18 +205,18 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                     },
                 })
                 return
+                // 주문 시간 5분 이내 취소 가능
+            } else if (now - order.orderDate.getDate() <= 5) {
+                const deleteResult = await prisma.order.delete({
+                    where: { id: order.id },
+                })
+
+                res.status(200).json({
+                    data: deleteResult,
+                })
+
+                break
             }
-
-            const deleteResult = await prisma.order.delete({
-                where: { id: order.id },
-            })
-
-            res.status(200).json({
-                data: deleteResult,
-            })
-
-            break
-
         default:
             // API method가 잘못되었을 때 오류
             res.status(400).json({
