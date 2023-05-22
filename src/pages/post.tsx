@@ -4,11 +4,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps } from 'next/types'
 import { postFacebookPage, postInstagramMedia } from '@/libs/sns'
-import { Button, Textarea } from '@nextui-org/react'
+import { Button, Grid, Spacer, Textarea } from '@nextui-org/react'
 import { Account } from '@prisma/client'
 import { getUserAccount } from '@/libs/users'
+import { AiFillFacebook, AiFillInstagram } from 'react-icons/ai'
+import { HiOutlinePencil } from 'react-icons/hi'
 
-export type ReviewCardProp = {
+export type PostReviewPageProps = {
     account: Account
     pageId: string
 }
@@ -17,11 +19,10 @@ export type ReviewCardProp = {
 /// 1. 디자인 수정
 /// 2. 이미지URL, link 입력 추가
 /// 3. SNS POST 버튼 선택으로 변경
-export default function postinsta({ account, pageId }: ReviewCardProp) {
+export default ({ account, pageId }: PostReviewPageProps) => {
     const [content, setContent] = useState('')
 
     const postReview = async (provider: string) => {
-        console.log('postreview')
         const imageURL = 'https://cdn.pixabay.com/photo/2023/05/04/10/31/spring-7969798_960_720.jpg'
         const link = ''
         if (provider == 'instagram') {
@@ -32,6 +33,7 @@ export default function postinsta({ account, pageId }: ReviewCardProp) {
             console.log(postId)
         }
     }
+
     return (
         <>
             <Layout>
@@ -43,8 +45,24 @@ export default function postinsta({ account, pageId }: ReviewCardProp) {
                     minRows={4}
                     css={{ width: '100%' }}
                 />
-                <Button onPress={() => postReview('facebook')}>페이스북 리뷰 작성</Button>
-                <Button onPress={() => postReview('instagram')}>인스타그램 리뷰 작성</Button>
+                <Grid.Container gap={2}>
+                    <Grid></Grid>
+                    <Grid>
+                        <Button onPress={() => postReview('facebook')} icon={<AiFillFacebook />}>
+                            페이스북 리뷰 작성
+                        </Button>
+                    </Grid>
+                    <Grid>
+                        <Button color="gradient" onPress={() => postReview('instagram')} icon={<AiFillInstagram />}>
+                            인스타그램 리뷰 작성
+                        </Button>
+                    </Grid>
+                    <Grid>
+                        <Button flat onPress={() => postReview('instagram')} icon={<HiOutlinePencil />}>
+                            일반 리뷰 작성
+                        </Button>
+                    </Grid>
+                </Grid.Container>
             </Layout>
         </>
     )

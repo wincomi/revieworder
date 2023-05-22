@@ -4,6 +4,7 @@ import Navbar, { NavbarMenuItem } from '@/components/_navbar/navbar'
 import UserButton from '@/components/_navbar/userButton'
 import SettingsButton from '@/components/_navbar/settingsButton'
 import { FaHome, FaShoppingCart, FaUser } from 'react-icons/fa'
+import { ImSpoonKnife } from 'react-icons/im'
 
 interface LayoutProps {
     children: ReactNode
@@ -18,7 +19,12 @@ export default ({ children }: LayoutProps) => {
 
     return (
         <main>
-            <Navbar title="리뷰오더" menu={menu} activeColor="primary">
+            <Navbar
+                title="리뷰오더"
+                menu={menu}
+                activeColor="primary"
+                titleIcon={<ImSpoonKnife style={{ verticalAlign: 'text-bottom' }} />}
+            >
                 <SettingsButton />
                 {/* <ShoppingCartButton count={-1} /> */}
                 <UserButton />

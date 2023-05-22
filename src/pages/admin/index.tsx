@@ -4,23 +4,23 @@ import { GetServerSideProps } from 'next/types'
 import { StoreAPIGETResponse, StoreInfo } from '../api/stores'
 import { OrderAPIGETResponse, OrderItem } from '../api/orders'
 
-interface adminPageProps {
+interface AdminPageProps {
     storeOrders: OrderItem[]
     storesInfo: StoreInfo[]
 }
 
-export default function adminPage({ storeOrders, storesInfo }: adminPageProps) {
+export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
     // 본인 매장 모든 매출 포함
-    const totalSales = storeOrders.reduce((totalSales, Orders) => {
-        const totalPrice = Orders.orderDetails.reduce((totalPrice, item) => {
+    const totalSales = storeOrders.reduce((totalSales, storeOrder) => {
+        const totalPrice = storeOrder.orderDetails.reduce((totalPrice, item) => {
             return totalPrice + item.menu.price * item.amount
         }, 0)
         return totalSales + totalPrice
     }, 0)
 
     // 매장 별 매출
-    const total = storeOrders.map((Orders) => {
-        const totalPrice = Orders.orderDetails.reduce((totalPrice, item) => {
+    const total = storeOrders.map((storeOrder) => {
+        const totalPrice = storeOrder.orderDetails.reduce((totalPrice, item) => {
             return totalPrice + item.menu.price * item.amount
         }, 0)
         return totalPrice
@@ -31,22 +31,16 @@ export default function adminPage({ storeOrders, storesInfo }: adminPageProps) {
         switch (index % 6) {
             case 0:
                 return 'primary'
-                break
             case 1:
                 return 'secondary'
-                break
             case 2:
                 return 'success'
-                break
             case 3:
                 return 'warning'
-                break
             case 4:
                 return 'error'
-                break
             case 5:
                 return 'gradient'
-                break
         }
     }
 

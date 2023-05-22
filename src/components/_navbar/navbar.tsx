@@ -1,7 +1,6 @@
 import { Grid, Link, Navbar, Spacer, Text } from '@nextui-org/react'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
-import { ImSpoonKnife } from 'react-icons/im'
 
 export type NavbarMenuItem = {
     id: string
@@ -12,12 +11,13 @@ export type NavbarMenuItem = {
 
 export interface NavbarProps {
     title: string
+    titleIcon?: ReactNode
     menu: NavbarMenuItem[]
     activeColor?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'neutral'
     children?: ReactNode
 }
 
-export default ({ title, menu, activeColor, children }: NavbarProps) => {
+export default ({ title, titleIcon, menu, activeColor, children }: NavbarProps) => {
     const router = useRouter()
 
     return (
@@ -25,7 +25,7 @@ export default ({ title, menu, activeColor, children }: NavbarProps) => {
             <Navbar.Brand>
                 <Link onClick={() => router.push('/')}>
                     <Text b color="text" css={{ fontSize: 20, ml: 8 }}>
-                        <ImSpoonKnife style={{ verticalAlign: 'text-bottom' }} /> {title}
+                        {titleIcon} {title}
                     </Text>
                 </Link>
             </Navbar.Brand>
