@@ -4,16 +4,19 @@ import Navbar, { NavbarMenuItem } from '@/components/_navbar/navbar'
 import UserButton from '@/components/_navbar/userButton'
 import { TbHomeCog } from 'react-icons/tb'
 import { FaClipboardList, FaCog, FaHome } from 'react-icons/fa'
+import router from 'next/router'
 
 interface LayoutProps {
     children: ReactNode
 }
 
 export default ({ children }: LayoutProps) => {
+    const id = router.query.id ?? ''
+
     const menu: NavbarMenuItem[] = [
         { id: 'index', name: '홈', path: '/admin', icon: <FaHome /> },
-        { id: 'store', name: '매장 관리', path: '/admin/store', icon: <FaCog /> },
-        { id: 'order', name: '주문 관리', path: '/admin/order', icon: <FaClipboardList /> },
+        { id: 'store', name: '매장 관리', path: `/admin/store?id=${id}`, icon: <FaCog /> },
+        { id: 'order', name: '주문 관리', path: `/admin/order?id=${id}`, icon: <FaClipboardList /> },
     ]
 
     return (
