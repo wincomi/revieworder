@@ -9,8 +9,9 @@ export type storeSeletionProps = {
 }
 
 export default ({ stores }: storeSeletionProps) => {
+    const curUrl = router.pathname
     const dropdownAction: (key: Key) => void = (key) => {
-        router.push('/admin/store?id=' + key)
+        router.push(curUrl + '/?id=' + key)
     }
 
     return (
