@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const storeId = context.query.id ?? ''
 
     // storeId 해당 매장 정보
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/stores?id=${storeId}`, {
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stores?id=${storeId}`, {
         method: 'GET',
         headers: {
             // session의 쿠키 전달

@@ -85,7 +85,7 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     // 회원이 가지고 있는 매장들 정보
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/stores?id=`, {
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stores`, {
         method: 'GET',
         headers: {
             // session의 쿠키 전달
@@ -99,7 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // 매장 주문내역들
     const queryString = '?q=' + encodeURIComponent(JSON.stringify(storesInfo))
 
-    const orderResult = await fetch(`${process.env.NEXTAUTH_URL}/api/orders` + queryString, {
+    const orderResult = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/orders` + queryString, {
         method: 'GET',
         headers: {
             // session의 쿠키 전달
