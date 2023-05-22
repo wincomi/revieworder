@@ -3,10 +3,11 @@ import { GetServerSideProps } from 'next'
 import { StoreAPIGETResponse, StoreInfo } from '../api/stores'
 import { OrderAPIGETResponse, OrderItem } from '../api/orders'
 import Link from 'next/link'
-import { Grid, Text } from '@nextui-org/react'
+import { Dropdown, Grid, Text } from '@nextui-org/react'
 import StoreSelection from '@/components/admin/storeSelection'
 import { format } from 'date-fns'
-import { Menu, OrderDetail } from '@prisma/client'
+import { Menu, OrderDetail, OrderStatus } from '@prisma/client'
+import { Key, SetStateAction, useEffect, useState } from 'react'
 
 interface adminOrderPageProps {
     storeInfo: StoreInfo | StoreInfo[]
@@ -14,6 +15,80 @@ interface adminOrderPageProps {
 }
 
 export default ({ storeInfo, orders }: adminOrderPageProps) => {
+    const [orderItems, setOrderItems] = useState(orders)
+
+    const setOrderItem = (data: SetStateAction<OrderItem | null>, index: number) => {
+        if (data == null) {
+            // data가 null이면 index를 삭제함
+            const updateOrder = orderItems.slice(index, 1)
+
+            setOrderItems(Object.assign(updateOrder))
+        } else {
+            const updateOrder = orderItems.map((item, idx) => {
+                if (idx === index) {
+                    return data
+                } else return item
+            })
+
+            setOrderItems(Object.assign(updateOrder))
+        }
+    }
+
+    // status 문자 변환
+    const convertStatus = (status: string) => {
+        switch (status) {
+            case 'REQUESTED':
+                return '주문 요청'
+            case 'CONFIRMED':
+                return '주문 확인'
+            case 'COMPLETED':
+                return '주문 완료'
+            case 'CANCELED':
+                return '주문 취소'
+        }
+    }
+
+    const setStatus = (index: number, status: string) => {
+        switch (status) {
+            case 'REQUESTED':
+                return [index + 'COMPLETED']
+            case 'CONFIRMED':
+                return [index + 'CONFIRMED']
+            case 'COMPLETED':
+                return [index + 'CONFIRMED,', index + 'CANCELED']
+            case 'CANCELED':
+                return [index + 'CONFIRMED', index + 'COMPLETED']
+        }
+    }
+
+    const dropdownAction: (key: Key) => void = (key) => {
+        // index 랑 status(원래 key) 분리
+        const index = key.toString().slice(0, 1)
+        const status = key.toString().slice(1)
+
+        setOrderItem({ ...orderItems[Number(index)], status: status as OrderStatus }, Number(index))
+    }
+
+    // 값(amount) 변경 시 자동 업데이트
+    useEffect(() => {
+        const result = async () => {
+            await fetch(`/api/admin/orders`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // session의 쿠키를 보내는데 req가 없으면 필요
+                credentials: 'include',
+
+                body: JSON.stringify({
+                    orders: orderItems,
+                }),
+            })
+        }
+
+        result()
+    }, [orderItems])
+
     // 매장 없을 시
     if (storeInfo == undefined) {
         return (
@@ -67,11 +142,24 @@ export default ({ storeInfo, orders }: adminOrderPageProps) => {
                                 <Text>주문 내역</Text>
                             </Grid>
                         </Grid.Container>
-                        {orders.map((order: OrderItem, index) => (
+                        {orderItems.map((order: OrderItem, index: number) => (
                             <Grid key={index}>
                                 <Text>{format(new Date(order.orderDate), 'yyyy-MM-dd HH:mm:ss')}</Text>
-                                {/* TODO: lib에 orderStatus 변환 기능 추가하기 */}
-                                <Text>{order.status}</Text>
+                                {/* 주문 상태 변경 */}
+                                <Dropdown>
+                                    <Dropdown.Button flat color="secondary">
+                                        {convertStatus(order.status)}
+                                    </Dropdown.Button>
+                                    <Dropdown.Menu
+                                        aria-label="Actions"
+                                        onAction={dropdownAction}
+                                        disabledKeys={setStatus(index, order.status)}
+                                    >
+                                        <Dropdown.Item key={index + 'CONFIRMED'}>주문 확인</Dropdown.Item>
+                                        <Dropdown.Item key={index + 'COMPLETED'}>주문 완료</Dropdown.Item>
+                                        <Dropdown.Item key={index + 'CANCELED'}>주문 취소</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                                 {order.orderDetails.map((orderDetail: OrderDetail & { menu: Menu }, index) => (
                                     <Grid key={index}>
                                         <Text>품목: &nbsp;{orderDetail.menu.name}</Text>
@@ -109,7 +197,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             cookie: context.req.headers.cookie || '',
         },
     })
-    // admin 분리 필요?
+
     const orderRes = await orderResult.json().then((data) => data as OrderAPIGETResponse)
     const orders = orderRes.data
 
