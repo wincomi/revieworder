@@ -15,7 +15,7 @@ export interface OrderAPIRequest extends NextApiRequest {
         carts?: CartItem[]
 
         // 주문 취소용
-        order?: Order
+        order?: OrderItem
     }
 }
 
