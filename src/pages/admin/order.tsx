@@ -9,14 +9,13 @@ import { format } from 'date-fns'
 import { Menu, OrderDetail } from '@prisma/client'
 
 interface adminOrderPageProps {
-    selectedStore: StoreInfo
-    storesInfo: StoreInfo[]
+    storeInfo: StoreInfo | StoreInfo[]
     orders: OrderItem[]
 }
 
-export default ({ selectedStore, storesInfo, orders }: adminOrderPageProps) => {
+export default ({ storeInfo, orders }: adminOrderPageProps) => {
     // 매장 없을 시
-    if (storesInfo == undefined) {
+    if (storeInfo == undefined) {
         return (
             <>
                 <Layout>
@@ -27,12 +26,13 @@ export default ({ selectedStore, storesInfo, orders }: adminOrderPageProps) => {
         )
     }
 
-    if (selectedStore == undefined) {
+    // storeInfo 타입이 StoreInfo[] 이면 (storeId 쿼리가 안 왔을 때 동작)
+    if (Array.isArray(storeInfo)) {
         return (
             <>
                 <Layout>
                     <Link href="/admin">홈</Link>
-                    <StoreSelection stores={storesInfo as StoreInfo[]} />
+                    <StoreSelection stores={storeInfo as StoreInfo[]} />
                 </Layout>
             </>
         )
@@ -41,7 +41,7 @@ export default ({ selectedStore, storesInfo, orders }: adminOrderPageProps) => {
             <>
                 <Layout>
                     <Text h3>주문 관리</Text>
-                    <Text>{selectedStore.name}</Text>
+                    <Text>{storeInfo.name}</Text>
                     <Grid.Container xs={12} sm={6} gap={2}>
                         <Grid.Container justify="space-between" alignItems="center">
                             <Grid>
@@ -60,7 +60,7 @@ export default ({ selectedStore, storesInfo, orders }: adminOrderPageProps) => {
             <>
                 <Layout>
                     <Text h3>주문 관리</Text>
-                    <Text>{selectedStore.name}</Text>
+                    <Text>{storeInfo.name}</Text>
                     <Grid.Container xs={12} sm={6} gap={2}>
                         <Grid.Container justify="space-between" alignItems="center">
                             <Grid>
@@ -91,7 +91,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const storeId = context.query.id ?? ''
 
     // storeId 해당 매장 정보
-    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/stores?id=${storeId}`, {
+    const result = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stores?id=${storeId}`, {
         method: 'GET',
         headers: {
             // session의 쿠키 전달
@@ -99,18 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
     })
     const response = await result.json().then((data) => data as StoreAPIGETResponse)
-    const selectedStore = response.data
-
-    // 내 모든 매장 정보
-    const storesResult = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stores`, {
-        method: 'GET',
-        headers: {
-            // session의 쿠키 전달
-            cookie: context.req.headers.cookie || '',
-        },
-    })
-    const storesRes = await storesResult.json().then((data) => data as StoreAPIGETResponse)
-    const storesInfo = storesRes.data
+    const storeInfo = response.data
 
     // storeId 해당 매장 주문들 정보
     const orderResult = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/orders?storeId=${storeId}`, {
@@ -125,6 +114,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const orders = orderRes.data
 
     return {
-        props: { selectedStore, storesInfo, orders },
+        props: { storeInfo, orders },
     }
 }
