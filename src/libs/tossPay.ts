@@ -14,7 +14,7 @@ export async function tossPayment(
     // custorm
     user?: User
 ) {
-    const tossPayments = await loadTossPayments(tossClientKey)
+    const tossPayments = await loadTossPayments('test_ck_Kma60RZblrqbExbOewz8wzYWBn14')
 
     // 주문번호 랜덤 생성
     const randomOrderId = Math.random().toString(36).substring(2, 12)
