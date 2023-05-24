@@ -68,8 +68,8 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
 
     // 충전
     const charge = async () => {
+        closeHandler()
         setIsLoadingUpdate(true)
-
         // clientKey, 충전 금액, redirect host url, 결제 방식 여부 ,주문번호, 표시 내용, 유저 정보
         tossPayment(tossClientKey, point, tossRedirectURL, false, undefined, '리뷰오더 포인트 충전', user)
 
@@ -149,7 +149,7 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                                 />
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button auto onPress={charge} onClick={closeHandler}>
+                                <Button auto onPress={charge}>
                                     충전
                                 </Button>
                             </Modal.Footer>
