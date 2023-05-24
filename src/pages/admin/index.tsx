@@ -18,12 +18,21 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
         return totalSales + totalPrice
     }, 0)
 
+    // 매장 별 주문 그룹화
+    const storeGroup = storesInfo.map((store) => {
+        const orderByStore = storeOrders.filter((order) => order.storeId == store.id)
+        return orderByStore
+    })
+
     // 매장 별 매출
-    const total = storeOrders.map((storeOrder) => {
-        const totalPrice = storeOrder.orderDetails.reduce((totalPrice, item) => {
-            return totalPrice + item.menu.price * item.amount
+    const total = storeGroup.map((orders) => {
+        const sales = orders.reduce((sales, order) => {
+            const totalPrice = order.orderDetails.reduce((totalPrice, item) => {
+                return totalPrice + item.menu.price * item.amount
+            }, 0)
+            return sales + totalPrice
         }, 0)
-        return totalPrice
+        return sales
     })
 
     // 순서대로 색깔 변경
@@ -68,13 +77,13 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
                         <Text>통합 총 매출: {totalSales.toLocaleString()}원</Text>
                     </Grid>
                     <Text>매장 별 매출</Text>
-                    {total.map((sales: number, index) => (
+                    {storesInfo.map((store: StoreInfo, index) => (
                         <Grid key={index}>
-                            <Link color="default" href={`/admin/store?id=${storesInfo[index].id}`}>
-                                {storesInfo[index].name}
+                            <Link color="default" href={`/admin/store?id=${store.id}`}>
+                                {store.name}
                             </Link>
-                            <Text>매출: {sales.toLocaleString()} 원</Text>
-                            <Progress value={sales} max={totalSales} color={setColor(index)} status="primary" />
+                            <Text>매출: {total[index].toLocaleString()} 원</Text>
+                            <Progress value={total[index]} max={totalSales} color={setColor(index)} status="primary" />
                         </Grid>
                     ))}
                 </Grid.Container>
