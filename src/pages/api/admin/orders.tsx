@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]'
 import { OrderAPIRequest, OrderItem } from '../orders'
 import { Prisma } from '@prisma/client'
+import { StoreInfo } from '../stores'
 
 // 무슨 기능이나, 업데이트 내역...
 
@@ -29,23 +30,28 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
 
     const userId = session.user.id
     const order = req.body.order
-    const storeId = req.query.storeId ?? ''
+    const storeId = (req.query.storeId ?? '') as string
 
-    // const receiveQuery = req.query.q
-    // // GET method에서 json파일을 query로 변환시켜서 GET에서 파라미터(쿼리)를 받아 다시 json으로 파싱
-    // // https://www.slingacademy.com/article/how-to-pass-a-javascript-array-within-a-query-string/'
-    // const stores = JSON.parse(receiveQuery as string)
+    const receiveQuery = req.query.q
 
     // API method에 따라 작동
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
         case 'GET':
-            if (storeId == '') {
+            if (receiveQuery != undefined && storeId == '') {
+                // GET method에서 json파일을 query로 변환시켜서 GET에서 파라미터(쿼리)를 받아 다시 json으로 파싱
+                // https://www.slingacademy.com/article/how-to-pass-a-javascript-array-within-a-query-string/'
+                const stores = JSON.parse(receiveQuery as string)
+
                 const readResult = await prisma.order.findMany({
                     where: {
-                        userId: userId,
-                        // TODO: 나중에 쿼리로 할 변경
-                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
+                        status: 'COMPLETED',
+                        OR: stores.map((store: StoreInfo) => {
+                            const input: Prisma.OrderWhereInput = {
+                                storeId: Number(store.id),
+                            }
+                            return input
+                        }),
                     },
                     include: {
                         store: true,
@@ -67,45 +73,38 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            }
-            // else if (receiveQuery != undefined) {
-            //     if (storeId == '') {
-            //         const readResult = await prisma.order.findMany({
-            //             where: {
-            //                 status: 'COMPLETED',
-            //                 OR: stores.map((store: StoreInfo) => {
-            //                     const input: Prisma.OrderWhereInput = {
-            //                         storeId: Number(store.id),
-            //                     }
-            //                     return input
-            //                 }),
-            //             },
-            //             include: {
-            //                 store: true,
-            //                 orderDetails: { include: { menu: true } },
-            //             },
-            //         })
-
-            //         if (readResult != null) {
-            //             // 성공!!
-            //             res.status(200).json({
-            //                 data: readResult,
-            //             })
-            //         } else {
-            //             res.status(404).json({
-            //                 error: {
-            //                     code: 400,
-            //                     message: '주문내역 조회를 실패하였습니다.',
-            //                 },
-            //             })
-            //         }
-            //         break
-            //  }
-            else {
+            } else if (storeId != '' && receiveQuery == undefined) {
                 const readResult = await prisma.order.findMany({
                     where: {
                         storeId: Number(storeId),
                         OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }, { status: 'CANCELED' }],
+                    },
+                    include: {
+                        store: true,
+                        orderDetails: { include: { menu: true } },
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '주문내역 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else {
+                const readResult = await prisma.order.findMany({
+                    where: {
+                        userId: userId,
+                        // TODO: 나중에 쿼리로 할 변경
+                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
                     },
                     include: {
                         store: true,
