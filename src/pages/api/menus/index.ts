@@ -24,13 +24,14 @@ export type MenuItem = Prisma.MenuGetPayload<typeof menuWithStore>
 
 export type MenuAPIGETResponse = {
     // 해당 매장 메뉴들
-    data: Menu[] | MenuItem[]
+    data: MenuItem | MenuItem[]
 }
 
 // 모든 메뉴 조회 및 등록 API
 export default async (req: MenuAPIRequest, res: NextApiResponse) => {
     // GET 조회 때 오는 정보
     const storeId = req.query.storeId as string | undefined
+    const menuId = req.query.id as string | undefined
 
     // body에서 정보
     const menu = req.body.menu
@@ -40,16 +41,39 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
     switch (req.method) {
         // GET (모든 메뉴 조회)
         case 'GET':
-            if (storeId == undefined) {
+            // storeId는 매장 메뉴들 조회, menuId에 해당 메뉴 정보 조회
+            if (storeId == undefined && menuId == undefined) {
                 res.status(400).json({
                     error: {
                         code: 400,
-                        message: '매장 번호 x.',
+                        message: '매장 번호 x, 메뉴 정보 x',
                     },
                 })
-            } else if (storeId != undefined) {
+            } else if (storeId != undefined && menuId == undefined) {
                 const readResult = await prisma.menu.findMany({
                     where: { storeId: Number(storeId) },
+                    include: {
+                        store: true,
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '메뉴 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else if (menuId != undefined) {
+                const readResult = await prisma.menu.findUnique({
+                    where: { id: Number(menuId) },
                     include: {
                         store: true,
                     },
@@ -97,6 +121,28 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
                         message: '메뉴를 등록할 수 없습니다.',
                     })
                 }
+                break
+            }
+
+        case 'PUT':
+            if (menu == undefined) {
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: '수정 할 메뉴 정보를 입력해주세요.',
+                    },
+                })
+            } else {
+                await prisma.menu.update({
+                    where: {
+                        id: menu.id,
+                    },
+                    data: menu,
+                })
+
+                res.status(200).json({
+                    data: { success: true },
+                })
                 break
             }
 
