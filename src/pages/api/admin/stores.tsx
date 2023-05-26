@@ -94,10 +94,7 @@ export default async (req: StoreAPIRequest, res: NextApiResponse) => {
             } else {
                 const createResult = await prisma.store.create({
                     // 매장 이름, 주소, 전화번호, 설명
-                    data: inputStore,
-                    include: {
-                        user: true,
-                    },
+                    data: { ...inputStore, user: { connect: { id: session.user.id } } },
                 })
 
                 if (createResult != null) {
