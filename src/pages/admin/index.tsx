@@ -58,7 +58,7 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
             <>
                 <Layout>
                     <Text>홈</Text>
-                    <Link href="/admin">매장 만들기</Link>
+                    <Link href="/admin/enrollStore">매장 만들기</Link>
                 </Layout>
             </>
         )
@@ -68,6 +68,7 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
         <>
             <Layout>
                 <Text h3>홈</Text>
+                <Link href="/admin/enrollStore">매장 만들기</Link>
                 {/* 홈은 매장 별 매출 보여주고 주문이나 다른데에서 선택바 
                 <Text h3>{selectedStore.name ?? '홈'}</Text>
                 <StoreSelection stores={storesInfo} />
