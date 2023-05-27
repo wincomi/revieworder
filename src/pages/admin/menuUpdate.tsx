@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { Button, Spacer, Input, Textarea, Dropdown } from '@nextui-org/react'
-import Layout from '@/components/layout'
+import Layout from '@/components/admin/layout'
 
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
