@@ -8,6 +8,7 @@ import StoreSelection from '@/components/admin/storeSelection'
 import { format } from 'date-fns'
 import { Menu, OrderDetail, OrderStatus } from '@prisma/client'
 import { Key, SetStateAction, useEffect, useState } from 'react'
+import orderStatusFormat from '@/utils/orderStatusFormat'
 
 interface adminOrderPageProps {
     storeInfo: StoreInfo | StoreInfo[]
@@ -31,20 +32,6 @@ export default ({ storeInfo, orders }: adminOrderPageProps) => {
             })
 
             setOrderItems(Object.assign(updateOrder))
-        }
-    }
-
-    // status 문자 변환
-    const convertStatus = (status: string) => {
-        switch (status) {
-            case 'REQUESTED':
-                return '주문 요청'
-            case 'CONFIRMED':
-                return '주문 확인'
-            case 'COMPLETED':
-                return '주문 완료'
-            case 'CANCELED':
-                return '주문 취소'
         }
     }
 
@@ -148,7 +135,7 @@ export default ({ storeInfo, orders }: adminOrderPageProps) => {
                                 {/* 주문 상태 변경 */}
                                 <Dropdown>
                                     <Dropdown.Button flat color="secondary">
-                                        {convertStatus(order.status)}
+                                        {orderStatusFormat(order.status)}
                                     </Dropdown.Button>
                                     <Dropdown.Menu
                                         aria-label="Actions"
