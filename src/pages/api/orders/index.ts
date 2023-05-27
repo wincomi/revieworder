@@ -60,43 +60,32 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
         case 'GET':
-            if (order == undefined || order == null) {
-                res.status(400).json({
+            const readResult = await prisma.order.findMany({
+                where: {
+                    userId: userId,
+                    // TODO: 나중에 쿼리로 할 변경
+                    OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
+                },
+                include: {
+                    store: true,
+                    orderDetails: { include: { menu: true } },
+                },
+            })
+
+            if (readResult != null) {
+                // 성공!!
+                res.status(200).json({
+                    data: readResult,
+                })
+            } else {
+                res.status(404).json({
                     error: {
                         code: 400,
-                        message: '조회 할 주문 내역이 없습니다.',
+                        message: '주문내역 조회를 실패하였습니다.',
                     },
                 })
-                return
             }
-            if (userId == order.userId) {
-                const readResult = await prisma.order.findMany({
-                    where: {
-                        userId: userId,
-                        // TODO: 나중에 쿼리로 할 변경
-                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
-                    },
-                    include: {
-                        store: true,
-                        orderDetails: { include: { menu: true } },
-                    },
-                })
-
-                if (readResult != null) {
-                    // 성공!!
-                    res.status(200).json({
-                        data: readResult,
-                    })
-                } else {
-                    res.status(404).json({
-                        error: {
-                            code: 400,
-                            message: '주문내역 조회를 실패하였습니다.',
-                        },
-                    })
-                }
-                break
-            }
+            break
 
         // CREATE (장바구니에서 주문)
         case 'POST':
