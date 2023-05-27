@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '@/libs/prismadb'
-import { Menu, Prisma } from '@prisma/client'
+import { Menu, Prisma, Store } from '@prisma/client'
 
 // API Request 타입 지정
 export interface MenuAPIRequest extends NextApiRequest {
@@ -36,6 +36,7 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
     // body에서 정보
     const menu = req.body.menu
     const inputMenu = req.body.inputMenu
+    const store = inputMenu?.store as Store
 
     // API method에 따라 작동
     switch (req.method) {
@@ -106,7 +107,7 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
             } else {
                 const createResult = await prisma.menu.create({
                     // 메뉴 정보들 + 해당 매장
-                    data: inputMenu,
+                    data: { ...inputMenu, store: { connect: { id: store.id } } },
                     include: {
                         store: true,
                     },
@@ -137,7 +138,7 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
                     where: {
                         id: menu.id,
                     },
-                    data: menu,
+                    data: { name: menu.name, description: menu.description, image: menu.image, price: menu.price },
                 })
 
                 res.status(200).json({
