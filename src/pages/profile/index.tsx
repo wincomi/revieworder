@@ -223,9 +223,9 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                     </fieldset>
                 </form>
                 {user.stores[0] != undefined || user.stores != null ? (
-                    <Button onPress={() => router.push('/admin')}> 매장 관리 </Button>
+                    <Button onPress={() => router.push('/admin')}> 내 매장 관리 </Button>
                 ) : (
-                    <Button disabled> 매장 없어 </Button>
+                    <Button onPress={() => router.push('/admin')}> 매장 만들기 </Button>
                 )}
             </Layout>
         </>
