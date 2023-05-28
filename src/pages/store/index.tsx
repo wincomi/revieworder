@@ -11,11 +11,11 @@ import { StoreAPIGETResponse } from '../api/admin/stores'
 import { Store } from '@prisma/client'
 import StoreCard from '@/components/store/storeCard'
 
-interface ReviewPageProps {
+interface StoreSearchPageProps {
     stores: Store[]
 }
 
-export default function Home({ stores }: ReviewPageProps) {
+export default function Home({ stores }: StoreSearchPageProps) {
     const router = useRouter()
 
     const [query, setQuery] = useState('')
