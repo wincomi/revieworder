@@ -27,13 +27,13 @@ export type StoreAPIGETResponse = {
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
     const query = (req.query.q ?? '') as string
-    const storeId = (req.query.id ?? '') as string
+    const storeId = req.query.id
 
     // API method에 따라 작동
     switch (req.method) {
         // 매장 검색 시에는 query만 이용하다 해당 매장 페이지 들어가면 storeId 쿼리 사용
         case 'GET':
-            if (query == '' && storeId == '') {
+            if (query == '' && storeId == undefined) {
                 // 검색 쿼리, storeId 없을 때
                 const readResult = await prisma.store.findMany({})
 
@@ -51,7 +51,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else if (query != '' && storeId == '') {
+            } else if (query != '' && storeId == undefined) {
                 // 검색 쿼리 있을 때
                 const readResult = await prisma.store.findMany({
                     where: {
@@ -78,7 +78,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else if (query != '' && storeId == '') {
+            } else if (query == '' && storeId != undefined) {
                 // 검색 쿼리 없을 때 userId 토대로 조회 (admin 용)
                 const readResult = await prisma.store.findUnique({
                     where: { id: Number(storeId) },
