@@ -21,7 +21,7 @@ export default function Home({ reviewCards }: ReviewPageProps) {
     const [query, setQuery] = useState('')
 
     const exeSearch = () => {
-        router.push(`/?q=${query}`)
+        router.push(`/?search=${query}`)
     }
 
     const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
