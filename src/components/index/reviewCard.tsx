@@ -145,7 +145,7 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
 
                     <CardFooterTitle>주문한 가게</CardFooterTitle>
                     <Tooltip content={'리뷰어가 주문한 가게로 이동하기'} placement="right" color="invert">
-                        <Link href={`/store/0`} color="inherit">
+                        <Link href={`/store/${review.order.storeId}`} color="inherit">
                             {review.order.store.name}
                         </Link>
                     </Tooltip>
