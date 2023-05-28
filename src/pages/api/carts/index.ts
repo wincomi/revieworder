@@ -90,8 +90,13 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
             const orderDetails = req.body.order_details
             const menu = req.body.menu
 
+            const exist = await prisma.cart.findMany({
+                where: { userId: userId },
+                include: { menu: true },
+            })
+
             // orderDetails가 오면
-            if (orderDetails != null || orderDetails != undefined) {
+            if (orderDetails != undefined && menu == undefined) {
                 // 장바구니 초기화 후
                 await prisma.cart.deleteMany({
                     where: { user: { id: userId } },
@@ -115,11 +120,24 @@ export default async (req: CartAPIRequest, res: NextApiResponse) => {
                 })
 
                 // menu가 오면
-            } else if (menu != null || menu != undefined) {
+            } else if (orderDetails == undefined && menu != undefined) {
+                // 기존의 장바구니에 내용물의 매장이 다를 시 초기화
+                if (exist[0].menu.storeId != menu.storeId) {
+                    // 장바구니 초기화
+                    await prisma.cart.deleteMany({
+                        where: { user: { id: userId } },
+                    })
+                }
+
+                await prisma.cart.deleteMany({
+                    where: { menuId: menu.id },
+                })
+
                 const createResult = await prisma.cart.create({
                     data: {
                         user: { connect: { id: userId } },
                         menu: { connect: { id: menu.id } },
+                        amount: 1,
                     },
                 })
 
