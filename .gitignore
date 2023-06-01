@@ -38,6 +38,9 @@ next-env.d.ts
 # env file
 .env
 
+# images in public/images folder
+/public/images/
+
 # 
 /certificates/
 server.js
