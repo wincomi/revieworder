@@ -3,6 +3,7 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { Key } from 'react'
 import { HiLogout, HiOutlinePencil, HiOutlineSwitchHorizontal } from 'react-icons/hi'
+import { MdStore, MdLocalGroceryStore } from 'react-icons/md'
 
 export default () => {
     const session = useSession()
@@ -41,6 +42,15 @@ export default () => {
                     </Dropdown.Item>
                     <Dropdown.Item key="profile" withDivider icon={<HiOutlinePencil />}>
                         회원정보 수정
+                    </Dropdown.Item>
+                    <Dropdown.Item key="order" withDivider icon={<MdLocalGroceryStore />}>
+                        내 주문내역
+                    </Dropdown.Item>
+                    <Dropdown.Item key="review" withDivider icon={<MdLocalGroceryStore />}>
+                        My리뷰
+                    </Dropdown.Item>
+                    <Dropdown.Item key="admin" withDivider icon={<MdStore />}>
+                        My매장
                     </Dropdown.Item>
                     <Dropdown.Item key="profile/sns" icon={<HiOutlineSwitchHorizontal />}>
                         SNS 연동
