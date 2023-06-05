@@ -13,7 +13,7 @@ export async function postInstagramMedia(
     caption: string,
     image: string
 ): Promise<string | null | undefined> {
-    if (image == '') {
+    if (image == '/images/default.png') {
         return null
     }
     /// 페이스북에 연결된 인스타그램 비즈니스 ID 가져오기
@@ -75,7 +75,7 @@ export async function postFacebookPage(
     const pageAccessTokenJSON = await getpageAccessToken.json()
     const pageAccessToken = pageAccessTokenJSON.access_token
     /// 아래 API들은 전부 page access token이 필요함
-    if (image != '' && caption != '') {
+    if (image != '/images/default.png' && caption != '') {
         const pagePostId = await fetch(
             `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${caption}&link=${link}&access_token=${pageAccessToken}`,
             { method: 'POST' }
@@ -83,7 +83,7 @@ export async function postFacebookPage(
         const pagePostIdJSON = await pagePostId.json()
         return pagePostIdJSON.id
     }
-    if (image == '' && caption != '') {
+    if (image == '/images/default.png' && caption != '') {
         const pagePostId = await fetch(
             `https://graph.facebook.com/${pageId}/feed?message=${caption}&link=${link}&access_token=${pageAccessToken}`,
             { method: 'POST' }

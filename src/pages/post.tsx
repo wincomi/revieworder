@@ -4,11 +4,12 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { GetServerSideProps } from 'next/types'
 import { postFacebookPage, postInstagramMedia } from '@/libs/sns'
-import { Button, Grid, Spacer, Textarea } from '@nextui-org/react'
+import { Button, Grid, Textarea } from '@nextui-org/react'
 import { Account } from '@prisma/client'
 import { getUserAccount } from '@/libs/users'
 import { AiFillFacebook, AiFillInstagram } from 'react-icons/ai'
 import { HiOutlinePencil } from 'react-icons/hi'
+import Imgupload from '@/components/imgUpload'
 
 export type PostReviewPageProps = {
     account: Account
@@ -20,17 +21,20 @@ export type PostReviewPageProps = {
 /// 2. 이미지URL, link 입력 추가
 /// 3. SNS POST 버튼 선택으로 변경
 export default ({ account, pageId }: PostReviewPageProps) => {
+    const [imageUrl, setImageUrl] = useState('/images/default.png')
+    const [uploaded, setUploaded] = useState(false)
     const [content, setContent] = useState('')
 
     const postReview = async (provider: string) => {
-        const imageURL = 'https://cdn.pixabay.com/photo/2023/05/04/10/31/spring-7969798_960_720.jpg'
-        const link = ''
-        if (provider == 'instagram') {
-            const postId = await postInstagramMedia(account, content, imageURL)
-            console.log(postId)
-        } else if (provider == 'facebook') {
-            const postId = await postFacebookPage(account, content, imageURL, link, pageId)
-            console.log(postId)
+        if (uploaded) {
+            const link = 'https://www.revieworder.kr'
+            if (provider == 'instagram') {
+                const postId = await postInstagramMedia(account, content, imageUrl)
+                console.log(postId)
+            } else if (provider == 'facebook') {
+                const postId = await postFacebookPage(account, content, imageUrl, link, pageId)
+                console.log(postId)
+            }
         }
     }
 
@@ -45,6 +49,7 @@ export default ({ account, pageId }: PostReviewPageProps) => {
                     minRows={4}
                     css={{ width: '100%' }}
                 />
+                <Imgupload uploaded={(data) => setUploaded(data)} onChangeImg={(data) => setImageUrl(data)} />
                 <Grid.Container gap={2}>
                     <Grid></Grid>
                     <Grid>
