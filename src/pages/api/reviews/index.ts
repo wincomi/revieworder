@@ -45,8 +45,9 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
         // GET (모든 리뷰 조회)
         case 'GET':
             const userId = req.query.userId
+            const reviewId = req.query.reviewId
             // 검색 쿼리 없으면 모두 출력
-            if (query == '' && userId == undefined) {
+            if (query == '' && userId == undefined && reviewId == undefined) {
                 const readResult = await prisma.review.findMany({
                     include: {
                         order: {
@@ -60,6 +61,9 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                         },
                     },
                     orderBy: [
+                        {
+                            order: { orderDate: 'desc' },
+                        },
                         {
                             order: { userId: 'desc' },
                         },
@@ -83,7 +87,7 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else if (query != '' && userId == undefined) {
+            } else if (query != '' && userId == undefined && reviewId == undefined) {
                 const readResult = await prisma.review.findMany({
                     where: {
                         OR: [{ content: { contains: query } }, { order: { store: { name: { contains: query } } } }],
@@ -101,6 +105,9 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                     },
                     orderBy: [
                         {
+                            order: { orderDate: 'desc' },
+                        },
+                        {
                             order: { userId: 'desc' },
                         },
                         {
@@ -123,10 +130,42 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                     })
                 }
                 break
-            } else {
+            } else if (userId != undefined && reviewId == undefined) {
                 const readResult = await prisma.review.findMany({
                     where: {
                         order: { userId: userId as string },
+                    },
+                    include: {
+                        order: {
+                            include: {
+                                store: true,
+                                user: true,
+                                orderDetails: {
+                                    include: { menu: true },
+                                },
+                            },
+                        },
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '리뷰 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else if (reviewId != undefined) {
+                const readResult = await prisma.review.findUnique({
+                    where: {
+                        id: Number(reviewId),
                     },
                     include: {
                         order: {
