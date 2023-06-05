@@ -1,8 +1,13 @@
-import React, { useState, useRef, ChangeEvent } from 'react'
+import React, { useState, useRef, ChangeEvent, Dispatch, SetStateAction } from 'react'
 import { Button } from '@nextui-org/react'
 import Image from 'next/image'
 
-const Imgupload: React.FC = () => {
+export type ImgProps = {
+    uploaded: Dispatch<SetStateAction<boolean>>
+    onChangeImg: Dispatch<SetStateAction<string>>
+}
+
+export default ({ uploaded, onChangeImg }: ImgProps) => {
     const [selectedFile, setSelectedFile] = useState<string | File | null>('')
     const [previewUrl, setPreviewUrl] = useState<string | null>('')
     const fileInput = useRef<HTMLInputElement>(null)
@@ -16,6 +21,7 @@ const Imgupload: React.FC = () => {
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file) {
+            onChangeImg('/images/' + file.name)
             setPreviewUrl(URL.createObjectURL(file))
             setSelectedFile(file)
         }
@@ -36,6 +42,8 @@ const Imgupload: React.FC = () => {
                 // 업로드 후 서버의 응답 확인
 
                 // 업로드 성공 후 필요한 동작 수행
+                uploaded(true)
+                alert('이미지 업로드 완료')
             } catch (error) {
                 console.error(error)
                 // 업로드 실패 시 에러 처리
@@ -58,5 +66,3 @@ const Imgupload: React.FC = () => {
         </div>
     )
 }
-
-export default Imgupload
