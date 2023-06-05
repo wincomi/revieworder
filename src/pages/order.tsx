@@ -1,9 +1,10 @@
 import Layout from '@/components/layout'
-import { Card, Grid, Text } from '@nextui-org/react'
+import { Button, Card, Grid, Text } from '@nextui-org/react'
 import { GetServerSideProps } from 'next/types'
 import { OrderAPIGETResponse, OrderItem } from './api/orders'
 import { Menu, OrderDetail } from '@prisma/client'
 import orderStatusFormat from '@/utils/orderStatusFormat'
+import router from 'next/router'
 
 interface OrderPageProps {
     /// 주문 내역
@@ -41,6 +42,9 @@ export default ({ orderItems }: OrderPageProps) => {
                                 <Grid>
                                     <Text h5>주문 내역{index + 1}</Text>
                                     <Text>{orderStatusFormat(order.status)}</Text>
+                                    <Button onPress={() => router.push(`/reviewEnroll?orderId=${order.id}`)}>
+                                        리뷰 작성
+                                    </Button>
                                 </Grid>
                             </Card.Header>
                             <Card.Divider></Card.Divider>

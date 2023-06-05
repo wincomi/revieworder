@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router'
+import router, { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next/types'
 
 import Layout from '@/components/layout'
@@ -64,7 +64,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                 <Text h3>My 리뷰</Text>
                 {/* TODO: 이 버튼 디자인만 어떻게 해주삼 
                     + 링크는 진호가 만든 리뷰 쓰는 페이지로 이동 */}
-                <Button>리뷰 쓰기</Button>
+                <Button onPress={() => router.push('/order')}>리뷰 쓰러가기</Button>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {reviews.map((review: ReviewItem) => (
                         <Grid xs={12} sm={6} lg={4} key={review.id}>
