@@ -34,7 +34,7 @@ export type OrderItem = Prisma.OrderGetPayload<typeof orderWithOrderDetail>
 
 export type OrderAPIGETResponse = {
     // 가게에서 보는 주문내역들
-    data: OrderItem[]
+    data: OrderItem | OrderItem[]
 }
 
 //
@@ -55,38 +55,65 @@ export default async (req: OrderAPIRequest, res: NextApiResponse) => {
     const userId = session.user.id
     const carts = req.body.carts
     const order = req.body.order
+    const orderId = req.query.id as string
 
     // API method에 따라 작동
     switch (req.method) {
         // GET (내 주문내역 정보 조회)
         case 'GET':
-            const readResult = await prisma.order.findMany({
-                where: {
-                    userId: userId,
-                    // TODO: 나중에 쿼리로 할 변경
-                    OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
-                },
-                include: {
-                    store: true,
-                    orderDetails: { include: { menu: true } },
-                },
-            })
-
-            if (readResult != null) {
-                // 성공!!
-                res.status(200).json({
-                    data: readResult,
-                })
-            } else {
-                res.status(404).json({
-                    error: {
-                        code: 400,
-                        message: '주문내역 조회를 실패하였습니다.',
+            if (orderId != undefined) {
+                const readResult = await prisma.order.findUnique({
+                    where: {
+                        id: orderId,
+                    },
+                    include: {
+                        store: true,
+                        orderDetails: { include: { menu: true } },
                     },
                 })
-            }
-            break
 
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '주문내역 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else {
+                const readResult = await prisma.order.findMany({
+                    where: {
+                        userId: userId,
+                        // TODO: 나중에 쿼리로 할 변경
+                        OR: [{ status: 'REQUESTED' }, { status: 'CONFIRMED' }],
+                    },
+                    include: {
+                        store: true,
+                        orderDetails: { include: { menu: true } },
+                    },
+                })
+
+                if (readResult != null) {
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '주문내역 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            }
         // CREATE (장바구니에서 주문)
         case 'POST':
             if (carts == undefined || carts == null) {

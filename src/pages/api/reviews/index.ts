@@ -182,10 +182,11 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                 })
                 return
             }
+            const order = inputReview.order as Order
 
             const createResult = await prisma.review.create({
                 // 리뷰
-                data: inputReview,
+                data: { ...inputReview, order: { connect: { id: order.id } } },
                 include: {
                     order: true,
                 },
