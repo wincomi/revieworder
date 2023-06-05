@@ -64,14 +64,14 @@ export default function adminStorePage({ storeInfo, menuItems }: AdminStorePageP
                             </Grid>
 
                             <Grid>
-                                <Button onPress={() => router.push('/admin/menuUpdate?' + queryString)}>
+                                <Button onPress={() => router.push('/admin/update_menu?' + queryString)}>
                                     메뉴 등록
                                 </Button>
                             </Grid>
                         </Grid.Container>
                         {menuItems.map((menu: MenuItem, index) => (
                             <Grid key={index}>
-                                <Link href={`/admin/menuUpdate?id=${menu.id}` + '&' + queryString}>{menu.name}</Link>
+                                <Link href={`/admin/update_menu?id=${menu.id}` + '&' + queryString}>{menu.name}</Link>
                                 <Text>
                                     {'('} {menu.status == 'AVAILABLE' ? '판매가능' : '판매 불가'} {')'}
                                 </Text>

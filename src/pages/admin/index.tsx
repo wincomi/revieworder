@@ -3,6 +3,9 @@ import { Grid, Progress, Text, Link } from '@nextui-org/react'
 import { GetServerSideProps } from 'next/types'
 import { StoreAPIGETResponse, StoreInfo } from '../api/stores'
 import { OrderAPIGETResponse, OrderItem } from '../api/orders'
+import { Button } from '@nextui-org/react'
+import { useRouter } from 'next/router'
+import { BsHouseAddFill } from 'react-icons/bs'
 
 interface AdminPageProps {
     storeOrders: OrderItem[]
@@ -53,22 +56,25 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
         }
     }
 
+    const router = useRouter()
+
     if (storesInfo.length == 0) {
         return (
-            <>
-                <Layout>
-                    <Text>홈</Text>
-                    <Link href="/admin/enrollStore">매장 만들기</Link>
-                </Layout>
-            </>
+            <Layout>
+                <Text h3>매장이 존재하지 않습니다.</Text>
+                <Button color="gradient" icon={<BsHouseAddFill />} onPress={() => router.push('/admin/enroll_store')}>
+                    매장 만들기
+                </Button>
+            </Layout>
         )
     }
 
     return (
         <>
             <Layout>
-                <Text h3>홈</Text>
-                <Link href="/admin/enrollStore">매장 만들기</Link>
+                <Button color="gradient" icon={<BsHouseAddFill />} onPress={() => router.push('/admin/enroll_store')}>
+                    매장 만들기
+                </Button>
                 {/* 홈은 매장 별 매출 보여주고 주문이나 다른데에서 선택바 
                 <Text h3>{selectedStore.name ?? '홈'}</Text>
                 <StoreSelection stores={storesInfo} />
