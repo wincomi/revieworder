@@ -1,4 +1,4 @@
-import router, { useRouter } from 'next/router'
+import router from 'next/router'
 import { GetServerSideProps } from 'next/types'
 
 import Layout from '@/components/layout'
@@ -8,16 +8,17 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from './api/auth/[...nextauth]'
 import { ReviewAPIGETResponse, ReviewItem } from './api/reviews'
 import { FaStar, FaRegStar, FaHeart, FaTimes } from 'react-icons/fa'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { format, formatDistance } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { Menu, OrderDetail } from '@prisma/client'
 
 interface ReviewPageProps {
     reviews: ReviewItem[]
 }
 
 export default function Home({ reviews }: ReviewPageProps) {
-    useRouter()
+    const [reviewItems] = useState(reviews)
 
     // Components
     const CardFooterTitle = ({ children }: { children: ReactNode }) => {
@@ -56,6 +57,9 @@ export default function Home({ reviews }: ReviewPageProps) {
                 }),
             })
         }
+
+        // 새로고침
+        router.reload()
     }
 
     return (
@@ -66,7 +70,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                     + 링크는 진호가 만든 리뷰 쓰는 페이지로 이동 */}
                 <Button onPress={() => router.push('/order')}>리뷰 쓰러가기</Button>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
-                    {reviews.map((review: ReviewItem) => (
+                    {reviewItems.map((review: ReviewItem) => (
                         <Grid xs={12} sm={6} lg={4} key={review.id}>
                             <Card variant="flat">
                                 {/* 유저 정보 및 리뷰 작성 시간 */}
@@ -131,7 +135,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                                         <div style={{ alignSelf: 'stretch' }}>
                                             {/* 여기 주석 이전 것 DB에 띄어쓰기 없으면 이거 사용 */}
                                             {/*{review.content.split(" ").map((str) => { */}
-                                            {review.content.split('#').map((str) => {
+                                            {review.content.split('#').map((str: string) => {
                                                 if (str != '') str = '#' + str
                                                 if (str.startsWith('#')) {
                                                 }
@@ -143,7 +147,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                                         <Spacer y={0.5} />
 
                                         <CardFooterTitle>주문한 메뉴</CardFooterTitle>
-                                        {review.order.orderDetails?.map((orderDetail) => (
+                                        {review.order.orderDetails?.map((orderDetail: OrderDetail & { menu: Menu }) => (
                                             <Text
                                                 key={orderDetail.id}
                                                 css={{ color: '$accents7', fontWeight: '$semibold', fontSize: '$sm' }}
