@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Button, Spacer, Input, Textarea, Dropdown } from '@nextui-org/react'
+import { Button, Spacer, Input, Textarea } from '@nextui-org/react'
 import Layout from '@/components/layout'
 
 import { useState } from 'react'
@@ -12,7 +12,6 @@ import { OrderAPIGETResponse, OrderItem } from './api/orders'
 import Imgupload from '@/components/imgUpload'
 import SnsPost from '@/components/snsPost'
 import { FaRegStar, FaStar } from 'react-icons/fa'
-import router from 'next/router'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { ReviewIdAPIGETResponse } from './api/reviews/post'
@@ -69,7 +68,10 @@ export default function reviewEnroll({ orderItem, account, pageId }: MenuEditPag
             } else {
                 alert('리뷰 등록 실패.')
             }
-            const r = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews/post`, { method: 'GET' })
+            const r = await fetch(`/api/reviews/post`, {
+                method: 'GET',
+                credentials: 'include',
+            })
             const re = await r.json().then((data) => data as ReviewIdAPIGETResponse)
             const revi = re.data.id
             setReviewId(revi)

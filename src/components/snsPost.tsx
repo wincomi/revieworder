@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { postFacebookPage, postInstagramMedia } from '@/libs/sns'
 import { Dropdown } from '@nextui-org/react'
 import { Account } from '@prisma/client'
@@ -18,6 +18,13 @@ export type PostReviewPageProps = {
 /// 2. 이미지URL, link 입력 추가
 /// 3. SNS POST 버튼 선택으로 변경
 export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPageProps) => {
+    const [selectedSNS, setSelectedSNS] = useState('')
+
+    const dropdownAction: (key: Key) => void = (key) => {
+        setSelectedSNS(key) // ..?
+        postReview(selectedSNS)
+    }
+
     const postReview = async (provider: string) => {
         const link = `https://www.revieworder.kr/${reviewId}`
         if (provider == 'instagram') {
@@ -32,9 +39,9 @@ export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPage
                 console.log('오류 발생')
             }
             console.log(postId)
-        }
-        if (confirm('내 리뷰로 이동하시겠습니까?')) {
-            router.push('/review')
+            if (confirm('내 리뷰로 이동하시겠습니까?')) {
+                router.push('/review')
+            }
         }
     }
 
@@ -43,13 +50,13 @@ export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPage
             <Dropdown.Button flat color="secondary">
                 SNS 업로드
             </Dropdown.Button>
-            <Dropdown.Menu color="secondary" aria-label="Actions">
-                <Dropdown.Button onPress={() => postReview('facebook')} icon={<AiFillFacebook />}>
+            <Dropdown.Menu color="secondary" aria-label="Actions" selectionMode="single" onAction={dropdownAction}>
+                <Dropdown.Item key="facebook" icon={<AiFillFacebook />}>
                     페이스북 리뷰 작성
-                </Dropdown.Button>
-                <Dropdown.Button onPress={() => postReview('instagram')} icon={<AiFillInstagram />}>
+                </Dropdown.Item>
+                <Dropdown.Item key="instagram" icon={<AiFillInstagram />}>
                     인스타그램 리뷰 작성
-                </Dropdown.Button>
+                </Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     )
