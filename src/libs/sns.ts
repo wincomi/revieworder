@@ -14,44 +14,66 @@ export async function postInstagramMedia(
     image: string
 ): Promise<string | null | undefined> {
     if (image == '/images/default.png') {
-        return null
+        return '이미지를 등록해주세요'
     }
     /// 페이스북에 연결된 인스타그램 비즈니스 ID 가져오기
     const FACEBOOK_GRAPH_API_URL = `https://graph.facebook.com`
     if (account.provider != 'facebook') {
+        return '페이스북 로그인이 필요합니다.'
+    }
+    let response
+    try {
+        response = await fetch(
+            `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/accounts?fields=instagram_business_account{id,name,username}&access_token=${account.access_token}`
+        )
+    } catch (err) {
+        console.log('instagram business account error', err)
         return null
     }
-    const instagram_business_account = await fetch(
-        `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/accounts?fields=instagram_business_account{id,name,username}&access_token=${account.access_token}`
-    )
-    const accountJSON = await instagram_business_account.json()
+    const accountJSON = await response.json()
     const instagramAccount = accountJSON.data[0].instagram_business_account
     const instagramId = instagramAccount.id
     /// 요청 3회, 컨테이너 post / 컨테이너 상태 get / 미디어 post
 
     /// container 가져오기
-    const container = await fetch(
-        `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media?image_url=${image}&caption=${caption}&access_token=${account.access_token}`,
-        { method: 'POST' }
-    )
-    const containerJSON = await container.json()
+    try {
+        response = await fetch(
+            `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media?image_url=${image}&caption=${caption}&access_token=${account.access_token}`,
+            { method: 'POST' }
+        )
+    } catch (err) {
+        console.log('get container error', err)
+        return null
+    }
+    const containerJSON = await response.json()
     const containerId = containerJSON.id
 
     /// 상태 가져오기
-    const status = await fetch(
-        `${FACEBOOK_GRAPH_API_URL}/${containerId}?fields=status_code&access_token=${account.access_token}`
-    )
-    const statusJSON = await status.json()
+    try {
+        response = await fetch(
+            `${FACEBOOK_GRAPH_API_URL}/${containerId}?fields=status_code&access_token=${account.access_token}`
+        )
+    } catch (err) {
+        console.log('get status_code error', err)
+        return null
+    }
+    const statusJSON = await response.json()
     /// 상태 코드 테스트 필요
 
     if (statusJSON.status_code != 'FINISHED') {
+        console.log('status not finished')
         return null
     }
-    const media = await fetch(
-        `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media_publish?creation_id=${containerId}&access_token=${account.access_token}`,
-        { method: 'POST' }
-    )
-    const mediaJSON = await media.json()
+    try {
+        response = await fetch(
+            `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media_publish?creation_id=${containerId}&access_token=${account.access_token}`,
+            { method: 'POST' }
+        )
+    } catch (err) {
+        console.log('instagram business account error', err)
+        return null
+    }
+    const mediaJSON = await response.json()
     const mediaId = mediaJSON.id
     return mediaId
 }
@@ -60,46 +82,51 @@ export async function postInstagramMedia(
 /// 1. 페이스북 페이지 글쓰기(리뷰오더 페이지에 포스팅)
 export async function postFacebookPage(
     account: Account,
-    caption: string,
-    image: string,
-    link: string,
-    pageId: string
+    caption: string, /// 설명
+    image: string, /// https://www.revieworder.kr/imagename
+    link: string, /// https://www.revieworder.kr/review/reviewId
+    pageId: string /// Faccebook Revieworder page ID
 ): Promise<string | null | undefined> {
     if (image == '' && caption == '') {
         return null
     }
     /// page access token 가져오기 - 1시간짜리 단기 access token으로 충분
-    const getpageAccessToken = await fetch(
-        `https://graph.facebook.com/${pageId}?fields=name,access_token&access_token=${account.access_token}`
-    )
-    const pageAccessTokenJSON = await getpageAccessToken.json()
+    let response
+    try {
+        response = await fetch(
+            `https://graph.facebook.com/${pageId}?fields=name,access_token&access_token=${account.access_token}`
+        )
+    } catch (err) {
+        console.log('get page access token error', err)
+        return null
+    }
+    const pageAccessTokenJSON = await response.json()
     const pageAccessToken = pageAccessTokenJSON.access_token
     /// 아래 API들은 전부 page access token이 필요함
     if (image != '/images/default.png' && caption != '') {
-        const pagePostId = await fetch(
-            `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${caption}&link=${link}&access_token=${pageAccessToken}`,
-            { method: 'POST' }
-        )
-        const pagePostIdJSON = await pagePostId.json()
+        try {
+            response = await fetch(
+                `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${caption}&link=${link}&access_token=${pageAccessToken}`,
+                { method: 'POST' }
+            )
+        } catch (err) {
+            console.log('get pagepostid error', err)
+            return null
+        }
+        const pagePostIdJSON = await response.json()
         return pagePostIdJSON.id
     }
     if (image == '/images/default.png' && caption != '') {
-        const pagePostId = await fetch(
-            `https://graph.facebook.com/${pageId}/feed?message=${caption}&link=${link}&access_token=${pageAccessToken}`,
-            { method: 'POST' }
-        )
-        const pagePostIdJSON = await pagePostId.json()
+        try {
+            response = await fetch(
+                `https://graph.facebook.com/${pageId}/feed?message=${caption}&link=${link}&access_token=${pageAccessToken}`,
+                { method: 'POST' }
+            )
+        } catch (err) {
+            console.log('get pagepostid error', err)
+            return null
+        }
+        const pagePostIdJSON = await response.json()
         return pagePostIdJSON.id
     }
 }
-
-/// 피드, 스토리 가져올 필요없음, 글쓰기만 구현
-/// 피드 가져오기
-// export async function getInstaFeedbyAccount(account: Account) {
-//     const result = await fetch(
-//         `https://graph.instagram.com/${account.providerAccountId}/media?fields=id,caption,media_type,media_url,timestamp,permalink,thumbnail_url,username&access_token=${account.access_token}`
-//     )
-//     const feed = await result.json()
-//     console.log(feed)
-//     return feed
-// }

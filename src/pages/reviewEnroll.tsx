@@ -5,23 +5,31 @@ import Layout from '@/components/layout'
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import React from 'react'
+import { getUserAccount } from '@/libs/users'
 
-import { Prisma } from '@prisma/client'
+import { Account, Prisma } from '@prisma/client'
 import { OrderAPIGETResponse, OrderItem } from './api/orders'
 import Imgupload from '@/components/imgUpload'
+import SnsPost from '@/components/snsPost'
 import { FaRegStar, FaStar } from 'react-icons/fa'
 import router from 'next/router'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './api/auth/[...nextauth]'
+import { ReviewIdAPIGETResponse } from './api/reviews/post'
 
 // 메뉴 api upsert 구현해서 기존에 있으면 업데이트, 없으면 생성 -> 기준 (이름, 가격)
 
 interface MenuEditPageProps {
     /// 리뷰 쓸 주문
     orderItem: OrderItem
+    account: Account
+    pageId: string
 }
 
-export default function reviewEnroll({ orderItem }: MenuEditPageProps) {
+export default function reviewEnroll({ orderItem, account, pageId }: MenuEditPageProps) {
     const [imageUrl, setImageUrl] = useState('/images/default.png')
     const [uploaded, setUploaded] = useState(false)
+    const [reviewId, setReviewId] = useState(0)
 
     const [review, setReview] = useState<Prisma.ReviewCreateInput>({
         content: '',
@@ -58,12 +66,13 @@ export default function reviewEnroll({ orderItem }: MenuEditPageProps) {
             })
             if (result.status == 200) {
                 alert('리뷰 등록 완료.')
-                if (confirm('내 리뷰로 이동하시겠습니까?')) {
-                    router.push('/review')
-                }
             } else {
                 alert('리뷰 등록 실패.')
             }
+            const r = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews/post`, { method: 'GET' })
+            const re = await r.json().then((data) => data as ReviewIdAPIGETResponse)
+            const revi = re.data.id
+            setReviewId(revi)
         } else {
             alert('이미지 업로드 해주세요.')
         }
@@ -102,6 +111,13 @@ export default function reviewEnroll({ orderItem }: MenuEditPageProps) {
                             onChange={(e) => setReview({ ...review, content: e.currentTarget.value })}
                         />
                         <Button onPress={create}>리뷰 등록</Button>
+                        <SnsPost
+                            content={review.content}
+                            imageUrl={imageUrl}
+                            account={account}
+                            pageId={pageId}
+                            reviewId={reviewId}
+                        />
                     </fieldset>
                 </form>
             </Layout>
@@ -123,7 +139,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const response = await result.json().then((data) => data as OrderAPIGETResponse)
     const orderItem = response.data
 
+    const session = await getServerSession(context.req, context.res, authOptions)
+    if (!session) {
+        return {
+            props: {
+                orderItem,
+                account: null,
+                pageId: process.env.NEXTAUTH_FACEBOOK_PAGE_ID,
+            },
+        }
+    }
+    const userId = session?.user?.id
+    /// Facebook 계정 하나로 instagram까지 전부 가능 (instagram 계정으로는 instagram post 불가능)
+    /// 반드시 Facebook 계정으로만 로그인해야함
+    const facebook = await getUserAccount(userId, 'facebook')
+
     return {
-        props: { orderItem },
+        props: {
+            orderItem,
+            account: facebook,
+            pageId: process.env.NEXTAUTH_FACEBOOK_PAGE_ID,
+        },
     }
 }
