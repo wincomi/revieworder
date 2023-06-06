@@ -32,7 +32,7 @@ export default ({ cartItems, tossClientKey, tossRedirectURL }: SummaryCardProps)
     const pay = async () => {
         // // clientKey, 충전 금액, redirect host url, 주문번호, 표시 내용, 유저 정보
         // tossPayment(tossClientKey, point, tossRedirectURL, undefined, undefined, user)
-        tossPayment(tossClientKey, totalPrice, tossRedirectURL, true, undefined, '리뷰오더 결제', cartItems[0].user)
+        tossPayment(tossClientKey, totalPrice, tossRedirectURL, false, undefined, '리뷰오더 결제', cartItems[0].user)
     }
 
     // 주문 기능

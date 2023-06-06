@@ -6,7 +6,7 @@ export async function tossPayment(
     tossClientKey: string,
     amount: number,
     tossRedirectURL: string,
-    // false: 바로 결제, true: 포인트 결제
+    // false: 바로 결제, true: 포인트 충전
     pointPay: boolean,
     // 지금은 고정 중
     _orderId?: string,

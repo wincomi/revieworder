@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const userId = context.query.userId
 
     // 결제 방식: 바로 결제, 포인트 결제
-    const pointPay = context.query.pointPay
+    const pointPay = context.query.payMethod
 
     // 토스 결제 승인 시 시크릿키 사용
     const secretKey = process.env.TOSS_SECRET_KEY
@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 console.log('성공')
 
                 // 조건문 넣rl
-                if (pointPay) {
+                if (pointPay == 'true') {
                     await fetch(`${process.env.NEXTAUTH_URL}/api/user/moneyapi`, {
                         method: 'PUT',
                         headers: {
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                             opt: 'charge',
                         }),
                     })
-                } else if (!pointPay) {
+                } else if (pointPay == 'false') {
                     await fetch(`${process.env.NEXTAUTH_URL}/api/orders`, {
                         method: 'POST',
                         headers: {
