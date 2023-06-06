@@ -9,14 +9,18 @@ import Layout from '@/components/layout'
 import { Button, Grid, Input, Text } from '@nextui-org/react'
 import { HiSearch } from 'react-icons/hi'
 import { ReviewAPIGETResponse, ReviewItem } from './api/reviews'
+import { ReviewIdAPIGETResponse } from './api/reviews/post'
 
 interface ReviewPageProps {
+    revi: number
     reviewCards: ReviewItem[]
 }
 
-export default function Home({ reviewCards }: ReviewPageProps) {
+export default function Home({ revi, reviewCards }: ReviewPageProps) {
     useSession()
     const router = useRouter()
+
+    console.log(revi)
 
     const [query, setQuery] = useState('')
 
@@ -78,7 +82,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const reviewCards = response.data
 
+    // post 사용 예시 다 보고 다시 지우삼
+    const r = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews/post`, { method: 'GET' })
+    const re = await r.json().then((data) => data as ReviewIdAPIGETResponse)
+
+    const revi = re.data.id
+
     return {
-        props: { reviewCards },
+        props: { revi, reviewCards },
     }
 }
