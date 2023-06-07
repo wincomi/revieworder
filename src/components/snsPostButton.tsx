@@ -5,7 +5,7 @@ import { Account } from '@prisma/client'
 import { AiFillFacebook, AiFillInstagram } from 'react-icons/ai'
 import router from 'next/router'
 
-export type PostReviewPageProps = {
+export type SNSPostButtonProps = {
     content: string
     imageUrl: string
     account: Account
@@ -17,7 +17,7 @@ export type PostReviewPageProps = {
 /// 1. 디자인 수정
 /// 2. 이미지URL, link 입력 추가
 /// 3. SNS POST 버튼 선택으로 변경
-export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPageProps) => {
+export default ({ content, imageUrl, account, reviewId, pageId }: SNSPostButtonProps) => {
     const [selectedSNS, setSelectedSNS] = useState('')
 
     const dropdownAction: (key: Key) => void = (key) => {
@@ -47,8 +47,8 @@ export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPage
 
     return (
         <Dropdown>
-            <Dropdown.Button flat color="secondary">
-                SNS 업로드
+            <Dropdown.Button color="primary" flat>
+                SNS 동시 등록
             </Dropdown.Button>
             <Dropdown.Menu color="secondary" aria-label="Actions" selectionMode="single" onAction={dropdownAction}>
                 <Dropdown.Item key="facebook" icon={<AiFillFacebook />}>

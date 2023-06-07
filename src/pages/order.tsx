@@ -64,7 +64,7 @@ export default ({ reviews, orderItems }: OrderPageProps) => {
                                     {checkReview(order.id) ? (
                                         <Button disabled>리뷰 작성</Button>
                                     ) : (
-                                        <Button onPress={() => router.push(`/reviewEnroll?orderId=${order.id}`)}>
+                                        <Button onPress={() => router.push(`/write_review?orderId=${order.id}`)}>
                                             리뷰 작성
                                         </Button>
                                     )}

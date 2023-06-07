@@ -1,16 +1,18 @@
 import React, { useState, useRef, ChangeEvent, Dispatch, SetStateAction } from 'react'
-import { Button } from '@nextui-org/react'
+import { Button, Spacer } from '@nextui-org/react'
 import Image from 'next/image'
+import { FaFileImage, FaUpload } from 'react-icons/fa'
 
 export type ImgProps = {
     uploaded: Dispatch<SetStateAction<boolean>>
-    onChangeImg: Dispatch<SetStateAction<string>>
+    onChangeImage: Dispatch<SetStateAction<string>>
 }
 
-export default ({ uploaded, onChangeImg }: ImgProps) => {
+export default ({ uploaded, onChangeImage: onChangeImage }: ImgProps) => {
     const [selectedFile, setSelectedFile] = useState<string | File | null>('')
     const [previewUrl, setPreviewUrl] = useState<string | null>('')
     const fileInput = useRef<HTMLInputElement>(null)
+    const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
     const handleUploadClick = () => {
         if (fileInput.current) {
@@ -21,7 +23,7 @@ export default ({ uploaded, onChangeImg }: ImgProps) => {
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file) {
-            onChangeImg('/images/' + file.name)
+            onChangeImage('/images/' + file.name)
             setPreviewUrl(URL.createObjectURL(file))
             setSelectedFile(file)
         }
@@ -43,7 +45,8 @@ export default ({ uploaded, onChangeImg }: ImgProps) => {
 
                 // 업로드 성공 후 필요한 동작 수행
                 uploaded(true)
-                alert('이미지 업로드 완료')
+                alert('사진 업로드를 완료하였습니다.')
+                setIsUploaded(true)
             } catch (error) {
                 console.error(error)
                 // 업로드 실패 시 에러 처리
@@ -52,9 +55,10 @@ export default ({ uploaded, onChangeImg }: ImgProps) => {
     }
 
     return (
-        <div>
-            {previewUrl && <Image src={previewUrl} width="300" height="300" alt="프리뷰" />}
-            <Button onPress={handleUploadClick}>이미지 선택</Button>
+        <>
+            <Button onPress={handleUploadClick} icon={<FaFileImage />} size="sm" disabled={isUploaded}>
+                리뷰 사진 선택
+            </Button>
             <input
                 type="file"
                 accept="image/*"
@@ -62,7 +66,15 @@ export default ({ uploaded, onChangeImg }: ImgProps) => {
                 style={{ display: 'none', width: 'auto', height: 'auto' }}
                 onChange={handleFileChange}
             />
-            <Button onPress={handleUpload}>업로드</Button>
-        </div>
+            <Spacer y={1} />
+            {previewUrl && (
+                <>
+                    <Image src={previewUrl} alt="미리보기 사진" width={300} height={300} />
+                    <Button onPress={handleUpload} icon={<FaUpload />} size="sm" flat disabled={isUploaded}>
+                        사진 업로드
+                    </Button>
+                </>
+            )}
+        </>
     )
 }
