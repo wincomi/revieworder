@@ -7,6 +7,7 @@ import { User, Card, Row, Text, Button, Spacer, Tooltip, Loading } from '@nextui
 import { FaHeart, FaShoppingCart, FaStar, FaRegStar } from 'react-icons/fa'
 import Link from 'next/link'
 import { ReviewItem } from '@/pages/api/reviews'
+import { useSession } from 'next-auth/react'
 
 export type ReviewCardProps = {
     review: ReviewItem
@@ -15,10 +16,15 @@ export type ReviewCardProps = {
 
 export default ({ review, onChangeQuery }: ReviewCardProps) => {
     const router = useRouter()
+    const session = useSession()
     const [favorite, setFavorite] = useState(review.favorite)
     const [isAddingToCart, setIsAddingToCart] = useState(false)
 
     const addToCart = async () => {
+        if (session == null) {
+            router.push('/login')
+        }
+
         setIsAddingToCart(true)
 
         await fetch(`api/carts`, {
