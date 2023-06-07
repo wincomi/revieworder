@@ -7,10 +7,9 @@ import { Button, Card, Grid, Row, Spacer, Text, Tooltip } from '@nextui-org/reac
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../api/auth/[...nextauth]'
 import { ReviewAPIGETResponse, ReviewItem } from '../api/reviews'
-import { FaStar, FaRegStar, FaHeart, FaTimes } from 'react-icons/fa'
+import { FaStar, FaRegStar, FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
 import { ReactNode, useState } from 'react'
-import { format, formatDistance } from 'date-fns'
-import { ko } from 'date-fns/locale'
+import { format } from 'date-fns'
 import { Menu, OrderDetail } from '@prisma/client'
 
 interface ReviewPageProps {
@@ -65,38 +64,17 @@ export default function Home({ reviews }: ReviewPageProps) {
     return (
         <>
             <Layout>
-                <Text h3>My 리뷰</Text>
-                {/* TODO: 이 버튼 디자인만 어떻게 해주삼 
-                    + 링크는 진호가 만든 리뷰 쓰는 페이지로 이동 */}
-                <Button onPress={() => router.push('/order')}>리뷰 쓰러가기</Button>
+                <Text h1>내 리뷰</Text>
+                <Button onPress={() => router.push('/order')} icon={<FaPencilAlt />} flat>
+                    리뷰 작성
+                </Button>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
+                    {reviewItems.length == 0 && (
+                        <Text css={{ m: 16, color: '$colors$neutral' }}>작성된 리뷰가 없습니다.</Text>
+                    )}
                     {reviewItems.map((review: ReviewItem) => (
                         <Grid xs={12} sm={6} lg={4} key={review.id}>
                             <Card variant="flat">
-                                {/* 유저 정보 및 리뷰 작성 시간 */}
-                                <Card.Header>
-                                    <Row wrap="wrap" justify="space-between" align="center">
-                                        <Tooltip
-                                            content={format(new Date(review.createTime), 'yyyy-MM-dd HH:mm:ss')}
-                                            placement="left"
-                                            color="invert"
-                                        >
-                                            <Text css={{ color: '$accents7', fontSize: '$xs' }}>
-                                                {formatDistance(new Date(review.createTime), new Date(), {
-                                                    addSuffix: true,
-                                                    locale: ko,
-                                                })}
-                                            </Text>
-                                        </Tooltip>
-                                        <Button
-                                            light
-                                            auto
-                                            onPress={() => del(review)}
-                                            color="error"
-                                            icon={<FaTimes fill="currentColor" />}
-                                        ></Button>
-                                    </Row>
-                                </Card.Header>
                                 {/* 리뷰 사진 */}
                                 <Card.Body css={{ p: 0, flexGrow: 'unset' }}>
                                     <Card.Image
@@ -113,11 +91,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                                     {/* TODO: 세로 정렬 */}
                                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                                         <Row wrap="wrap" justify="space-between" align="center">
-                                            <Tooltip content={'리뷰 추천하기'} placement="top" color="error">
-                                                <Button auto flat size="xs" color="error" icon={<FaHeart />}>
-                                                    {review.favorite}
-                                                </Button>
-                                            </Tooltip>
+                                            <Spacer />
                                             <Tooltip content={'리뷰어가 선택한 별점'} placement="top" color="warning">
                                                 <Button
                                                     auto
@@ -144,6 +118,7 @@ export default function Home({ reviews }: ReviewPageProps) {
                                         </div>
 
                                         <CardFooterTitle>주문한 가게</CardFooterTitle>
+                                        {/* TODO */}
                                         <Spacer y={0.5} />
 
                                         <CardFooterTitle>주문한 메뉴</CardFooterTitle>
@@ -158,6 +133,23 @@ export default function Home({ reviews }: ReviewPageProps) {
                                         ))}
                                         <Spacer y={0.5} />
                                     </div>
+                                    {/* 유저 정보 및 리뷰 작성 시간 */}
+                                </Card.Footer>
+                                <Card.Divider />
+                                <Card.Footer css={{ color: '$accents7', fontSize: '$xs' }}>
+                                    <Row wrap="wrap" justify="space-between" align="center">
+                                        작성 시간: {format(new Date(review.createTime), 'yyyy-MM-dd HH:mm:ss')}
+                                        <Button
+                                            flat
+                                            auto
+                                            onPress={() => del(review)}
+                                            color="error"
+                                            size="xs"
+                                            icon={<FaTrashAlt fill="currentColor" />}
+                                        >
+                                            리뷰 삭제
+                                        </Button>
+                                    </Row>
                                 </Card.Footer>
                             </Card>
                         </Grid>
