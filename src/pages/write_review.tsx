@@ -7,23 +7,27 @@ import { GetServerSideProps } from 'next'
 import React from 'react'
 import { getUserAccount } from '@/libs/users'
 
-import { Account, Prisma } from '@prisma/client'
+import { Account, Prisma, Review } from '@prisma/client'
 import { OrderAPIGETResponse, OrderItem } from './api/orders'
 import ImageUploadButton from '@/components/ImageUploadButton'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './api/auth/[...nextauth]'
 import { HiPencilAlt } from 'react-icons/hi'
+import { ReviewAPIGETResponse } from './api/reviews'
+import router from 'next/router'
 
 // 메뉴 api upsert 구현해서 기존에 있으면 업데이트, 없으면 생성 -> 기준 (이름, 가격)
 
 interface MenuEditPageProps {
+    /// 리뷰 확인용(write or not)
+    reviews: Review[]
     /// 리뷰 쓸 주문
     orderItem: OrderItem
     account: Account | null
     pageId: string
 }
 
-export default ({ orderItem, account, pageId }: MenuEditPageProps) => {
+export default ({ reviews, orderItem, account, pageId }: MenuEditPageProps) => {
     const [imageUrl, setImageUrl] = useState('/images/default.png')
     const [uploaded, setUploaded] = useState(false)
     const [reviewId, setReviewId] = useState(0)
@@ -53,6 +57,19 @@ export default ({ orderItem, account, pageId }: MenuEditPageProps) => {
             alert('리뷰를 등록하였습니다.')
         } else {
             alert('리뷰 등록에 실패하였습니다.')
+        }
+    }
+
+    const orderId = router.query.orderId
+
+    for (let i = 0; i < reviews.length; i++) {
+        if (reviews[i].orderId == orderId) {
+            return (
+                <Layout>
+                    <title>리뷰 작성</title>
+                    <Text>이미 작성된 리뷰입니다.</Text>
+                </Layout>
+            )
         }
     }
 
@@ -154,8 +171,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     /// 반드시 Facebook 계정으로만 로그인해야함
     const facebook = await getUserAccount(userId, 'facebook')
 
+    const reviewResult = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews`, {
+        method: 'GET',
+        headers: {
+            // session의 쿠키 전달
+            cookie: context.req.headers.cookie || '',
+        },
+    })
+
+    const reviewRes = await reviewResult.json().then((data) => data as ReviewAPIGETResponse)
+    const reviews = reviewRes.data
+
     return {
         props: {
+            reviews,
             orderItem,
             account: facebook != undefined ? facebook : null,
             pageId: process.env.NEXTAUTH_FACEBOOK_PAGE_ID,
