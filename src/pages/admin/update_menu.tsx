@@ -128,6 +128,28 @@ export default function menuEnroll({ menu }: MenuEditPageProps) {
             }
         }
 
+        const del = async () => {
+            const result = await fetch(`/api/menus`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // session의 쿠키를 보내는데 req가 없으면 필요
+                credentials: 'include',
+
+                body: JSON.stringify({
+                    menu: menu,
+                }),
+            })
+
+            if (result.status == 200) {
+                alert('메뉴 삭제 완료.')
+                router.push(`/admin/store?id=${store.id}`)
+            } else {
+                alert('메뉴 삭제 실패.')
+            }
+        }
+
         return (
             <>
                 <Head>
@@ -194,6 +216,7 @@ export default function menuEnroll({ menu }: MenuEditPageProps) {
                                 </Dropdown.Menu>
                             </Dropdown>
                             <Button onPress={edit}>메뉴 수정</Button>
+                            <Button onPress={del}>메뉴 삭제</Button>
                         </fieldset>
                     </form>
                 </Layout>

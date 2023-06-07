@@ -147,6 +147,36 @@ export default async (req: MenuAPIRequest, res: NextApiResponse) => {
                 break
             }
 
+        // DELETE (menuId에 해당되는 메뉴 삭제)
+        case 'DELETE':
+            if (menu == null || menu == undefined) {
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: '삭제 할 값은 필수입니다.',
+                    },
+                })
+                return
+            }
+
+            const deleteResult = await prisma.menu.delete({
+                where: { id: menu.id },
+            })
+
+            if (deleteResult != null) {
+                // 삭제 성공!!
+                res.status(200).json(deleteResult)
+            } else {
+                // 삭제 실패.
+                res.status(400).json({
+                    error: {
+                        code: 400,
+                        message: '해당 메뉴를 삭제할 수 없습니다.',
+                    },
+                })
+            }
+            break
+
         default:
             // API method가 잘못되었을 때 오류
             res.status(400).json({
