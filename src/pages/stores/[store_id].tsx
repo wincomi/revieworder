@@ -62,7 +62,7 @@ export default ({ menuItems }: StorePageProps) => {
             <Layout>
                 <Text h1>{menuItems[0].store.name}</Text>
                 <Button onPress={() => setVisibleQRCode(true)} icon={<HiQrcode />} flat css={{ mb: 12 }}>
-                    매장 QR코드 보기
+                    매장 QR 코드 보기
                 </Button>
                 <Modal open={visibleQRCode} onClose={() => setVisibleQRCode(false)}>
                     <Modal.Body>
