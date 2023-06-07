@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Key, useState } from 'react'
 import { postFacebookPage, postInstagramMedia } from '@/libs/sns'
 import { Dropdown } from '@nextui-org/react'
 import { Account } from '@prisma/client'
@@ -21,12 +21,12 @@ export default ({ content, imageUrl, account, reviewId, pageId }: PostReviewPage
     const [selectedSNS, setSelectedSNS] = useState('')
 
     const dropdownAction: (key: Key) => void = (key) => {
-        setSelectedSNS(key) // ..?
+        setSelectedSNS(key as string)
         postReview(selectedSNS)
     }
 
     const postReview = async (provider: string) => {
-        const link = `https://www.revieworder.kr/${reviewId}`
+        const link = `https://revieworder.kr/${reviewId}`
         if (provider == 'instagram') {
             const postId = await postInstagramMedia(account, content, imageUrl)
             if (postId == null) {
