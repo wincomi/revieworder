@@ -16,18 +16,13 @@ interface ReviewPageProps {
 }
 
 export default function Home({ reviewCards }: ReviewPageProps) {
-    useSession()
     const router = useRouter()
 
     const [query, setQuery] = useState('')
 
-    const exeSearch = () => {
-        router.push(`/?search=${query}`)
-    }
-
     const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        exeSearch()
+        router.push(`/?search=${query}`)
     }
 
     return (
@@ -38,25 +33,16 @@ export default function Home({ reviewCards }: ReviewPageProps) {
             <Layout>
                 <Text h1>둘러보기</Text>
                 <form onSubmit={sumbit}>
-                    <Grid.Container justify="flex-start" css={{ mb: '$8' }}>
-                        <Grid>
-                            <Input
-                                size="xl"
-                                shadow={false}
-                                clearable
-                                placeholder="검색"
-                                initialValue={query}
-                                contentLeft={<HiSearch />}
-                                fullWidth={true}
-                                onChange={(e) => setQuery(e.currentTarget.value)}
-                            />
-                        </Grid>
-                        <Grid css={{ ml: '$4' }}>
-                            <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>
-                                검색
-                            </Button>
-                        </Grid>
-                    </Grid.Container>
+                    <Input
+                        size="xl"
+                        shadow={false}
+                        clearable
+                        placeholder="리뷰 검색"
+                        initialValue={query}
+                        contentLeft={<HiSearch />}
+                        fullWidth={true}
+                        onChange={(e) => setQuery(e.currentTarget.value)}
+                    />
                 </form>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {reviewCards.map((item: ReviewItem) => (
