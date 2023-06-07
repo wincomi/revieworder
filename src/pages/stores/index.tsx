@@ -9,53 +9,38 @@ import { Button, Grid, Input, Text } from '@nextui-org/react'
 import { HiSearch } from 'react-icons/hi'
 import { StoreAPIGETResponse } from '../api/admin/stores'
 import { Store } from '@prisma/client'
-import StoreCard from '@/components/store/storeCard'
+import StoreCard from '@/components/stores/storeCard'
 
 interface StoreSearchPageProps {
     stores: Store[]
 }
 
 export default function Home({ stores }: StoreSearchPageProps) {
-    const router = useRouter()
-
     const [query, setQuery] = useState('')
-
-    const exeSearch = () => {
-        router.push(`/store?search=${query}`)
-    }
 
     const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        exeSearch()
+        router.push(`/stores?search=${query}`)
     }
 
     return (
         <>
             <Head>
-                <title>리뷰오더</title>
+                <title>매장</title>
             </Head>
             <Layout>
-                <Text h1>둘러보기</Text>
+                <Text h1>매장</Text>
                 <form onSubmit={sumbit}>
-                    <Grid.Container justify="flex-start" css={{ mb: '$8' }}>
-                        <Grid>
-                            <Input
-                                size="xl"
-                                shadow={false}
-                                clearable
-                                placeholder="검색"
-                                initialValue={query}
-                                contentLeft={<HiSearch />}
-                                fullWidth={true}
-                                onChange={(e) => setQuery(e.currentTarget.value)}
-                            />
-                        </Grid>
-                        <Grid css={{ ml: '$4' }}>
-                            <Button auto flat css={{ h: '100%' }} icon={<HiSearch />} onPress={exeSearch}>
-                                검색
-                            </Button>
-                        </Grid>
-                    </Grid.Container>
+                    <Input
+                        size="xl"
+                        shadow={false}
+                        clearable
+                        placeholder="매장 검색"
+                        initialValue={query}
+                        contentLeft={<HiSearch />}
+                        fullWidth={true}
+                        onChange={(e) => setQuery(e.currentTarget.value)}
+                    />
                 </form>
                 <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
                     {stores.map((item: Store) => (

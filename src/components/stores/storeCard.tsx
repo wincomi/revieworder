@@ -12,16 +12,17 @@ export type StoreCardProps = {
 export default ({ store }: StoreCardProps) => {
     const router = useRouter()
 
-    const goToStore = async () => {
-        if (confirm('해당 매장으로 이동하시겠습니까?')) {
-            router.push(`/store/${store.id}`)
-        }
-    }
-
     return (
         <Card variant="flat">
             <Card.Header>
-                <Text h4>{store.name}</Text>
+                <Row wrap="wrap" justify="space-between" align="center">
+                    <Text h4 css={{ mb: 0 }}>
+                        {store.name}
+                    </Text>
+                    <Text color="$colors$neutral" small>
+                        {store.address}
+                    </Text>
+                </Row>
             </Card.Header>
             <Card.Body css={{ p: 0, flexGrow: 'unset' }}>
                 <Card.Image
@@ -34,12 +35,8 @@ export default ({ store }: StoreCardProps) => {
                 />
             </Card.Body>
             <Card.Footer css={{ color: '$accents7', fontWeight: '$semibold', fontSize: '$sm' }}>
-                <Row wrap="wrap" justify="space-between" align="center">
-                    <Text>{store.address}</Text>
-                </Row>
-                <Spacer y={0.5} />
-                <Grid>
-                    <Grid>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ alignSelf: 'stretch' }}>
                         {store.description?.split('#').map((str, index) => {
                             if (str != '') str = '#' + str
                             if (str.startsWith('#')) {
@@ -47,7 +44,7 @@ export default ({ store }: StoreCardProps) => {
                                     <span key={str}>
                                         <Link
                                             //onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#', ''))}
-                                            href={{ pathname: `/store`, query: { search: `${str.replace('#', '')}` } }}
+                                            href={{ pathname: `s`, query: { search: `${str.replace('#', '')}` } }}
                                         >
                                             {str}
                                         </Link>{' '}
@@ -56,12 +53,17 @@ export default ({ store }: StoreCardProps) => {
                             }
                             return str + ' '
                         })}
-                    </Grid>
-
-                    <Button css={{ width: '100%' }} color="gradient" icon={<FaStore />} onPress={() => goToStore()}>
+                    </div>
+                    <Spacer y={0.5} />
+                    <Button
+                        css={{ width: '100%' }}
+                        color="gradient"
+                        icon={<FaStore />}
+                        onPress={() => router.push(`/stores/${store.id}`)}
+                    >
                         매장 둘러보기
                     </Button>
-                </Grid>
+                </div>
             </Card.Footer>
         </Card>
     )
