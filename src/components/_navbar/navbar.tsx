@@ -23,11 +23,9 @@ export default ({ title, titleIcon, menu, activeColor, children }: NavbarProps) 
     return (
         <Navbar variant="sticky" isBordered>
             <Navbar.Brand hideIn="xs">
-                <Link onClick={() => router.push('/')}>
-                    <Text b color="text" css={{ fontSize: 20, ml: 8 }}>
-                        {titleIcon} {title}
-                    </Text>
-                </Link>
+                <Text b color="text" css={{ fontSize: 20, ml: 8, cursor: 'pointer' }} onClick={() => router.push('/')}>
+                    {titleIcon} {title}
+                </Text>
             </Navbar.Brand>
             <Navbar.Content activeColor={activeColor}>
                 {menu.map((item) => (
