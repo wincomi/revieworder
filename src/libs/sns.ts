@@ -17,14 +17,14 @@ export async function postInstagramMedia(
         return '이미지를 등록해주세요'
     }
     /// 페이스북에 연결된 인스타그램 비즈니스 ID 가져오기
-    const FACEBOOK_GRAPH_API_URL = `https://graph.facebook.com`
+    const FACEBOOK_GRAPH_API_URL = `https://graph.facebook.com/v17.0`
     if (account.provider != 'facebook') {
         return '페이스북 로그인이 필요합니다.'
     }
     let response
     try {
         response = await fetch(
-            `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/accounts?fields=instagram_business_account{id,name,username}&access_token=${account.access_token}`
+            `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/accounts?fields=instagram_business_account{ig_id}&access_token=${account.access_token}`
         )
     } catch (err) {
         console.log('instagram business account error', err)

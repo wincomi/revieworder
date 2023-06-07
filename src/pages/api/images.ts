@@ -43,16 +43,19 @@ const handler: NextApiHandler = async (req, res) => {
         const imageBuffer = await fs.readFile(uploadedImage.filepath)
 
         /// 파일명 : 당시 시간.png - 띄어쓰기 없음
-        const fileName = Date.now().toString + '.png'
-
+        console.log('' + Date.now())
+        const fileName = '' + Date.now() + '.png'
+        console.log(fileName)
         /// 서버 업로드용 파일명, public/images/당시 시간.png
         const uploadFilePath = '/public/images/' + fileName
 
-        /// 이미지 호스팅 경로, 기본: name='당시 시간.png', name=당시 시간.png로 수정해야 할 수도 있음
+        /// 이미지 호스팅 경로, 기본: name='/당시 시간.png', name='당시 시간.png'로 수정해야 할 수도 있음
         const writeFilePath = 'https://revieworder.kr/images?name=' + "'/" + fileName + "'"
-
-        fs.writeFile('.' + uploadFilePath, imageBuffer, 'base64')
+        console.log(uploadFilePath)
+        console.log(writeFilePath)
+        await fs.writeFile('.' + uploadFilePath, imageBuffer, 'base64')
         res.json({ filename: writeFilePath, done: 'ok' })
+        return res
     }
 }
 
