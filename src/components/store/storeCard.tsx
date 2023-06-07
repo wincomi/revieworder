@@ -44,12 +44,14 @@ export default ({ store }: StoreCardProps) => {
                             if (str != '') str = '#' + str
                             if (str.startsWith('#')) {
                                 return (
-                                    <Link
-                                        key={index}
-                                        href={{ pathname: `/store`, query: { search: `${str.replace('#', '')}` } }}
-                                    >
-                                        {str}
-                                    </Link>
+                                    <span key={str}>
+                                        <Link
+                                            //onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#', ''))}
+                                            href={{ pathname: `/store`, query: { search: `${str.replace('#', '')}` } }}
+                                        >
+                                            {str}
+                                        </Link>{' '}
+                                    </span>
                                 )
                             }
                             return str + ' '

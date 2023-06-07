@@ -129,15 +129,16 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                         {review.content.split('#').map((str) => {
                             if (str != '') str = '#' + str
                             if (str.startsWith('#')) {
-                                return
-                                ;<span key={str}>
-                                    <Link
-                                        onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#', ''))}
-                                        href={{ pathname: `/`, query: { search: `${str.replace('#', '')}` } }}
-                                    >
-                                        {str}
-                                    </Link>
-                                </span>
+                                return (
+                                    <span key={str}>
+                                        <Link
+                                            //onClick={(e) => onChangeQuery(e.currentTarget.text.replace('#', ''))}
+                                            href={{ pathname: `/`, query: { search: `${str.replace('#', '')}` } }}
+                                        >
+                                            {str}
+                                        </Link>{' '}
+                                    </span>
+                                )
                             }
                             return str + ' '
                         })}
