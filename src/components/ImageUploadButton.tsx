@@ -23,7 +23,6 @@ export default ({ uploaded, onChangeImage: onChangeImage }: ImgProps) => {
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (file) {
-            onChangeImage('/images/' + file.name)
             setPreviewUrl(URL.createObjectURL(file))
             setSelectedFile(file)
         }
@@ -41,15 +40,15 @@ export default ({ uploaded, onChangeImage: onChangeImage }: ImgProps) => {
                 })
                 const data = await response.json()
                 console.log(data)
-                // 업로드 후 서버의 응답 확인
-
-                // 업로드 성공 후 필요한 동작 수행
+                /// 업로드 후 서버의 응답 확인
+                /// 업로드 성공 후 필요한 동작 수행
+                onChangeImage(data.filename)
                 uploaded(true)
                 alert('사진 업로드를 완료하였습니다.')
                 setIsUploaded(true)
             } catch (error) {
                 console.error(error)
-                // 업로드 실패 시 에러 처리
+                /// 업로드 실패 시 에러 처리
             }
         }
     }
