@@ -205,7 +205,7 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                             onChange={(e) => setMutableUser({ ...mutableUser, allergy: e.currentTarget.value })}
                         />
 
-                        <Spacer y={2} />
+                        <Spacer />
 
                         <Button
                             flat
@@ -222,11 +222,7 @@ export default function profileEdit({ user, accountProviders, tossClientKey, tos
                         </Button>
                     </fieldset>
                 </form>
-                {user.stores[0] != undefined || user.stores != null ? (
-                    <Button onPress={() => router.push('/admin')}> 내 매장 관리 </Button>
-                ) : (
-                    <Button onPress={() => router.push('/admin')}> 매장 만들기 </Button>
-                )}
+                <Spacer />
             </Layout>
         </>
     )
