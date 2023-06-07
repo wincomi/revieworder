@@ -52,6 +52,8 @@ export default ({ cartItems, tossClientKey, tossRedirectURL }: SummaryCardProps)
                         money: totalPrice,
                     }),
                 })
+
+                // 포인트 결제
                 await fetch(`api/user/moneyapi`, {
                     method: 'PUT',
                     headers: {
@@ -65,6 +67,22 @@ export default ({ cartItems, tossClientKey, tossRedirectURL }: SummaryCardProps)
                         opt: 'pay',
                     }),
                 })
+
+                // 장바구니 초기화
+                await fetch(`api/carts`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // session의 쿠키를 보내는데 req가 없으면 필요
+                    credentials: 'include',
+
+                    body: JSON.stringify({
+                        cart: cartItems[0],
+                        reset: true,
+                    }),
+                })
+
                 router.push('/order')
             }
             // 포인트 없으면 profile로 이동

@@ -99,6 +99,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                             money: totalPrice,
                         }),
                     })
+
+                    // 주문 후 장바구니 초기화
+                    await fetch(`api/carts`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        // session의 쿠키를 보내는데 req가 없으면 필요
+                        credentials: 'include',
+
+                        body: JSON.stringify({
+                            cart: cartItems[0],
+                            reset: true,
+                        }),
+                    })
                 }
             }
         })
