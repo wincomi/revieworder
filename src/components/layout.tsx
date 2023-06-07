@@ -15,9 +15,8 @@ export default ({ children }: LayoutProps) => {
     const menu: NavbarMenuItem[] = [
         { id: 'index', name: '둘러보기', path: '/', icon: <FaHome /> },
         { id: 'store', name: '매장', path: '/stores', icon: <FaStore /> },
-        { id: 'cart', name: '주문하기', path: '/cart', icon: <FaShoppingCart /> },
+        { id: 'cart', name: '장바구니', path: '/cart', icon: <FaShoppingCart /> },
         { id: 'review', name: '내 리뷰', path: '/review', icon: <MdRateReview /> },
-        { id: 'profile', name: '내 프로필', path: '/profile', icon: <FaUser /> },
     ]
 
     return (
@@ -28,8 +27,6 @@ export default ({ children }: LayoutProps) => {
                 activeColor="primary"
                 titleIcon={<ImSpoonKnife style={{ verticalAlign: 'text-bottom' }} />}
             >
-                <SettingsButton />
-                {/* <ShoppingCartButton count={-1} /> */}
                 <UserButton />
             </Navbar>
             <Container lg css={{ mt: 32 }}>
