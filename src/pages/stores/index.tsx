@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 import Head from 'next/head'
 import Layout from '@/components/layout'
-import { Button, Grid, Input, Text } from '@nextui-org/react'
+import { Grid, Input, Text } from '@nextui-org/react'
 import { HiSearch } from 'react-icons/hi'
 import { StoreAPIGETResponse } from '../api/admin/stores'
 import { Store } from '@prisma/client'
@@ -16,6 +16,7 @@ interface StoreSearchPageProps {
 }
 
 export default function Home({ stores }: StoreSearchPageProps) {
+    const router = useRouter()
     const [query, setQuery] = useState('')
 
     const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
