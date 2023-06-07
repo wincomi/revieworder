@@ -62,7 +62,7 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                     },
                     orderBy: [
                         {
-                            order: { orderDate: 'desc' },
+                            createTime: 'desc',
                         },
                         {
                             order: { userId: 'desc' },
@@ -105,7 +105,7 @@ export default async (req: ReviewAPIRequest, res: NextApiResponse) => {
                     },
                     orderBy: [
                         {
-                            order: { orderDate: 'desc' },
+                            createTime: 'desc',
                         },
                         {
                             order: { userId: 'desc' },
