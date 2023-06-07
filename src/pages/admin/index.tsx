@@ -1,5 +1,5 @@
 import Layout from '@/components/admin/layout'
-import { Grid, Progress, Text, Link } from '@nextui-org/react'
+import { Grid, Progress, Text, Link, Spacer } from '@nextui-org/react'
 import { GetServerSideProps } from 'next/types'
 import { StoreAPIGETResponse, StoreInfo } from '../api/stores'
 import { OrderAPIGETResponse, OrderItem } from '../api/orders'
@@ -39,7 +39,7 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
     })
 
     // 순서대로 색깔 변경
-    const setColor = (index: number) => {
+    const progressColor = (index: number) => {
         switch (index % 6) {
             case 0:
                 return 'primary'
@@ -51,8 +51,6 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
                 return 'warning'
             case 4:
                 return 'error'
-            case 5:
-                return 'gradient'
         }
     }
 
@@ -62,7 +60,12 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
         return (
             <Layout>
                 <Text h3>매장이 존재하지 않습니다.</Text>
-                <Button color="gradient" icon={<BsHouseAddFill />} onPress={() => router.push('/admin/enroll_store')}>
+                <Button
+                    color="primary"
+                    flat
+                    icon={<BsHouseAddFill />}
+                    onPress={() => router.push('/admin/enroll_store')}
+                >
                     매장 만들기
                 </Button>
             </Layout>
@@ -72,27 +75,44 @@ export default function adminPage({ storeOrders, storesInfo }: AdminPageProps) {
     return (
         <>
             <Layout>
-                <Button color="gradient" icon={<BsHouseAddFill />} onPress={() => router.push('/admin/enroll_store')}>
-                    매장 만들기
-                </Button>
-                {/* 홈은 매장 별 매출 보여주고 주문이나 다른데에서 선택바 
-                <Text h3>{selectedStore.name ?? '홈'}</Text>
-                <StoreSelection stores={storesInfo} />
-                */}
-                <Grid.Container xs={12} sm={6} gap={2}>
-                    <Grid>
-                        <Text>통합 총 매출: {totalSales.toLocaleString()}원</Text>
+                <Grid.Container>
+                    <Grid xs={12} sm={6}>
+                        <div>
+                            <Text h2>통합 총 매출</Text>
+                            <Text h3>{totalSales.toLocaleString()}원</Text>
+                        </div>
                     </Grid>
-                    <Text>매장 별 매출</Text>
-                    {storesInfo.map((store: StoreInfo, index) => (
-                        <Grid key={index}>
-                            <Link color="default" href={`/admin/store?id=${store.id}`}>
-                                {store.name}
-                            </Link>
-                            <Text>매출: {total[index].toLocaleString()} 원</Text>
-                            <Progress value={total[index]} max={totalSales} color={setColor(index)} status="primary" />
-                        </Grid>
-                    ))}
+                    <Grid xs={12} sm={6}>
+                        <div style={{ width: '100%' }}>
+                            <Text h2>매장 별 매출</Text>
+                            {storesInfo.map((store: StoreInfo, index) => (
+                                <Grid key={index}>
+                                    <Text h3>
+                                        <Link color="text" href={`/admin/store?id=${store.id}`}>
+                                            {store.name}
+                                        </Link>
+                                    </Text>
+                                    <Text h4>매출: {total[index].toLocaleString()} 원</Text>
+                                    <Progress
+                                        value={total[index]}
+                                        max={totalSales}
+                                        color={progressColor(index)}
+                                        status={progressColor(index)}
+                                        shadow
+                                    />
+                                    <Spacer />
+                                </Grid>
+                            ))}
+                            <Spacer y={1} />
+                            <Button
+                                color="gradient"
+                                icon={<BsHouseAddFill />}
+                                onPress={() => router.push('/admin/enroll_store')}
+                            >
+                                매장 만들기
+                            </Button>
+                        </div>
+                    </Grid>
                 </Grid.Container>
             </Layout>
         </>
