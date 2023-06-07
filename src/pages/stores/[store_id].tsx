@@ -70,10 +70,10 @@ export default ({ menuItems }: StorePageProps) => {
                     </Modal.Body>
                 </Modal>
 
-                <Grid.Container>
-                    <Grid sm={12}>
-                        {menuItems.map((item: Menu, index) => (
-                            <>
+                <Grid.Container gap={2} alignItems="stretch" css={{ px: 0 }}>
+                    {menuItems.map((item: Menu, index) => (
+                        <>
+                            <Grid xs={12} sm={6} lg={4}>
                                 <Card key={index} variant="flat">
                                     <Card.Header>
                                         <Row wrap="wrap" justify="space-between" align="center">
@@ -112,9 +112,9 @@ export default ({ menuItems }: StorePageProps) => {
                                     </Card.Footer>
                                 </Card>
                                 <Spacer y={0.5} />
-                            </>
-                        ))}
-                    </Grid>
+                            </Grid>
+                        </>
+                    ))}
                 </Grid.Container>
             </Layout>
         </>
