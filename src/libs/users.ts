@@ -23,11 +23,18 @@ export async function getUsers(): Promise<User[]> {
 }
 
 ///  userId로 유저 찾기
-export async function getUserAccount(userId: string, provider: 'instagram' | 'facebook'): Promise<Account | undefined> {
-    const userResult = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { accounts: { where: { provider: provider } } },
-    })
-
-    return userResult?.accounts[0]
+export async function getUserAccount(userId: string, provider: string): Promise<Account | undefined> {
+    if (provider == '') {
+        const userResult = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { accounts: true },
+        })
+        return userResult?.accounts[0]
+    } else {
+        const userResult = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { accounts: { where: { provider: provider } } },
+        })
+        return userResult?.accounts[0]
+    }
 }

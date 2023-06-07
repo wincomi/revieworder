@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import React from 'react'
 import { getUserAccount } from '@/libs/users'
+import { postFacebookPage, postInstagramMedia } from '@/libs/sns'
 
 import { Account, Prisma, Review } from '@prisma/client'
 import { OrderAPIGETResponse, OrderItem } from './api/orders'
@@ -55,11 +56,39 @@ export default ({ reviews, orderItem, account, pageId }: MenuEditPageProps) => {
         })
         if (result.status == 200) {
             alert('리뷰를 등록하였습니다.')
+            const result = await fetch(`/api/reviews/post`, {
+                method: 'GET',
+                credentials: 'include',
+            })
+            if (result.status == 200) {
+                /// 리뷰 ID 가져와서 Facebook 링크로 작성
+                const idJSON = await result.json()
+                setReviewId(idJSON.data)
+                if (selectedInstagram && account != null) {
+                    const postId = await postInstagramMedia(account, review.content, imageUrl)
+                    if (postId == null) {
+                        console.log('인스타그램 오류 발생')
+                    }
+                    console.log(postId)
+                }
+                if (selectedFacebook && account != null) {
+                    const link = `https://revieworder.kr/review/${reviewId}`
+                    const postId = await postFacebookPage(account, review.content, imageUrl, link, pageId)
+                    if (postId == null) {
+                        console.log('페이스북 오류 발생')
+                    }
+                    console.log(postId)
+                }
+            }
         } else {
             alert('리뷰 등록에 실패하였습니다.')
         }
+        if (confirm('내 리뷰로 이동하시겠습니까?')) {
+            router.push('/review')
+        }
     }
 
+    /// 리뷰 유효성 검사
     const orderId = router.query.orderId
 
     for (let i = 0; i < reviews.length; i++) {
@@ -156,20 +185,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const orderItem = response.data
 
     const session = await getServerSession(context.req, context.res, authOptions)
+    /// 세션정보 없음(로그인 X) 시 로그인 페이지로 리다이렉트
     if (!session) {
-        return {
-            props: {
-                orderItem,
-                account: null,
-                pageId: process.env.NEXTAUTH_FACEBOOK_PAGE_ID,
-            },
-        }
+        console.log('로그인 후 이용해주세요.')
+        router.push('/login')
     }
 
     const userId = session?.user?.id
     /// Facebook 계정 하나로 instagram까지 전부 가능 (instagram 계정으로는 instagram post 불가능)
-    /// 반드시 Facebook 계정으로만 로그인해야함
-    const facebook = await getUserAccount(userId, 'facebook')
+    /// Facebook 계정 이외에는 SNS업로드기능 이용 불가능
+    let account
+    if (userId != undefined) {
+        account = await getUserAccount(userId, 'facebook')
+        if (account == undefined) {
+            account = await getUserAccount(userId, '')
+        }
+    }
 
     const reviewResult = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews`, {
         method: 'GET',
@@ -178,7 +209,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             cookie: context.req.headers.cookie || '',
         },
     })
-
     const reviewRes = await reviewResult.json().then((data) => data as ReviewAPIGETResponse)
     const reviews = reviewRes.data
 
@@ -186,7 +216,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {
             reviews,
             orderItem,
-            account: facebook != undefined ? facebook : null,
+            account: account != undefined ? account : null,
             pageId: process.env.NEXTAUTH_FACEBOOK_PAGE_ID,
         },
     }
