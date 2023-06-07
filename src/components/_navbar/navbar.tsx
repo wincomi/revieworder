@@ -22,7 +22,7 @@ export default ({ title, titleIcon, menu, activeColor, children }: NavbarProps) 
 
     return (
         <Navbar variant="sticky" isBordered>
-            <Navbar.Brand>
+            <Navbar.Brand hideIn="xs">
                 <Link onClick={() => router.push('/')}>
                     <Text b color="text" css={{ fontSize: 20, ml: 8 }}>
                         {titleIcon} {title}
@@ -35,7 +35,7 @@ export default ({ title, titleIcon, menu, activeColor, children }: NavbarProps) 
                         key={item.id}
                         onClick={() => router.push(item.path)}
                         isActive={router.pathname == item.path}
-                        css={{ width: 80 }}
+                        css={{ width: 50 }}
                     >
                         <Grid.Container css={router.pathname == item.path ? { color: `$colors$${activeColor}` } : {}}>
                             <Grid xs={12} justify="center" css={{ fontSize: 24 }}>
@@ -49,7 +49,7 @@ export default ({ title, titleIcon, menu, activeColor, children }: NavbarProps) 
                     </Navbar.Link>
                 ))}
             </Navbar.Content>
-            <Navbar.Content>{children}</Navbar.Content>
+            <Navbar.Content hideIn="xs">{children}</Navbar.Content>
         </Navbar>
     )
 }
