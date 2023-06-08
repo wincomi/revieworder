@@ -45,10 +45,10 @@ export default ({ menuItems }: StorePageProps) => {
         }
     }
 
-    if (menuItems == undefined) {
+    if (menuItems[0] == undefined) {
         return (
             <Layout>
-                <Text>매장 업데이트 중</Text>
+                <Text>매장 준비 중입니다.</Text>
             </Layout>
         )
     }
