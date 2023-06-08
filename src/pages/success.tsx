@@ -101,7 +101,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                     })
 
                     // 주문 후 장바구니 초기화
-                    await fetch(`api/carts`, {
+                    await fetch(`${process.env.NEXTAUTH_URL}/api/carts`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
