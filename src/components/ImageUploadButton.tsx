@@ -38,7 +38,37 @@ export default ({ uploaded, onChangeImage: onChangeImage }: ImgProps) => {
                     body: formData,
                     method: 'POST',
                 })
+
+                // 1회용 업로드 url 발급
+                // const response = await await fetch(
+                //     `https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ID}/images/v2/direct_upload `,
+                //     {
+                //         method: 'POST',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //             Authorization: `Bearer ${process.env.CF_TOKEN}`,
+                //         },
+                //     }
+                // )
+                //
+                //const uploadURL = await response.json()
+                //
+                // 해당 url로 이미지 업로드
+                // await fetch(uploadURL, {
+                //     method: 'POST',
+                //     body: formData,
+                // })
+
                 const data = await response.json()
+
+                // 참고 문헌
+                // https://velog.io/@hunmok1027/CloudFlare%EC%97%90-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C
+                // https://velog.io/@rlagurwns112/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C-%ED%94%8C%EB%A0%88%EC%96%B4%EB%A1%9C-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-%ED%95%98%EA%B8%B0
+                // imageId로 해당 이미지 불러옴
+                // const result = data.get('result')
+                // const image_Id = result.get('id')
+                // const resultUploadURL = result.get('uploadURL')
+
                 console.log(data)
                 /// 업로드 후 서버의 응답 확인
                 /// 업로드 성공 후 필요한 동작 수행

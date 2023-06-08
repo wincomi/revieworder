@@ -28,5 +28,8 @@ declare namespace NodeJS {
 
         TOSS_CLIENT_KEY: string
         TOSS_SECRET_KEY: string
+
+        CF_ID: string
+        CF_API_TOKEN: string
     }
 }
