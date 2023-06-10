@@ -132,9 +132,8 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
                     <div style={{ alignSelf: 'stretch' }}>
                         {/* 여기 주석 이전 것 DB에 띄어쓰기 없으면 이거 사용 */}
                         {/*{review.content.split(" ").map((str) => { */}
-                        {review.content.split('#').map((str) => {
-                            if (str != '') str = '#' + str
-                            if (str.startsWith('#')) {
+                        {review.content.split(/[^\S]/g).map((str) => {
+                            if (str.includes('#')) {
                                 return (
                                     <span key={str}>
                                         <Link
