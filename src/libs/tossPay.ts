@@ -20,7 +20,7 @@ export async function tossPayment(
     const randomOrderId = Math.random().toString(36).substring(2, 12)
 
     // TODO: 나중에 조건문 수정
-    if (user != null && user != undefined && user.name != null && orderName) {
+    if (user != null && user != undefined && orderName) {
         // 결제 창 생성
         tossPayments
             .requestPayment('카드', {
@@ -29,7 +29,7 @@ export async function tossPayment(
                 amount: amount,
                 orderId: randomOrderId,
                 orderName: orderName,
-                customerName: user.name,
+                customerName: user.name != null ? user.name : '이름 없음', // 구매자 이름 (휴대폰인증하는 사람들은 초반에 이름 없어서)
                 successUrl: `${tossRedirectURL}/success?userId=${user.id}&payMethod=${pointPay}`,
                 failUrl: `${tossRedirectURL}/fail`,
             })
