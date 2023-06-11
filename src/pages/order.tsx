@@ -55,8 +55,8 @@ export default ({ reviews, orderItems }: OrderPageProps) => {
             <title>My 주문</title>
             <Grid.Container gap={2} alignItems="flex-start">
                 {orderItems.map((order: OrderItem, index) => (
-                    <Grid key={index} md={4} xs={6}>
-                        <Card>
+                    <Grid key={index} md={4} xs={12}>
+                        <Card variant="flat">
                             <Card.Header>
                                 <Grid>
                                     <Text h5>주문 내역{index + 1}</Text>
