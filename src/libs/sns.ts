@@ -17,6 +17,7 @@ export async function postInstagramMedia(
     if (image == '') {
         return '이미지를 등록해주세요'
     }
+    image = 'https://i.ibb.co/ynSXzVb/Kakao-Talk-20230612-152444517.jpg'
     /// 페이스북에 연결된 인스타그램 비즈니스 ID 가져오기
     const FACEBOOK_GRAPH_API_URL = `https://graph.facebook.com/v17.0`
     if (account.provider != 'facebook') {
@@ -106,7 +107,7 @@ export async function postFacebookPage(
     const pageAccessToken = pageAccessTokenJSON.access_token
 
     const encodedCaption = encodeURIComponent(caption + '\n\n' + link)
-
+    image = 'https://i.ibb.co/ynSXzVb/Kakao-Talk-20230612-152444517.jpg'
     /// 아래 API들은 전부 page access token이 필요함
     if (image != '' && caption != '') {
         try {
