@@ -38,9 +38,13 @@ const handler: NextApiHandler = async (req, res) => {
         } catch (error) {
             await fs.mkdir('./public/images')
         }
+        console.log('handler1')
         const { files } = await readFile(req, true)
+        console.log('handler2')
         const uploadedImage = files.myImage as formidable.File
+        console.log('handler3')
         const imageBuffer = await fs.readFile(uploadedImage.filepath)
+        console.log('handler4')
 
         /// 파일명 : 당시 시간.png - 띄어쓰기 없음
         console.log('' + Date.now())
