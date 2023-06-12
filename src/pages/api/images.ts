@@ -50,7 +50,7 @@ const handler: NextApiHandler = async (req, res) => {
         const uploadFilePath = '/public/images/' + fileName
 
         /// 이미지 호스팅 경로, 기본: name='/당시 시간.png', name='당시 시간.png'로 수정해야 할 수도 있음
-        const writeFilePath = 'https://revieworder.kr/images?name=' + "'/" + fileName + "'"
+        const writeFilePath = 'https://revieworder.kr/images/' + fileName
         console.log(uploadFilePath)
         console.log(writeFilePath)
         await fs.writeFile('.' + uploadFilePath, imageBuffer, 'base64')

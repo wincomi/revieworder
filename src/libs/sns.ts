@@ -102,11 +102,14 @@ export async function postFacebookPage(
     }
     const pageAccessTokenJSON = await response.json()
     const pageAccessToken = pageAccessTokenJSON.access_token
+
     /// 아래 API들은 전부 page access token이 필요함
     if (image != '' && caption != '') {
         try {
             response = await fetch(
-                `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${caption}&link=${link}&access_token=${pageAccessToken}`,
+                `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${encodeURIComponent(
+                    caption
+                )}&link=${link}&access_token=${pageAccessToken}`,
                 { method: 'POST' }
             )
         } catch (err) {
