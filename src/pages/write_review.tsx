@@ -31,7 +31,6 @@ interface MenuEditPageProps {
 export default ({ reviews, orderItem, account, pageId }: MenuEditPageProps) => {
     const [imageUrl, setImageUrl] = useState('https://www.revieworder.kr/images/default.png')
     const [uploaded, setUploaded] = useState(false)
-    const [reviewId, setReviewId] = useState(0)
     const [selectedFacebook, setSelectedFacebook] = React.useState(false)
     const [selectedInstagram, setSelectedInstagram] = React.useState(false)
 
@@ -63,16 +62,16 @@ export default ({ reviews, orderItem, account, pageId }: MenuEditPageProps) => {
             if (result.status == 200) {
                 /// 리뷰 ID 가져와서 Facebook 링크로 작성
                 const idJSON = await result.json()
-                setReviewId(idJSON.data.id)
+                const reviewId = idJSON.data.id
+                const link = `https://revieworder.kr/review/${reviewId}`
                 if (selectedInstagram && account != null) {
-                    const postId = await postInstagramMedia(account, review.content, imageUrl)
+                    const postId = await postInstagramMedia(account, review.content, imageUrl, link)
                     if (postId == null) {
                         console.log('인스타그램 오류 발생')
                     }
                     console.log(postId)
                 }
                 if (selectedFacebook && account != null) {
-                    const link = `https://revieworder.kr/review/${reviewId}`
                     const postId = await postFacebookPage(account, review.content, imageUrl, link, pageId)
                     if (postId == null) {
                         console.log('페이스북 오류 발생')

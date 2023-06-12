@@ -11,7 +11,8 @@ import { Account } from '@prisma/client'
 export async function postInstagramMedia(
     account: Account,
     caption: string,
-    image: string
+    image: string,
+    link: string
 ): Promise<string | null | undefined> {
     if (image == '') {
         return '이미지를 등록해주세요'
@@ -22,6 +23,7 @@ export async function postInstagramMedia(
         return '페이스북 로그인이 필요합니다.'
     }
     let response
+    const encodedCaption = encodeURIComponent(caption + '\n\n' + link)
     try {
         response = await fetch(
             `${FACEBOOK_GRAPH_API_URL}/${account.providerAccountId}/accounts?fields=instagram_business_account{ig_id}&access_token=${account.access_token}`
@@ -38,7 +40,7 @@ export async function postInstagramMedia(
     /// container 가져오기
     try {
         response = await fetch(
-            `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media?image_url=${image}&caption=${caption}&access_token=${account.access_token}`,
+            `${FACEBOOK_GRAPH_API_URL}/${instagramId}/media?image_url=${image}&caption=${encodedCaption}&access_token=${account.access_token}`,
             { method: 'POST' }
         )
     } catch (err) {
@@ -103,13 +105,13 @@ export async function postFacebookPage(
     const pageAccessTokenJSON = await response.json()
     const pageAccessToken = pageAccessTokenJSON.access_token
 
+    const encodedCaption = encodeURIComponent(caption + '\n\n' + link)
+
     /// 아래 API들은 전부 page access token이 필요함
     if (image != '' && caption != '') {
         try {
             response = await fetch(
-                `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${encodeURIComponent(
-                    caption
-                )}&link=${link}&access_token=${pageAccessToken}`,
+                `https://graph.facebook.com/${pageId}/photos?url=${image}&message=${encodedCaption}&access_token=${pageAccessToken}`,
                 { method: 'POST' }
             )
         } catch (err) {
@@ -122,7 +124,7 @@ export async function postFacebookPage(
     if (image == '' && caption != '') {
         try {
             response = await fetch(
-                `https://graph.facebook.com/${pageId}/feed?message=${caption}&link=${link}&access_token=${pageAccessToken}`,
+                `https://graph.facebook.com/${pageId}/feed?message=${encodedCaption}&access_token=${pageAccessToken}`,
                 { method: 'POST' }
             )
         } catch (err) {
