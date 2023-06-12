@@ -27,7 +27,7 @@ export default ({ review, onChangeQuery }: ReviewCardProps) => {
 
         setIsAddingToCart(true)
 
-        await fetch(`api/carts`, {
+        await fetch(`/api/carts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
