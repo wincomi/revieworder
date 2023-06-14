@@ -44,17 +44,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const result = await fetch(`${process.env.NEXTAUTH_URL}/api/reviews?reviewId=${reviewId}`, { method: 'GET' })
     const response = await result.json().then((data) => data as ReviewAPIGETResponse)
     const reviewItem = response.data
-    let commentResponse
+    let commentProps
     try {
-        commentResponse = await fetch(`http://localhost:3001/api/comment/1`, { method: 'GET' })
+        const commentResponse = await fetch(`http://localhost:3001/api/comment/1`, { method: 'GET' })
+        const commentResponseJson = await commentResponse.json().then((data) => data)
+        commentProps = commentResponseJson.data as Comment[]
     } catch (error) {
         return {
             props: { reviewItem: reviewItem, commentProps: null, users: null },
         }
     }
 
-    const commentResponseJson = await commentResponse.json().then((data) => data)
-    const commentProps = commentResponseJson.data as Comment[]
     console.log(commentProps)
     // const getUsers = comments.map((comment: Comment) => {
     //     return fetch(`${process.env.NEXTAUTH_URL}/api/user?userId=${comment.userId}`, {
