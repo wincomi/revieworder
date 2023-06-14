@@ -60,26 +60,57 @@ export default async (req: UserAPIRequest, res: NextApiResponse) => {
     switch (req.method) {
         // GET (셰션 내 유저 정보 조회)
         case 'GET':
-            const readUser = await prisma.user.findUnique({
-                where: { id: userId },
-                include: { accounts: true, stores: true },
-            })
-
-            if (readUser != null) {
-                const readResult = exclude(readUser, ['password'])
-                // 성공!!
-                res.status(200).json({
-                    data: readResult,
-                })
-            } else {
-                res.status(404).json({
-                    error: {
-                        code: 400,
-                        message: '유저 정보 조회를 실패하였습니다.',
+            const admin = req.query.admin
+            if (admin == 'true') {
+                const readUser = await prisma.user.findMany({
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        phoneNumber: true,
+                        image: true,
+                        emailVerified: true,
+                        allergy: true,
                     },
                 })
+
+                if (readUser != null) {
+                    const readResult = readUser
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '유저 정보 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
+            } else {
+                const readUser = await prisma.user.findUnique({
+                    where: { id: userId },
+                    include: { accounts: true, stores: true },
+                })
+
+                if (readUser != null) {
+                    const readResult = exclude(readUser, ['password'])
+                    // 성공!!
+                    res.status(200).json({
+                        data: readResult,
+                    })
+                } else {
+                    res.status(404).json({
+                        error: {
+                            code: 400,
+                            message: '유저 정보 조회를 실패하였습니다.',
+                        },
+                    })
+                }
+                break
             }
-            break
 
         // CREATE (sns 연동 외 회원가입)
         case 'POST':
